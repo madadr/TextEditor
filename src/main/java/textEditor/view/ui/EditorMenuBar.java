@@ -15,13 +15,12 @@ public class EditorMenuBar extends MenuBar {
     public EditorMenuBar() {
         super();
         init();
+        getMenus().addAll(file, edit, help);
     }
 
     private void init() {
         file = new MenuBarElement("File", new ArrayList<>(Arrays.asList("New", "Open", "Save", "Close")));
         edit = new MenuBarElement("Edit", new ArrayList<>(Arrays.asList("Undo", "Redo", "---", "Copy", "Cut", "Paste")));
         help = new MenuBarElement("Help", new ArrayList<>(Arrays.asList("Help", "---", "About us")));
-
-        getMenus().addAll(file, edit, help);
     }
 }
