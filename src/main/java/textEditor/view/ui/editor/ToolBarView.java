@@ -1,4 +1,4 @@
-package textEditor.view;
+package textEditor.view.ui.editor;
 
 import javafx.scene.control.Button;
 
