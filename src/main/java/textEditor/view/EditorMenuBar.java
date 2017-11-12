@@ -1,8 +1,8 @@
-package textEditor.view.ui;
+package textEditor.view;
 
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
-import textEditor.view.ui.menu.MenuBarElement;
+import textEditor.view.ui.menuBar.MenuBarElement;
 
 import java.util.ArrayList;
 import java.util.Arrays;
