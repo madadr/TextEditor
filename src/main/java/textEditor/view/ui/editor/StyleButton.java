@@ -10,6 +10,8 @@ public class StyleButton extends Button {
     public StyleButton(String text, StyleAction action) {
         this.buttonText = text;
         this.action = action;
+
+        setText(buttonText);
     }
 
     public String getButtonText() {
