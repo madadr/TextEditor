@@ -6,6 +6,7 @@ import javafx.scene.control.MenuBar;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import textEditor.controller.EditorController;
 
 public class Main extends Application {
     private BorderPane root;
@@ -29,6 +30,8 @@ public class Main extends Application {
         stage.setScene(scene);
         stage.setResizable(false);
         stage.show();
+
+        new EditorController((EditorView) editor);
     }
 
     public static void main(String[] args) {
