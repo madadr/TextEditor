@@ -2,8 +2,8 @@ package textEditor.view;
 
 import javafx.scene.control.TextArea;
 
-public class EditorTextArea extends TextArea {
-    public EditorTextArea() {
+public class TextAreaView extends TextArea {
+    public TextAreaView() {
         super();
     }
 }
