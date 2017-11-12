@@ -1,4 +1,4 @@
-package textEditor.view.ui.menu;
+package textEditor.view.ui.menuBar;
 
 import javafx.collections.ObservableList;
 import javafx.scene.control.MenuItem;

@@ -7,7 +7,6 @@ import javafx.scene.control.ToolBar;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import textEditor.view.ui.EditorMenuBar;
 
 public class Main extends Application {
     private BorderPane root;
