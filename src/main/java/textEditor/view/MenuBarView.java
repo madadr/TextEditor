@@ -7,12 +7,12 @@ import textEditor.view.ui.menuBar.MenuBarElement;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class EditorMenuBar extends MenuBar {
+public class MenuBarView extends MenuBar {
     private Menu file;
     private Menu edit;
     private Menu help;
 
-    public EditorMenuBar() {
+    public MenuBarView() {
         super();
         init();
         getMenus().addAll(file, edit, help);

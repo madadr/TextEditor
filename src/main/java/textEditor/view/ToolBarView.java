@@ -2,12 +2,12 @@ package textEditor.view;
 
 import javafx.scene.control.Button;
 
-public class EditorToolBar extends javafx.scene.control.ToolBar {
+public class ToolBarView extends javafx.scene.control.ToolBar {
     private Button bold;
     private Button italic;
     private Button underscore;
 
-    public EditorToolBar() {
+    public ToolBarView() {
         super();
         init();
         getItems().addAll(bold, italic, underscore);
