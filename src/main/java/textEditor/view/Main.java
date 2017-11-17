@@ -9,19 +9,15 @@ import javafx.stage.Stage;
 import textEditor.controller.EditorController;
 
 public class Main extends Application {
-    private BorderPane root;
-    // TODO: Are these members required? Can they be replaced with local objects?
-    private MenuBar menuBar;
-    private VBox editor;
 
     @Override
     public void start(Stage stage) throws Exception {
-        root = new BorderPane();
+        BorderPane root = new BorderPane();
         int width = 600, height = 400;
         Scene scene = new Scene(root, width, height);
 
-        menuBar = new MenuBarView();
-        editor = new EditorView();
+        MenuBar menuBar = new MenuBarView();
+        VBox editor = new EditorView();
 
         root.setTop(menuBar);
         root.setCenter(editor);
