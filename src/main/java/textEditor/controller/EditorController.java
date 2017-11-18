@@ -7,6 +7,7 @@ import javafx.scene.control.Button;
 import textEditor.model.EditorModel;
 import textEditor.model.StyleAction;
 import textEditor.view.EditorView;
+import textEditor.view.MainApp;
 import textEditor.view.ui.editor.StyleButton;
 
 public class EditorController implements EventHandler<ActionEvent> {
@@ -15,9 +16,9 @@ public class EditorController implements EventHandler<ActionEvent> {
 
     private String text;
 
-    public EditorController(EditorView view) {
+    public EditorController(MainApp app, EditorModel model, EditorView view) {
         this.view = view;
-        model = new EditorModel();
+        this.model = model;
 
         text = "";
         updateText();
@@ -37,8 +38,7 @@ public class EditorController implements EventHandler<ActionEvent> {
             return;
         }
 
-        // TODO: replace with selected text (now selectedText is whole text)
-        String selectedText = view.getTextArea().getText();
+        String selectedText = view.getTextArea().getSelectedText();
 
         if (target instanceof StyleButton) {
             StyleButton button = (StyleButton) target;
@@ -51,7 +51,7 @@ public class EditorController implements EventHandler<ActionEvent> {
             switch (action) {
                 case BOLD:
                     model.setText(boldText(selectedText));
-                    setText(model.getText());
+//                    view.getTextArea().replaceSelection(boldText(selectedText));
                     break;
                 case ITALIC:
                     break;
@@ -60,7 +60,7 @@ public class EditorController implements EventHandler<ActionEvent> {
             }
         }
 
-        updateText();
+//        updateText();
     }
 
     // TODO: create separate class for tags manipulation
