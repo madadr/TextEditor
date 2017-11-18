@@ -9,13 +9,11 @@ public class MainApp extends Application {
     private static final int EDITOR_SCENE_HEIGHT = 400;
 
     private Stage stage;
-    private Scene editorScene;
+    private Scene editorScene = new EditorScene(this, EDITOR_SCENE_WIDTH, EDITOR_SCENE_HEIGHT);
 
     @Override
     public void start(Stage stage) throws Exception {
         this.stage = stage;
-
-        editorScene = new EditorScene(this, EDITOR_SCENE_WIDTH, EDITOR_SCENE_HEIGHT);
 
         stage.setTitle("Editor");
         stage.setScene(editorScene);
@@ -28,7 +26,7 @@ public class MainApp extends Application {
         return editorScene;
     }
 
-    public void setScene(Scene scene) {
+    public void setEditorScene(Scene scene) {
         this.stage.setScene(scene);
     }
 
