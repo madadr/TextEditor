@@ -22,9 +22,15 @@ public class EditorView extends VBox {
         menuBar = new MenuBarView();
         toolBar = new ToolBarView();
         textArea = new TextAreaView();
-        setupTextAreaSize();
+        setupTextArea();
 
         getChildren().addAll(menuBar, toolBar, textArea);
+    }
+
+    private void setupTextArea() {
+//        textArea.textProperty().bind(model.textProperty());
+
+        setupTextAreaSize();
     }
 
     private void setupTextAreaSize() {

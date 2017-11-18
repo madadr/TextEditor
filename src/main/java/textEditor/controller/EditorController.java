@@ -13,5 +13,12 @@ public class EditorController {
         this.app = app;
         this.view = view;
         this.model = model;
+
+
+        this.model.addTextObserver(st -> updateTextArea(st));
+    }
+
+    private void updateTextArea(String st) {
+        view.getTextArea().setText(st);
     }
 }

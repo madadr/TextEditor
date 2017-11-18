@@ -20,15 +20,15 @@ public class ToolBarView extends javafx.scene.control.ToolBar {
         underscore = new StyleButton("Underscore", StyleAction.UNDERSCORE);
     }
 
-    public Button getBold() {
+    public Button getBoldButton() {
         return bold;
     }
 
-    public Button getItalic() {
+    public Button getItalicButton() {
         return italic;
     }
 
-    public Button getUnderscore() {
+    public Button getUnderscoreButton() {
         return underscore;
     }
 }
