@@ -5,23 +5,20 @@ import javafx.scene.Scene;
 import javafx.scene.control.MenuBar;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
 import textEditor.controller.EditorController;
 
-public class EditorStage extends Stage {
-    public EditorStage() {
-        setTitle("Editor");
-        setScene(createScene(600, 400));
-        setResizable(false);
+public class EditorScene extends Scene {
+    // is app ref required to switch between scenes?
+    private MainApp app;
+
+    public EditorScene(MainApp app, int width, int height) {
+        super(createRoot(), width, height);
+        System.out.println("I am");
+        this.app = app;
     }
 
-    private Scene createScene(int width, int height) {
-        Scene scene = new Scene(createRoot(), width, height);
-
-        return scene;
-    }
-
-    private Parent createRoot() {
+    // must be static to let super class constructor use it
+    private static Parent createRoot() {
         BorderPane root = new BorderPane();
 
         MenuBar menuBar = new MenuBarView();
