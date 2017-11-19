@@ -28,8 +28,6 @@ public class EditorView extends VBox {
     }
 
     private void setupTextArea() {
-//        textArea.textProperty().bind(model.textProperty());
-
         setupTextAreaSize();
     }
 
