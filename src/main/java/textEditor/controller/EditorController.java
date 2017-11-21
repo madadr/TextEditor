@@ -1,30 +1,118 @@
 package textEditor.controller;
 
-import javafx.application.Platform;
+import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
+import javafx.scene.control.*;
+import javafx.scene.control.Menu;
+import javafx.scene.control.TextArea;
+import javafx.scene.layout.HBox;
 import textEditor.model.EditorModel;
-import textEditor.view.EditorView;
-import textEditor.view.MainApp;
 
-public class EditorController {
-    private MainApp app;
-    private EditorView view;
-    private EditorModel model;
+import java.awt.*;
+import java.net.URL;
+import java.util.ResourceBundle;
 
-    public EditorController(MainApp app, EditorModel model, EditorView view) {
-        this.app = app;
-        this.view = view;
-        this.model = model;
+public class EditorController implements Initializable {
+    @FXML
+    private Menu fileMenu,editMenu,helpMenu;
+    @FXML
+    private CheckBox bold,italic,underscore;
+    @FXML
+    private ChoiceBox fontType,fontSize;
+    @FXML
+    private TabPane tabBar;
+    @FXML
+    private HBox searchBox;
+    private SingleSelectionModel<Tab> tabSelection;
+    //Run when app starts
+    private EditorModel editorModel;
 
-        this.view.getTextArea().textProperty().addListener(model);
-        this.model.addTextObserver(s -> updateTextArea(s));
-
-        app.getStage().setOnCloseRequest(event -> {
-            model.shutdown();
-            Platform.exit();
-        });
+    @Override
+    public void initialize(URL location, ResourceBundle resources)
+    {
+        tabSelection = tabBar.getSelectionModel();
     }
-
-    private void updateTextArea(String st) {
-        view.getTextArea().setText(st);
+    @FXML
+    private void addingTab()
+    {
+        //TODO change return value of EditorModel addTab to boolean and handle this
+        editorModel.addTab(tabBar,tabSelection);
     }
+    @FXML
+    private void editUndoClicked()
+    {
+
+    }
+    @FXML
+    private void editRedoClicked()
+    {
+
+    }
+    @FXML
+    private void editCopyClicked()
+    {
+
+    }
+    @FXML
+    private void editCutClicked()
+    {
+
+    }
+    @FXML
+    private void editPasteClicked()
+    {
+
+    }
+    @FXML
+    private void helpHelpClicked()
+    {
+
+    }
+    @FXML
+    private void helpAboutUsClicked()
+    {
+
+    }
+    @FXML
+    private void editSearchClicked()
+    {
+        searchBox.setVisible(true);
+    }
+    @FXML
+    private void fileNewClicked()
+    {
+        System.out.println("New file will be created");
+    }
+    @FXML
+    private void fileOpenClicked()
+    {
+        System.out.println("File will be open");
+    }
+    @FXML
+    private void fileSaveClicked()
+    {
+        System.out.println("file will be save");
+    }
+    @FXML
+    private void closeSearchBar()
+    {
+        searchBox.setVisible(false);
+    }
+    @FXML
+    private void fileCloseClicked()
+    {
+
+    }
+    //        this.view.getTextArea().textProperty().addListener(model);
+//        this.model.addTextObserver(s -> updateTextArea(s));
+//
+//
+////        });
+//    }
+
+//    private void updateTextArea(String st) {
+////        view.getTextArea().setText(st);
+//    }
+
+
 }

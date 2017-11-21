@@ -1,26 +1,21 @@
 package textEditor.view;
 
 import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 public class MainApp extends Application {
-    private Stage stage;
-
     @Override
-    public void start(Stage stage) throws Exception {
-        this.stage = stage;
+    public void start(Stage primaryStage) throws Exception {
 
-        stage = new EditorStage(this);
+        Parent root = FXMLLoader.load(getClass().getResource("Editor.fxml"));
+        primaryStage.setTitle("Editor");
 
-        stage.setTitle("Editor");
-
-        stage.setResizable(true);
-
-        stage.show();
-    }
-
-    public Stage getStage() {
-        return stage;
+        primaryStage.setResizable(true);
+        primaryStage.setScene(new Scene(root,800,600));
+        primaryStage.show();
     }
 
     public static void main(String[] args) {
