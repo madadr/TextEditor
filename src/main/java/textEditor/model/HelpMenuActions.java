@@ -1,7 +1,6 @@
 package textEditor.model;
 
-public enum HelpMenuActions
-{
+public enum HelpMenuActions {
     HELP,
     ABOUTUS,
 }

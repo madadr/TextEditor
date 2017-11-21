@@ -1,7 +1,6 @@
 package textEditor.model;
 
-public enum EditMenuActions
-{
+public enum EditMenuActions {
     UNDO,
     REDO,
     COPY,

@@ -2,7 +2,9 @@ package textEditor.model;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.scene.control.*;
+import javafx.scene.control.SingleSelectionModel;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,7 +43,7 @@ public class EditorModel implements ChangeListener {
     private int loremIndex = 0;
 
     private String getLoremIpsumChar() {
-        if(loremIndex < loremIpsum.length()) {
+        if (loremIndex < loremIpsum.length()) {
             return String.valueOf(loremIpsum.charAt(loremIndex++));
         } else {
             loremIndex = 0;
@@ -84,10 +86,10 @@ public class EditorModel implements ChangeListener {
         this.caretPosition = caretPosition;
     }
 
-    public void addTab(TabPane tabBar, SingleSelectionModel<Tab> tabSelection)
-    {
+    public void addTab(TabPane tabBar, SingleSelectionModel<Tab> tabSelection) {
 
     }
+
     @Override
     public void changed(ObservableValue observable, Object oldValue, Object newValue) {
         System.out.println((String) oldValue);
