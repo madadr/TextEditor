@@ -35,8 +35,17 @@ public class EditorController implements Initializable {
     @FXML
     private void addingTab()
     {
+        //TODO Add handling of only one tab(at this moment exception occured)
+        int indexOfAddingPane = tabBar.getTabs().size() -1;
+
+        tabBar.getTabs().add(indexOfAddingPane,new Tab("New tab"));
+
+        Tab newItem = tabBar.getTabs().get(indexOfAddingPane);
+        tabSelection.select(newItem);
+        newItem.setContent(new TextArea());
+        //TODO Make method that change name of Tabs on click request
         //TODO change return value of EditorModel addTab to boolean and handle this
-        editorModel.addTab(tabBar,tabSelection);
+//        editorModel.addTab(tabBar,tabSelection);
     }
     @FXML
     private void editUndoClicked()

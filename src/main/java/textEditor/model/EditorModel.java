@@ -23,19 +23,19 @@ public class EditorModel implements ChangeListener {
 
     public EditorModel() {
         // simulation of editing text by another user?
-        executor.submit(() -> {
-            try {
-                Thread.sleep(5000);
-            } catch (InterruptedException ignored) {
-            }
-            while (!stopped) {
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException ignored) {
-                }
-                setText(text + getLoremIpsumChar());
-            }
-        });
+//        executor.submit(() -> {
+//            try {
+//                Thread.sleep(5000);
+//            } catch (InterruptedException ignored) {
+//            }
+//            while (!stopped) {
+//                try {
+//                    Thread.sleep(1000);
+//                } catch (InterruptedException ignored) {
+//                }
+//                setText(text + getLoremIpsumChar());
+//            }
+//        });
     }
 
     private int loremIndex = 0;
@@ -86,15 +86,7 @@ public class EditorModel implements ChangeListener {
 
     public void addTab(TabPane tabBar, SingleSelectionModel<Tab> tabSelection)
     {
-        //TODO Add handling of only one tab(at this moment exception occured)
-        int indexOfAddingPane = tabBar.getTabs().size() -1;
 
-        tabBar.getTabs().add(indexOfAddingPane,new Tab("New tab"));
-
-        Tab newItem = tabBar.getTabs().get(indexOfAddingPane);
-        tabSelection.select(newItem);
-        newItem.setContent(new TextArea());
-        //TODO Make method that change name of Tabs on click request
     }
     @Override
     public void changed(ObservableValue observable, Object oldValue, Object newValue) {
