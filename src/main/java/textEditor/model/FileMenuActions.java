@@ -1,7 +1,6 @@
 package textEditor.model;
 
-public enum FileMenuActions
-{
+public enum FileMenuActions {
     NEW,
     OPEN,
     SAVE,
