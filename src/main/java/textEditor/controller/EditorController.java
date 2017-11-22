@@ -8,14 +8,13 @@ import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import textEditor.model.EditorModel;
 import textEditor.model.EditorModelService;
-import textEditor.rmi.IRemoteObserver;
 
 import java.net.URL;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.ResourceBundle;
-import java.util.Scanner;
+
 
 public class EditorController implements Initializable {
     @FXML
