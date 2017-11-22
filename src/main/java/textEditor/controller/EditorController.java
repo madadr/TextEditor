@@ -1,16 +1,21 @@
 package textEditor.controller;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.Menu;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import textEditor.model.EditorModel;
+import textEditor.model.EditorModelService;
+import textEditor.rmi.IRemoteObserver;
 
 import java.net.URL;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.util.ResourceBundle;
+import java.util.Scanner;
 
 public class EditorController implements Initializable {
     @FXML
@@ -25,12 +30,34 @@ public class EditorController implements Initializable {
             searchButton, nextSearchButton, previousSearchButton, closeSearchBox;
     @FXML
     private TextField searchTextField;
+    @FXML
+    private TextArea mainTextArea;
 
     private EditorModel editorModel;
 
+    private EditorModelService editorModelService;
     //Run when app starts
     @Override
-    public void initialize(URL location, ResourceBundle resources) {
+    public void initialize(URL location, ResourceBundle resources)
+    {
+        try {
+            Registry registry = LocateRegistry.getRegistry("localhost", 4321);
+
+            editorModelService = (EditorModelService) registry.lookup("EditorModelService");
+//            editorModelService.setTextAreaString();
+            mainTextArea.textProperty().addListener(new ChangeListener<String>() {
+                @Override
+                public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                    try {
+                        editorModelService.setTextAreaString(newValue);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
 
     }
 

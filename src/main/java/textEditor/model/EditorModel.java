@@ -1,46 +1,33 @@
 package textEditor.model;
 
-import java.util.Observer;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
 
-public class EditorModel extends java.util.Observable {
-    private boolean stopped = false;
-
-    private String text = "";
-
-    private int caretPosition;
-    public EditorModel() {
-        // simulation of editing text by another user?
-    }
-
-    public String getText() {
-        return this.text;
-    }
-
-    public void setText(String text) {
-        this.text = text;
-
-//        for (Consumer<String> observer : textObservers) {
-//            observer.accept(text);
-//        }
-
-        System.out.println("new text: " + text);
-    }
-
-    public int getCaretPosition() {
-        return caretPosition;
-    }
-
-    public void setCaretPosition(int caretPosition) {
-        this.caretPosition = caretPosition;
-    }
-
+public class EditorModel implements EditorModelService
+{
+    private String textAreaString = "";
     @Override
-    public synchronized void addObserver(Observer o) {
-        super.addObserver(o);
+    public void setTextAreaString(String value) throws RemoteException
+    {
+        textAreaString+=value;
+        System.out.println(textAreaString);
     }
 
-    @Override
-    public synchronized void deleteObserver(Observer o) {
-        super.deleteObserver(o);
+    public static void main(String[] args)
+    {
+        Registry registry = null;
+        try {
+            registry = LocateRegistry.createRegistry(4321);
+
+            EditorModel editorModel = new EditorModel();
+            EditorModelService editorModelService = (EditorModelService) UnicastRemoteObject.exportObject(editorModel,0);
+
+            registry.rebind("EditorModelService", editorModelService);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+
     }
 }
