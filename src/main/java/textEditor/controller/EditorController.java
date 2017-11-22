@@ -2,7 +2,10 @@ package textEditor.controller;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.Menu;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import textEditor.model.EditorModel;
 
@@ -17,12 +20,14 @@ public class EditorController implements Initializable {
     @FXML
     private HBox searchBox;
     @FXML
-    private Button boldButton, italicButton,underscoreButton,
-                   aligmentLeftButton,aligmentCenterButton,aligmentRightButton,aligmentAdjustButton,
-                   searchButton,nextSearchButton,previousSearchButton,closeSearchBox;
-    @FXML TextField searchTextField;
+    private Button boldButton, italicButton, underscoreButton,
+            aligmentLeftButton, aligmentCenterButton, aligmentRightButton, aligmentAdjustButton,
+            searchButton, nextSearchButton, previousSearchButton, closeSearchBox;
+    @FXML
+    private TextField searchTextField;
 
     private EditorModel editorModel;
+
     //Run when app starts
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -88,69 +93,71 @@ public class EditorController implements Initializable {
     private void fileCloseClicked() {
 
     }
+
     @FXML
     private void closeSearchBoxClicked() {
         searchBox.setVisible(false);
     }
+
     @FXML
     private void boldButtonClicked() {
 
     }
+
     @FXML
     private void italicButtonClicked() {
 
     }
+
     @FXML
     private void underscoreButtonClicked() {
 
     }
+
     @FXML
     private void fontSizePlusButtonClicked() {
 
     }
+
     @FXML
     private void fontSizeMinusButtonClicked() {
 
     }
+
     @FXML
     private void alligmentLeftButtonClicked() {
 
     }
+
     @FXML
     private void alligmentCenterButtonClicked() {
 
     }
+
     @FXML
     private void alligmentRightButtonClicked() {
 
     }
+
     @FXML
     private void aligmentAdjustButtonClicked() {
 
     }
+
     @FXML
     private void searchButtonClicked() {
 
     }
+
     @FXML
     private void nextSearchButtonClicked() {
 
     }
+
     @FXML
     private void previousSearchButtonClicked() {
 
     }
-
-    //        this.view.getTextArea().textProperty().addListener(model);
-//        this.model.addTextObserver(s -> updateTextArea(s));
-//
-//
-////        });
-//    }
-
-//    private void updateTextArea(String st) {
-////        view.getTextArea().setText(st);
-//    }
 
 
 }
