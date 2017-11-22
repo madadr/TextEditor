@@ -13,7 +13,7 @@ public class MainApp extends Application {
         primaryStage.setTitle("Editor");
 
         primaryStage.setResizable(true);
-        primaryStage.setScene(new Scene(root, 800, 600));
+        primaryStage.setScene(new Scene(root, 1328, 776));
         primaryStage.show();
     }
 
