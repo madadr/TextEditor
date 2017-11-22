@@ -13,35 +13,20 @@ public class EditorController implements Initializable {
     @FXML
     private Menu fileMenu, editMenu, helpMenu;
     @FXML
-    private CheckBox bold, italic, underscore;
-    @FXML
     private ChoiceBox fontType, fontSize;
     @FXML
-    private TabPane tabBar;
-    @FXML
     private HBox searchBox;
-    private SingleSelectionModel<Tab> tabSelection;
-    //Run when app starts
-    private EditorModel editorModel;
+    @FXML
+    private Button boldButton, italicButton,underscoreButton,
+                   aligmentLeftButton,aligmentCenterButton,aligmentRightButton,aligmentAdjustButton,
+                   searchButton,nextSearchButton,previousSearchButton,closeSearchBox;
+    @FXML TextField searchTextField;
 
+    private EditorModel editorModel;
+    //Run when app starts
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        tabSelection = tabBar.getSelectionModel();
-    }
 
-    @FXML
-    private void addingTab() {
-        //TODO Add handling of only one tab(at this moment exception occured)
-        int indexOfAddingPane = tabBar.getTabs().size() - 1;
-
-        tabBar.getTabs().add(indexOfAddingPane, new Tab("New tab"));
-
-        Tab newItem = tabBar.getTabs().get(indexOfAddingPane);
-        tabSelection.select(newItem);
-        newItem.setContent(new TextArea());
-        //TODO Make method that change name of Tabs on click request
-        //TODO change return value of EditorModel addTab to boolean and handle this
-//        editorModel.addTab(tabBar,tabSelection);
     }
 
     @FXML
@@ -100,14 +85,62 @@ public class EditorController implements Initializable {
     }
 
     @FXML
-    private void closeSearchBar() {
-        searchBox.setVisible(false);
-    }
-
-    @FXML
     private void fileCloseClicked() {
 
     }
+    @FXML
+    private void closeSearchBoxClicked() {
+        searchBox.setVisible(false);
+    }
+    @FXML
+    private void boldButtonClicked() {
+
+    }
+    @FXML
+    private void italicButtonClicked() {
+
+    }
+    @FXML
+    private void underscoreButtonClicked() {
+
+    }
+    @FXML
+    private void fontSizePlusButtonClicked() {
+
+    }
+    @FXML
+    private void fontSizeMinusButtonClicked() {
+
+    }
+    @FXML
+    private void alligmentLeftButtonClicked() {
+
+    }
+    @FXML
+    private void alligmentCenterButtonClicked() {
+
+    }
+    @FXML
+    private void alligmentRightButtonClicked() {
+
+    }
+    @FXML
+    private void aligmentAdjustButtonClicked() {
+
+    }
+    @FXML
+    private void searchButtonClicked() {
+
+    }
+    @FXML
+    private void nextSearchButtonClicked() {
+
+    }
+    @FXML
+    private void previousSearchButtonClicked() {
+
+    }
+
     //        this.view.getTextArea().textProperty().addListener(model);
 //        this.model.addTextObserver(s -> updateTextArea(s));
 //
