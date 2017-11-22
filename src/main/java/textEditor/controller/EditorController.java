@@ -8,16 +8,16 @@ import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import textEditor.model.EditorModel;
 import textEditor.model.EditorModelService;
-import textEditor.rmi.IRemoteObserver;
+import textEditor.model.ObserverService;
 
 import java.net.URL;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.ResourceBundle;
-import java.util.Scanner;
 
-public class EditorController implements Initializable {
+public class EditorController extends UnicastRemoteObject implements Initializable {
     @FXML
     private Menu fileMenu, editMenu, helpMenu;
     @FXML
@@ -36,6 +36,12 @@ public class EditorController implements Initializable {
     private EditorModel editorModel;
 
     private EditorModelService editorModelService;
+    private ObserverService observerService;
+
+    public EditorController() throws RemoteException {
+        super();
+    }
+
     //Run when app starts
     @Override
     public void initialize(URL location, ResourceBundle resources)
@@ -44,7 +50,9 @@ public class EditorController implements Initializable {
             Registry registry = LocateRegistry.getRegistry("localhost", 4321);
 
             editorModelService = (EditorModelService) registry.lookup("EditorModelService");
+            observerService = (ObserverService) registry.lookup("ObserverService");
 //            editorModelService.setTextAreaString();
+            observerService.addObserver(editorModelService);
             mainTextArea.textProperty().addListener(new ChangeListener<String>() {
                 @Override
                 public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
