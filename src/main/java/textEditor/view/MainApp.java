@@ -7,13 +7,15 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 public class MainApp extends Application {
+
+
     @Override
     public void start(Stage primaryStage) throws Exception {
-        Parent root = FXMLLoader.load(getClass().getResource("Editor.fxml"));
-        primaryStage.setTitle("Editor");
+        Parent root = FXMLLoader.load(getClass().getResource("Login.fxml"));
 
-        primaryStage.setResizable(true);
-        primaryStage.setScene(new Scene(root, 1328, 776));
+        primaryStage.setTitle("Editor");
+        primaryStage.setResizable(false);
+        primaryStage.setScene(new Scene(root, 600, 400));
         primaryStage.show();
     }
 
