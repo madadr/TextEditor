@@ -20,7 +20,7 @@
             <Image url="@userlogin.png" />
          </image>
       </ImageView>
-      <GridPane prefHeight="103.0" prefWidth="600.0">
+      <GridPane alignment="CENTER_RIGHT" prefHeight="103.0" prefWidth="600.0">
          <columnConstraints>
             <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
             <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
@@ -52,6 +52,7 @@
                   <Insets left="125.0" />
                </GridPane.margin>
             </Button>
+            <Label fx:id="resultOfAuthorization" alignment="CENTER_RIGHT" contentDisplay="RIGHT" prefHeight="100.0" prefWidth="300.0" text="Wrong User Name or Password typed !!" visible="false" GridPane.rowIndex="2" />
          </children>
          <VBox.margin>
             <Insets right="100.0" />
@@ -64,7 +65,7 @@
                   <Insets right="20.0" />
                </padding>
             </Label>
-            <Button mnemonicParsing="false" text="Register" />
+            <Button fx:id="registrationButton" mnemonicParsing="false" text="Register" />
          </children>
          <padding>
             <Insets top="30.0" />

@@ -8,7 +8,9 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import textEditor.view.*;
 import java.io.IOException;
@@ -17,9 +19,9 @@ import java.util.ResourceBundle;
 
 public class LoginController implements Initializable {
     @FXML
-    private Button submitLogin;
+    private Button submitLogin, registrationLabel;
     @FXML
-    private Button registryButton;
+    private Label resultOfAuthorization;
     @FXML
     private TextField userLoginField;
     @FXML
@@ -27,6 +29,7 @@ public class LoginController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources)
     {
+        resultOfAuthorization.setVisible(false);
     }
 
     @FXML
@@ -37,7 +40,9 @@ public class LoginController implements Initializable {
     public void onClickSubmit(ActionEvent actionEvent) throws IOException {
         if (checkLoginAndPassword()) {
             System.out.println("Login correct Password Correct, entering Service");
-
+            resultOfAuthorization.setText("Authorization success");
+            resultOfAuthorization.setTextFill(Color.web("#2eb82e"));
+            resultOfAuthorization.setVisible(true);
             Parent parent = FXMLLoader.load(getClass().getResource("Editor.fxml"));
             Scene editorScene = new Scene(parent);
 
@@ -47,6 +52,12 @@ public class LoginController implements Initializable {
 
             primaryStage.setScene(editorScene);
             primaryStage.show();
+        }
+        else{
+            System.out.println("Authorization failed");
+            resultOfAuthorization.setText("Authorization failed");
+            resultOfAuthorization.setTextFill(Color.web("#ff3300"));
+            resultOfAuthorization.setVisible(true);
         }
     }
     private boolean checkLoginAndPassword()
