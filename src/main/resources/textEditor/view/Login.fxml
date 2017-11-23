@@ -36,18 +36,18 @@
                   <Insets />
                </GridPane.margin>
             </Label>
-            <TextField maxWidth="-Infinity" prefWidth="150.0" GridPane.columnIndex="1">
+            <TextField fx:id="userLoginField" maxWidth="-Infinity" prefWidth="150.0" GridPane.columnIndex="1">
                <GridPane.margin>
                   <Insets left="30.0" />
                </GridPane.margin>
             </TextField>
             <Label alignment="CENTER_RIGHT" contentDisplay="RIGHT" prefHeight="100.0" prefWidth="300.0" text="Password:" GridPane.rowIndex="1" />
-            <PasswordField maxWidth="-Infinity" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+            <PasswordField fx:id="userPasswordField" maxWidth="-Infinity" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
                <GridPane.margin>
                   <Insets left="30.0" />
                </GridPane.margin>
             </PasswordField>
-            <Button fx:id="submitLogin" mnemonicParsing="false" onMouseClicked="#onClickedSubmit" text="Submit" GridPane.columnIndex="1" GridPane.rowIndex="2">
+            <Button fx:id="submitLogin" mnemonicParsing="false" onAction="#onClickSubmit" text="Submit" GridPane.columnIndex="1" GridPane.rowIndex="2">
                <GridPane.margin>
                   <Insets left="125.0" />
                </GridPane.margin>
