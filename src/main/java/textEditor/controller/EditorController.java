@@ -5,6 +5,8 @@ import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
 import javafx.scene.layout.HBox;
 import textEditor.model.EditorModel;
 import textEditor.model.EditorModelService;
@@ -38,6 +40,7 @@ public class EditorController extends UnicastRemoteObject implements Initializab
 
     private EditorModelService editorModelService;
     private ObserverService observerService;
+    private Clipboard clipboard;
 
     public EditorController() throws RemoteException {
         super();
@@ -45,8 +48,8 @@ public class EditorController extends UnicastRemoteObject implements Initializab
 
     //Run when app starts
     @Override
-    public void initialize(URL location, ResourceBundle resources)
-    {
+    public void initialize(URL location, ResourceBundle resources) {
+        clipboard = Clipboard.getSystemClipboard();
         try {
             Registry registry = LocateRegistry.getRegistry("localhost", 4321);
 
@@ -70,6 +73,16 @@ public class EditorController extends UnicastRemoteObject implements Initializab
 
     }
 
+    private TextInputControl getFocusedText() {
+        if (mainTextArea.isFocused()) {
+            return mainTextArea;
+
+        } else if (searchTextField.isFocused()) {
+            return searchTextField;
+        }
+        return null;
+    }
+
     @FXML
     private void editUndoClicked() {
 
@@ -82,17 +95,38 @@ public class EditorController extends UnicastRemoteObject implements Initializab
 
     @FXML
     private void editCopyClicked() {
+        ClipboardContent clipboardContent = new ClipboardContent();
+        //getting text from focused area
+        TextInputControl textInput = getFocusedText();
+        if (textInput != null) {
+            clipboardContent.putString(textInput.getSelectedText());
+            clipboard.setContent(clipboardContent);
+        }
 
     }
 
     @FXML
     private void editCutClicked() {
-
+        ClipboardContent clipboardContent = new ClipboardContent();
+        TextInputControl textInput = getFocusedText();
+        if (textInput != null) {
+            clipboardContent.putString(textInput.getSelectedText());
+            //clearing coresponding area from cuted text
+            IndexRange indexRange = textInput.getSelection();
+            //TODO this line should be refactor maybe use subString from stringUtils ?
+            textInput.setText(textInput.getText(0, indexRange.getStart()) + textInput.getText(indexRange.getEnd(), textInput.getLength()));
+            clipboard.setContent(clipboardContent);
+        }
     }
 
     @FXML
     private void editPasteClicked() {
-
+        //TODO: refactor this shit
+        TextInputControl textInput = getFocusedText();
+        if (textInput != null) {
+            System.out.println(textInput.getText());
+            textInput.setText(textInput.getText(0, textInput.getCaretPosition()) + clipboard.getString() + textInput.getText(textInput.getCaretPosition(), textInput.getLength()));
+        }
     }
 
     @FXML
@@ -137,11 +171,10 @@ public class EditorController extends UnicastRemoteObject implements Initializab
 
     @FXML
     private void boldButtonClicked() {
-        if(boldButton.isSelected())
-        {
+
+        if (boldButton.isSelected()) {
             mainTextArea.setStyle("-fx-font-weight: bold");
-        }
-        else{
+        } else {
             mainTextArea.setStyle("-fx-font-weight: normal");
         }
 
@@ -149,11 +182,9 @@ public class EditorController extends UnicastRemoteObject implements Initializab
 
     @FXML
     private void italicButtonClicked() {
-        if(boldButton.isSelected())
-        {
+        if (boldButton.isSelected()) {
             mainTextArea.setStyle("-fx-font-style: italic");
-        }
-        else{
+        } else {
             mainTextArea.setStyle("-fx-font-style: normal");
         }
 
@@ -195,8 +226,10 @@ public class EditorController extends UnicastRemoteObject implements Initializab
     }
 
     @FXML
-    private void searchButtonClicked() {
-
+    private void searchButtonClicked()
+    {
+     string searchPhrase = searchTextField.getText();
+     mainTextArea.getText().
     }
 
     @FXML
