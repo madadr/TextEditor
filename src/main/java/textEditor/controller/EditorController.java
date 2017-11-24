@@ -228,8 +228,7 @@ public class EditorController extends UnicastRemoteObject implements Initializab
     @FXML
     private void searchButtonClicked()
     {
-     string searchPhrase = searchTextField.getText();
-     mainTextArea.getText().
+
     }
 
     @FXML
