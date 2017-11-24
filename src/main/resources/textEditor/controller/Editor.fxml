@@ -11,6 +11,8 @@
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.text.Font?>
@@ -53,9 +55,9 @@
                <children>
                   <HBox alignment="CENTER" prefHeight="39.0" prefWidth="528.0" spacing="10.0">
                      <children>
-                        <Button fx:id="boldButton" mnemonicParsing="false" onAction="#boldButtonClicked" text="Bold" />
-                        <Button fx:id="italicButton" mnemonicParsing="false" onAction="#italicButtonClicked" text="Italic" />
-                        <Button fx:id="underscoreButton" mnemonicParsing="false" onAction="#underscoreButtonClicked" text="Underscore" />
+                        <ToggleButton fx:id="boldButton" mnemonicParsing="false" onAction="#boldButtonClicked" text="Bold" />
+                        <ToggleButton fx:id="italicButton" mnemonicParsing="false" onAction="#italicButtonClicked" text="Italic" />
+                        <ToggleButton fx:id="underscoreButton" mnemonicParsing="false" onAction="#underscoreButtonClicked" text="Underscore" />
                         <ChoiceBox fx:id="fontType" prefWidth="150.0" />
                         <ChoiceBox fx:id="fontSize" prefHeight="25.0" prefWidth="40.0" />
                         <Button fx:id="fontSizePlusButton" mnemonicParsing="false" onAction="#fontSizePlusButtonClicked" text="+" />
@@ -82,10 +84,14 @@
                   </HBox>
                   <HBox alignment="CENTER" layoutX="528.0" layoutY="-1.0" prefHeight="39.0" prefWidth="459.0" spacing="10.0">
                      <children>
-                        <Button fx:id="alligmentLeftButton" mnemonicParsing="false" onAction="#alligmentLeftButtonClicked" text="Left" />
-                        <Button fx:id="alligmentCenterButton" mnemonicParsing="false" onAction="#alligmentCenterButtonClicked" text="Center" />
-                        <Button fx:id="alligmentRightButton" mnemonicParsing="false" onAction="#alligmentRightButtonClicked" text="Right" />
-                        <Button fx:id="aligmentAdjustButton" mnemonicParsing="false" onAction="#aligmentAdjustButtonClicked" text="Adjust" />
+                        <ToggleButton fx:id="aligmentLeftButton" mnemonicParsing="false" onAction="#alligmentLeftButtonClicked" text="Left">
+                           <toggleGroup>
+                              <ToggleGroup fx:id="Aligment" />
+                           </toggleGroup>
+                        </ToggleButton>
+                        <ToggleButton fx:id="aligmentCenterButton" mnemonicParsing="false" onAction="#alligmentCenterButtonClicked" text="Center" toggleGroup="$Aligment" />
+                        <ToggleButton fx:id="aligmentRightButton" mnemonicParsing="false" onAction="#alligmentRightButtonClicked" text="Right" toggleGroup="$Aligment" />
+                        <ToggleButton fx:id="aligmentAdjustButton" mnemonicParsing="false" onAction="#aligmentAdjustButtonClicked" text="Adjust" toggleGroup="$Aligment" />
                      </children>
                   </HBox>
                </children>

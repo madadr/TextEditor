@@ -25,9 +25,10 @@ public class EditorController extends UnicastRemoteObject implements Initializab
     @FXML
     private HBox searchBox;
     @FXML
-    private Button boldButton, italicButton, underscoreButton,
-            aligmentLeftButton, aligmentCenterButton, aligmentRightButton, aligmentAdjustButton,
-            searchButton, nextSearchButton, previousSearchButton, closeSearchBox;
+    private Button searchButton, nextSearchButton, previousSearchButton, closeSearchBox;
+    @FXML
+    private ToggleButton boldButton, italicButton, underscoreButton,
+            aligmentLeftButton, aligmentCenterButton, aligmentRightButton, aligmentAdjustButton;
     @FXML
     private TextField searchTextField;
     @FXML
@@ -136,11 +137,25 @@ public class EditorController extends UnicastRemoteObject implements Initializab
 
     @FXML
     private void boldButtonClicked() {
+        if(boldButton.isSelected())
+        {
+            mainTextArea.setStyle("-fx-font-weight: bold");
+        }
+        else{
+            mainTextArea.setStyle("-fx-font-weight: normal");
+        }
 
     }
 
     @FXML
     private void italicButtonClicked() {
+        if(boldButton.isSelected())
+        {
+            mainTextArea.setStyle("-fx-font-style: italic");
+        }
+        else{
+            mainTextArea.setStyle("-fx-font-style: normal");
+        }
 
     }
 
