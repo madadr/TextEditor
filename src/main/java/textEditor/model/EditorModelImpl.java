@@ -11,7 +11,7 @@ public class EditorModelImpl extends Observable implements EditorModel, Observer
     @Override
     public void setTextAreaString(String value) throws RemoteException {
         textAreaString = value;
-        System.out.print(textAreaString.charAt(textAreaString.length()));
+        System.out.print(textAreaString.charAt(textAreaString.length()-1));
         notifyObservers();
     }
 
