@@ -9,7 +9,6 @@
     <organization>
         <name>Company</name>
     </organization>
-
     <build>
         <plugins>
             <plugin>
@@ -25,7 +24,7 @@
                 <artifactId>javafx-maven-plugin</artifactId>
                 <version>8.8.3</version>
                 <configuration>
-                    <mainClass>textEditor.view.MainApp</mainClass>
+                    <mainClass>textEditor.MainApp</mainClass>
                 </configuration>
             </plugin>
         </plugins>

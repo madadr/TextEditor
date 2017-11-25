@@ -54,7 +54,7 @@ public class LoginController implements Initializable {
             primaryStage.setResizable(true);
 
             primaryStage.setScene(editorScene);
-            primaryStage.show();
+            //primaryStage.show();
         }
         else{
             System.out.println("Authorization failed");
