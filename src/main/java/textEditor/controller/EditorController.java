@@ -15,7 +15,7 @@ import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.ResourceBundle;
 
-public class EditorController implements Initializable, ClientInjectionTarget {
+public class EditorController implements Initializable, ClientInjectionTarget, WindowSwitcherInjectionTarget {
     @FXML
     private Menu fileMenu, editMenu, helpMenu;
     @FXML
@@ -37,6 +37,7 @@ public class EditorController implements Initializable, ClientInjectionTarget {
     private EditorModel editorModel;
     private ObserverModel observerModel;
     private RMIClient rmiClient;
+    private WindowSwitcher switcher;
 
     public EditorController() {
     }
@@ -44,6 +45,11 @@ public class EditorController implements Initializable, ClientInjectionTarget {
     @Override
     public void injectClient(RMIClient client) {
         this.rmiClient = client;
+    }
+
+    @Override
+    public void injectWindowSwitcher(WindowSwitcher switcher) {
+        this.switcher = switcher;
     }
 
     //Run when app starts

@@ -6,16 +6,18 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import textEditor.controller.ControllerFactory;
+import textEditor.controller.WindowSwitcher;
 
 public class Client extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         RMIClient rmiClient = new RMIClient();
+        WindowSwitcher switcher = new WindowSwitcher();
 
         //Started Application
         FXMLLoader loader = new FXMLLoader(getClass().getResource("\\view\\Login.fxml"));
 
-        loader.setControllerFactory(new ControllerFactory(rmiClient));
+        loader.setControllerFactory(new ControllerFactory(rmiClient, switcher));
 
         primaryStage.setTitle("Editor");
         primaryStage.setResizable(false);

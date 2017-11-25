@@ -17,7 +17,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class LoginController implements Initializable, ClientInjectionTarget {
+public class LoginController implements Initializable, ClientInjectionTarget, WindowSwitcherInjectionTarget {
     @FXML
     private Button submitLogin, registrationLabel;
     @FXML
@@ -29,12 +29,19 @@ public class LoginController implements Initializable, ClientInjectionTarget {
 
     private RMIClient rmiClient;
 
+    private WindowSwitcher switcher;
+
     public LoginController() {
     }
 
     @Override
     public void injectClient(RMIClient client) {
         this.rmiClient = client;
+    }
+
+    @Override
+    public void injectWindowSwitcher(WindowSwitcher switcher) {
+        this.switcher = switcher;
     }
 
     @Override
@@ -57,7 +64,7 @@ public class LoginController implements Initializable, ClientInjectionTarget {
 
             FXMLLoader loader = new FXMLLoader(getClass().getResource("Editor.fxml"));
 
-            loader.setControllerFactory(new ControllerFactory(rmiClient));
+            loader.setControllerFactory(new ControllerFactory(rmiClient, switcher));
 //
 //            //Geting primaryStage
             Stage primaryStage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();

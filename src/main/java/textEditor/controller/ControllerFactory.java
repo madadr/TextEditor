@@ -5,9 +5,11 @@ import textEditor.RMIClient;
 
 public class ControllerFactory implements Callback<Class<?>, Object> {
     private RMIClient rmiClient;
+    private WindowSwitcher switcher;
 
-    public ControllerFactory(RMIClient rmiClient) {
+    public ControllerFactory(RMIClient rmiClient, WindowSwitcher switcher) {
         this.rmiClient = rmiClient;
+        this.switcher = switcher;
     }
 
     @Override
@@ -19,6 +21,11 @@ public class ControllerFactory implements Callback<Class<?>, Object> {
             if (controller instanceof ClientInjectionTarget) {
                 ((ClientInjectionTarget) controller).injectClient(rmiClient);
             }
+
+            if(controller instanceof WindowSwitcherInjectionTarget) {
+                ((WindowSwitcherInjectionTarget) controller).injectWindowSwitcher(switcher);
+            }
+
             return controller;
         } catch (InstantiationException | IllegalAccessException e) {
             e.printStackTrace();
