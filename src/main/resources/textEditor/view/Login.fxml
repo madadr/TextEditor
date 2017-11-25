@@ -17,7 +17,7 @@
    <children>
       <ImageView fitHeight="105.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
          <image>
-            <Image url="@userlogin.png" />
+            <Image url="@view/userlogin.png" />
          </image>
       </ImageView>
       <GridPane alignment="CENTER_RIGHT" prefHeight="103.0" prefWidth="600.0">

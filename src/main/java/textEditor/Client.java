@@ -5,8 +5,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import javafx.util.Callback;
-import textEditor.controller.ControllerFactoryImpl;
+import textEditor.controller.ClientInjectionTarget;
 
 import java.rmi.NotBoundException;
 import java.rmi.Remote;
@@ -15,7 +14,6 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
 public class Client extends Application {
-
     public class RMIClient {
         private Registry registry;
 
@@ -26,6 +24,7 @@ public class Client extends Application {
                 e.printStackTrace();
             }
         }
+
         public Remote getModel(String modelName) {
             try {
                 return registry.lookup(modelName);
@@ -35,25 +34,37 @@ public class Client extends Application {
             return null;
         }
     }
+
     @Override
     public void start(Stage primaryStage) throws Exception {
         RMIClient rmiClient = new RMIClient();
 
         //Started Application
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("Login.fxml"));
-        loader.setControllerFactory(param -> {
-            ControllerFactoryImpl controllerFactory = new ControllerFactoryImpl(rmiClient);
-            return controllerFactory;
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("\\view\\Login.fxml"));
+
+        loader.setControllerFactory(p -> {
+            Object controller = null;
+            try {
+                controller = p.newInstance();
+
+                if (controller instanceof ClientInjectionTarget) {
+                    ((ClientInjectionTarget) controller).injectClient(rmiClient);
+                }
+                return controller;
+            } catch (InstantiationException | IllegalAccessException e) {
+                e.printStackTrace();
+                return null;
+            }
         });
-         loader = FXMLLoader.load(getClass().getResource("Login.fxml"));
+//        loader = FXMLLoader.load(getClass().getResource("Login.fxml"));
 
         primaryStage.setTitle("Editor");
         primaryStage.setResizable(false);
-        primaryStage.setScene(new Scene(root, 600, 400));
+        primaryStage.setScene(new Scene((Parent)loader.load(), 600, 400));
         primaryStage.show();
     }
 
     public static void main(String[] args) {
-
+        launch(args);
     }
 }

@@ -10,17 +10,15 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import textEditor.Client;
-import textEditor.view.*;
+
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class LoginController implements Initializable {
+public class LoginController implements Initializable, ClientInjectionTarget {
     @FXML
     private Button submitLogin, registrationLabel;
     @FXML
@@ -32,8 +30,12 @@ public class LoginController implements Initializable {
 
     private Client.RMIClient rmiClient;
 
-    public LoginController(Client.RMIClient rmiClient) {
-        this.rmiClient = rmiClient;
+    public LoginController() {
+    }
+
+    @Override
+    public void injectClient(Client.RMIClient client) {
+        this.rmiClient = client;
     }
 
     @Override
