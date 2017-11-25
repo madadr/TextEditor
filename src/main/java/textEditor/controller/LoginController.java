@@ -2,15 +2,11 @@ package textEditor.controller;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.paint.Color;
-import javafx.stage.Stage;
 import textEditor.RMIClient;
 
 import java.io.IOException;
@@ -62,16 +58,18 @@ public class LoginController implements Initializable, ClientInjectionTarget, Wi
             resultOfAuthorization.setTextFill(Color.web("#2eb82e"));
             resultOfAuthorization.setVisible(true);
 
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("Editor.fxml"));
+            switcher.setEditorWindow();
 
-            loader.setControllerFactory(new ControllerFactory(rmiClient, switcher));
+//            FXMLLoader loader = new FXMLLoader(getClass().getResource("Editor.fxml"));
 //
-//            //Geting primaryStage
-            Stage primaryStage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
-            primaryStage.setResizable(true);
-            primaryStage.setScene(new Scene(loader.load(), 600, 400));
-//            primaryStage.setScene(editorScene);
-            primaryStage.show();
+//            loader.setControllerFactory(new ControllerFactory(rmiClient, switcher));
+////
+////            //Geting primaryStage
+//            Stage primaryStage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
+//            primaryStage.setResizable(true);
+//            primaryStage.setScene(new Scene(loader.load(), 600, 400));
+////            primaryStage.setScene(editorScene);
+//            primaryStage.show();
         } else {
             System.out.println("Authorization failed");
             resultOfAuthorization.setText("Authorization failed");
