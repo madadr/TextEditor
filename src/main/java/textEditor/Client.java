@@ -40,7 +40,7 @@ public class Client extends Application {
         RMIClient rmiClient = new RMIClient();
 
         //Started Application
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("\\controller\\Editor.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("\\view\\Login.fxml"));
 
         loader.setControllerFactory(p -> {
             Object controller = null;
