@@ -50,7 +50,7 @@ public class EditorController implements Initializable, ClientInjectionTarget {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         clipboard = Clipboard.getSystemClipboard();
-
+        editorModel = (EditorModel) rmiClient.getModel("EditorModel");
         mainTextArea.textProperty().addListener((ChangeListener<String>) (observable, oldValue, newValue) -> {
             try {
                 editorModel.setTextAreaString(newValue);

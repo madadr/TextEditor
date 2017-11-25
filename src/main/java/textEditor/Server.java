@@ -16,17 +16,17 @@ public class Server {
 
             //Creating models implementation of our classes
             EditorModelImpl editorModelImpl = new EditorModelImpl();
-            DatabaseModelImpl databaseModelImpl = new DatabaseModelImpl();
+            //DatabaseModelImpl databaseModelImpl = new DatabaseModelImpl();
 
             //Exporting models interface to client
             EditorModel editorModel = (EditorModel) UnicastRemoteObject.exportObject(editorModelImpl, 0);
             ObserverModel observerEditorModel = (ObserverModel) editorModel;
-            DatabaseModel databaseModel = (DatabaseModel) UnicastRemoteObject.exportObject(databaseModelImpl, 0);
+            //DatabaseModel databaseModel = (DatabaseModel) UnicastRemoteObject.exportObject(databaseModelImpl, 0);
 
             //Binding names and models interfaces
             registry.rebind("EditorModel", editorModel);
             registry.rebind("ObserverEditorModel", observerEditorModel);
-            registry.rebind("DatabaseModel", databaseModel);
+            //registry.rebind("DatabaseModel", databaseModel);
         } catch (RemoteException e) {
             e.printStackTrace();
         }
