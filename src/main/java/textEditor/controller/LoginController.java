@@ -5,7 +5,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -59,22 +58,7 @@ public class LoginController implements Initializable, ClientInjectionTarget {
 
             FXMLLoader loader = new FXMLLoader(getClass().getResource("Editor.fxml"));
 
-            loader.setControllerFactory(p -> {
-                Object controller = null;
-                try {
-                    controller = p.newInstance();
-
-                    if (controller instanceof ClientInjectionTarget) {
-                        ((ClientInjectionTarget) controller).injectClient(rmiClient);
-                    }
-                    return controller;
-                } catch (InstantiationException | IllegalAccessException e) {
-                    e.printStackTrace();
-                    return null;
-                }
-            });
-//            Parent parent = FXMLLoader.load(getClass().getResource("Editor.fxml"));
-
+            loader.setControllerFactory(new ControllerFactory(rmiClient));
 //
 //            //Geting primaryStage
             Stage primaryStage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();

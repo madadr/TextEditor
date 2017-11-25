@@ -5,7 +5,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import textEditor.controller.ClientInjectionTarget;
+import textEditor.controller.ControllerFactory;
 
 import java.rmi.NotBoundException;
 import java.rmi.Remote;
@@ -42,21 +42,7 @@ public class Client extends Application {
         //Started Application
         FXMLLoader loader = new FXMLLoader(getClass().getResource("\\view\\Login.fxml"));
 
-        loader.setControllerFactory(p -> {
-            Object controller = null;
-            try {
-                controller = p.newInstance();
-
-                if (controller instanceof ClientInjectionTarget) {
-                    ((ClientInjectionTarget) controller).injectClient(rmiClient);
-                }
-                return controller;
-            } catch (InstantiationException | IllegalAccessException e) {
-                e.printStackTrace();
-                return null;
-            }
-        });
-//        loader = FXMLLoader.load(getClass().getResource("Login.fxml"));
+        loader.setControllerFactory(new ControllerFactory(rmiClient));
 
         primaryStage.setTitle("Editor");
         primaryStage.setResizable(false);
