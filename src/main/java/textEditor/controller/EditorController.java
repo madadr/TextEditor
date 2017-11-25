@@ -7,6 +7,7 @@ import javafx.scene.control.*;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.layout.HBox;
+import textEditor.Client;
 import textEditor.model.EditorModel;
 import textEditor.model.ObserverModel;
 
@@ -18,7 +19,7 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ResourceBundle;
 
-public class EditorController extends UnicastRemoteObject implements Initializable {
+public class EditorController implements Initializable {
     @FXML
     private Menu fileMenu, editMenu, helpMenu;
     @FXML
@@ -39,25 +40,15 @@ public class EditorController extends UnicastRemoteObject implements Initializab
 
     private EditorModel editorModel;
     private ObserverModel observerModel;
+    private Client.RMIClient rmiClient;
 
-    public EditorController() throws RemoteException {
-        super();
+    public EditorController(Client.RMIClient rmiClient) {
+        this.rmiClient = rmiClient;
     }
 
     //Run when app starts
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        Registry registry = null;
-        try {
-            registry = LocateRegistry.getRegistry("localhost", 4321);
-            editorModel = (EditorModel) registry.lookup("EditorModel");
-            observerModel = (ObserverModel) registry.lookup("ObserverModel");
-            observerModel.addObserver(editorModel);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        } catch (NotBoundException e) {
-            e.printStackTrace();
-        }
         clipboard = Clipboard.getSystemClipboard();
 
         mainTextArea.textProperty().addListener((ChangeListener<String>) (observable, oldValue, newValue) -> {

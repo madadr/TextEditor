@@ -14,6 +14,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import textEditor.Client;
 import textEditor.view.*;
 import java.io.IOException;
 import java.net.URL;
@@ -28,6 +29,13 @@ public class LoginController implements Initializable {
     private TextField userLoginField;
     @FXML
     private TextField userPasswordField;
+
+    private Client.RMIClient rmiClient;
+
+    public LoginController(Client.RMIClient rmiClient) {
+        this.rmiClient = rmiClient;
+    }
+
     @Override
     public void initialize(URL location, ResourceBundle resources)
     {
