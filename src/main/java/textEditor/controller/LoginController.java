@@ -56,15 +56,32 @@ public class LoginController implements Initializable, ClientInjectionTarget {
             resultOfAuthorization.setText("Authorization success");
             resultOfAuthorization.setTextFill(Color.web("#2eb82e"));
             resultOfAuthorization.setVisible(true);
-            Parent parent = FXMLLoader.load(getClass().getResource("Editor.fxml"));
-            Scene editorScene = new Scene(parent);
 
-            //Geting primaryStage
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("Editor.fxml"));
+
+            loader.setControllerFactory(p -> {
+                Object controller = null;
+                try {
+                    controller = p.newInstance();
+
+                    if (controller instanceof ClientInjectionTarget) {
+                        ((ClientInjectionTarget) controller).injectClient(rmiClient);
+                    }
+                    return controller;
+                } catch (InstantiationException | IllegalAccessException e) {
+                    e.printStackTrace();
+                    return null;
+                }
+            });
+//            Parent parent = FXMLLoader.load(getClass().getResource("Editor.fxml"));
+
+//
+//            //Geting primaryStage
             Stage primaryStage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
             primaryStage.setResizable(true);
-
-            primaryStage.setScene(editorScene);
-            //primaryStage.show();
+            primaryStage.setScene(new Scene(loader.load(), 600, 400));
+//            primaryStage.setScene(editorScene);
+            primaryStage.show();
         }
         else{
             System.out.println("Authorization failed");
