@@ -12,14 +12,10 @@ import textEditor.model.EditorModel;
 import textEditor.model.ObserverModel;
 
 import java.net.URL;
-import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
-import java.rmi.server.UnicastRemoteObject;
 import java.util.ResourceBundle;
 
-public class EditorController implements Initializable {
+public class EditorController implements Initializable, ClientInjectionTarget {
     @FXML
     private Menu fileMenu, editMenu, helpMenu;
     @FXML
@@ -42,8 +38,12 @@ public class EditorController implements Initializable {
     private ObserverModel observerModel;
     private Client.RMIClient rmiClient;
 
-    public EditorController(Client.RMIClient rmiClient) {
-        this.rmiClient = rmiClient;
+    public EditorController() {
+    }
+
+    @Override
+    public void injectClient(Client.RMIClient client) {
+        this.rmiClient = client;
     }
 
     //Run when app starts
@@ -212,8 +212,7 @@ public class EditorController implements Initializable {
     }
 
     @FXML
-    private void searchButtonClicked()
-    {
+    private void searchButtonClicked() {
 
     }
 
@@ -226,6 +225,4 @@ public class EditorController implements Initializable {
     private void previousSearchButtonClicked() {
 
     }
-
-
 }
