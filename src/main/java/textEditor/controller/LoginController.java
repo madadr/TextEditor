@@ -10,16 +10,15 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-import textEditor.view.*;
+import textEditor.Client;
+
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class LoginController implements Initializable {
+public class LoginController implements Initializable, ClientInjectionTarget {
     @FXML
     private Button submitLogin, registrationLabel;
     @FXML
@@ -28,6 +27,17 @@ public class LoginController implements Initializable {
     private TextField userLoginField;
     @FXML
     private TextField userPasswordField;
+
+    private Client.RMIClient rmiClient;
+
+    public LoginController() {
+    }
+
+    @Override
+    public void injectClient(Client.RMIClient client) {
+        this.rmiClient = client;
+    }
+
     @Override
     public void initialize(URL location, ResourceBundle resources)
     {
@@ -46,14 +56,31 @@ public class LoginController implements Initializable {
             resultOfAuthorization.setText("Authorization success");
             resultOfAuthorization.setTextFill(Color.web("#2eb82e"));
             resultOfAuthorization.setVisible(true);
-            Parent parent = FXMLLoader.load(getClass().getResource("Editor.fxml"));
-            Scene editorScene = new Scene(parent);
 
-            //Geting primaryStage
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("Editor.fxml"));
+
+            loader.setControllerFactory(p -> {
+                Object controller = null;
+                try {
+                    controller = p.newInstance();
+
+                    if (controller instanceof ClientInjectionTarget) {
+                        ((ClientInjectionTarget) controller).injectClient(rmiClient);
+                    }
+                    return controller;
+                } catch (InstantiationException | IllegalAccessException e) {
+                    e.printStackTrace();
+                    return null;
+                }
+            });
+//            Parent parent = FXMLLoader.load(getClass().getResource("Editor.fxml"));
+
+//
+//            //Geting primaryStage
             Stage primaryStage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
             primaryStage.setResizable(true);
-
-            primaryStage.setScene(editorScene);
+            primaryStage.setScene(new Scene(loader.load(), 600, 400));
+//            primaryStage.setScene(editorScene);
             primaryStage.show();
         }
         else{

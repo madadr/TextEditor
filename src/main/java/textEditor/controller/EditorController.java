@@ -1,23 +1,21 @@
 package textEditor.controller;
 
 import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
 import javafx.scene.layout.HBox;
+import textEditor.Client;
 import textEditor.model.EditorModel;
-import textEditor.model.EditorModelService;
-import textEditor.model.ObserverService;
+import textEditor.model.ObserverModel;
 
 import java.net.URL;
 import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
-import java.rmi.server.UnicastRemoteObject;
 import java.util.ResourceBundle;
 
-public class EditorController extends UnicastRemoteObject implements Initializable {
+public class EditorController implements Initializable, ClientInjectionTarget {
     @FXML
     private Menu fileMenu, editMenu, helpMenu;
     @FXML
@@ -34,40 +32,42 @@ public class EditorController extends UnicastRemoteObject implements Initializab
     @FXML
     private TextArea mainTextArea;
 
+    private Clipboard clipboard;
+
     private EditorModel editorModel;
+    private ObserverModel observerModel;
+    private Client.RMIClient rmiClient;
 
-    private EditorModelService editorModelService;
-    private ObserverService observerService;
+    public EditorController() {
+    }
 
-    public EditorController() throws RemoteException {
-        super();
+    @Override
+    public void injectClient(Client.RMIClient client) {
+        this.rmiClient = client;
     }
 
     //Run when app starts
     @Override
-    public void initialize(URL location, ResourceBundle resources)
-    {
-        try {
-            Registry registry = LocateRegistry.getRegistry("localhost", 4321);
+    public void initialize(URL location, ResourceBundle resources) {
+        clipboard = Clipboard.getSystemClipboard();
+        editorModel = (EditorModel) rmiClient.getModel("EditorModel");
+        mainTextArea.textProperty().addListener((ChangeListener<String>) (observable, oldValue, newValue) -> {
+            try {
+                editorModel.setTextAreaString(newValue);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        });
+    }
 
-            editorModelService = (EditorModelService) registry.lookup("EditorModelService");
-            observerService = (ObserverService) registry.lookup("ObserverService");
-//            editorModelService.setTextAreaString();
-            observerService.addObserver(editorModelService);
-            mainTextArea.textProperty().addListener(new ChangeListener<String>() {
-                @Override
-                public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                    try {
-                        editorModelService.setTextAreaString(newValue);
-                    } catch (RemoteException e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
-        } catch (Exception ex) {
-            ex.printStackTrace();
+    private TextInputControl getFocusedText() {
+        if (mainTextArea.isFocused()) {
+            return mainTextArea;
+
+        } else if (searchTextField.isFocused()) {
+            return searchTextField;
         }
-
+        return null;
     }
 
     @FXML
@@ -82,17 +82,37 @@ public class EditorController extends UnicastRemoteObject implements Initializab
 
     @FXML
     private void editCopyClicked() {
+        ClipboardContent clipboardContent = new ClipboardContent();
+        //getting text from focused area
+        TextInputControl textInput = getFocusedText();
+        if (textInput != null) {
+            clipboardContent.putString(textInput.getSelectedText());
+            clipboard.setContent(clipboardContent);
+        }
 
     }
 
     @FXML
     private void editCutClicked() {
-
+        ClipboardContent clipboardContent = new ClipboardContent();
+        TextInputControl textInput = getFocusedText();
+        if (textInput != null) {
+            clipboardContent.putString(textInput.getSelectedText());
+            //clearing coresponding area from cuted text
+            IndexRange indexRange = textInput.getSelection();
+            //TODO this line should be refactor maybe use subString from stringUtils ?
+            textInput.setText(textInput.getText(0, indexRange.getStart()) + textInput.getText(indexRange.getEnd(), textInput.getLength()));
+            clipboard.setContent(clipboardContent);
+        }
     }
 
     @FXML
     private void editPasteClicked() {
-
+        //TODO: refactor this shit
+        TextInputControl textInput = getFocusedText();
+        if (textInput != null) {
+            textInput.setText(textInput.getText(0, textInput.getCaretPosition()) + clipboard.getString() + textInput.getText(textInput.getCaretPosition(), textInput.getLength()));
+        }
     }
 
     @FXML
@@ -137,11 +157,10 @@ public class EditorController extends UnicastRemoteObject implements Initializab
 
     @FXML
     private void boldButtonClicked() {
-        if(boldButton.isSelected())
-        {
+
+        if (boldButton.isSelected()) {
             mainTextArea.setStyle("-fx-font-weight: bold");
-        }
-        else{
+        } else {
             mainTextArea.setStyle("-fx-font-weight: normal");
         }
 
@@ -149,11 +168,9 @@ public class EditorController extends UnicastRemoteObject implements Initializab
 
     @FXML
     private void italicButtonClicked() {
-        if(boldButton.isSelected())
-        {
+        if (boldButton.isSelected()) {
             mainTextArea.setStyle("-fx-font-style: italic");
-        }
-        else{
+        } else {
             mainTextArea.setStyle("-fx-font-style: normal");
         }
 
@@ -208,6 +225,4 @@ public class EditorController extends UnicastRemoteObject implements Initializab
     private void previousSearchButtonClicked() {
 
     }
-
-
 }
