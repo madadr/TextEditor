@@ -11,7 +11,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-import textEditor.Client;
+import textEditor.RMIClient;
 
 import java.io.IOException;
 import java.net.URL;
@@ -27,19 +27,18 @@ public class LoginController implements Initializable, ClientInjectionTarget {
     @FXML
     private TextField userPasswordField;
 
-    private Client.RMIClient rmiClient;
+    private RMIClient rmiClient;
 
     public LoginController() {
     }
 
     @Override
-    public void injectClient(Client.RMIClient client) {
+    public void injectClient(RMIClient client) {
         this.rmiClient = client;
     }
 
     @Override
-    public void initialize(URL location, ResourceBundle resources)
-    {
+    public void initialize(URL location, ResourceBundle resources) {
         resultOfAuthorization.setVisible(false);
 
     }
@@ -66,23 +65,19 @@ public class LoginController implements Initializable, ClientInjectionTarget {
             primaryStage.setScene(new Scene(loader.load(), 600, 400));
 //            primaryStage.setScene(editorScene);
             primaryStage.show();
-        }
-        else{
+        } else {
             System.out.println("Authorization failed");
             resultOfAuthorization.setText("Authorization failed");
             resultOfAuthorization.setTextFill(Color.web("#ff3300"));
             resultOfAuthorization.setVisible(true);
         }
     }
-    private boolean checkLoginAndPassword()
-    {
-        if(userLoginField.getText().isEmpty() || userPasswordField.getText().isEmpty())
-        {
+
+    private boolean checkLoginAndPassword() {
+        if (userLoginField.getText().isEmpty() || userPasswordField.getText().isEmpty()) {
             System.out.println("Login or Password werent typed");
             return false;
-        }
-        else if(userLoginField.getText().equals("admin") && userPasswordField.getText().equals("admin"))
-        {
+        } else if (userLoginField.getText().equals("admin") && userPasswordField.getText().equals("admin")) {
             System.out.println("Correct Login and Password");
             return true;
         }

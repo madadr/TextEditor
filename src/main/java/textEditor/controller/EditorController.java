@@ -7,7 +7,7 @@ import javafx.scene.control.*;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.layout.HBox;
-import textEditor.Client;
+import textEditor.RMIClient;
 import textEditor.model.EditorModel;
 import textEditor.model.ObserverModel;
 
@@ -36,13 +36,13 @@ public class EditorController implements Initializable, ClientInjectionTarget {
 
     private EditorModel editorModel;
     private ObserverModel observerModel;
-    private Client.RMIClient rmiClient;
+    private RMIClient rmiClient;
 
     public EditorController() {
     }
 
     @Override
-    public void injectClient(Client.RMIClient client) {
+    public void injectClient(RMIClient client) {
         this.rmiClient = client;
     }
 

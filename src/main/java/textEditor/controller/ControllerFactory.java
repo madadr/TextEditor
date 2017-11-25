@@ -1,12 +1,12 @@
 package textEditor.controller;
 
 import javafx.util.Callback;
-import textEditor.Client;
+import textEditor.RMIClient;
 
 public class ControllerFactory implements Callback<Class<?>, Object> {
-    private Client.RMIClient rmiClient;
+    private RMIClient rmiClient;
 
-    public ControllerFactory(Client.RMIClient rmiClient) {
+    public ControllerFactory(RMIClient rmiClient) {
         this.rmiClient = rmiClient;
     }
 

@@ -2,7 +2,6 @@ package textEditor;
 
 import textEditor.model.*;
 
-import javax.xml.crypto.Data;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
