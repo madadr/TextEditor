@@ -19,7 +19,7 @@
 
 <AnchorPane minHeight="776.0" minWidth="1328.0" prefHeight="776.0" prefWidth="1328.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="textEditor.controller.EditorController">
     <children>
-        <MenuBar AnchorPane.bottomAnchor="751.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <MenuBar>
             <menus>
                 <Menu fx:id="FileMenu" mnemonicParsing="false" text="File">
                     <items>
