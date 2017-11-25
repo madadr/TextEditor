@@ -1,7 +1,6 @@
 package textEditor.controller;
 
 import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -9,10 +8,10 @@ import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.layout.HBox;
 import textEditor.model.EditorModel;
-import textEditor.model.EditorModelService;
-import textEditor.model.ObserverService;
+import textEditor.model.ObserverModel;
 
 import java.net.URL;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -36,11 +35,10 @@ public class EditorController extends UnicastRemoteObject implements Initializab
     @FXML
     private TextArea mainTextArea;
 
-    private EditorModel editorModel;
-
-    private EditorModelService editorModelService;
-    private ObserverService observerService;
     private Clipboard clipboard;
+
+    private EditorModel editorModel;
+    private ObserverModel observerModel;
 
     public EditorController() throws RemoteException {
         super();
@@ -49,28 +47,26 @@ public class EditorController extends UnicastRemoteObject implements Initializab
     //Run when app starts
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        clipboard = Clipboard.getSystemClipboard();
+        Registry registry = null;
         try {
-            Registry registry = LocateRegistry.getRegistry("localhost", 4321);
-
-            editorModelService = (EditorModelService) registry.lookup("EditorModelService");
-            observerService = (ObserverService) registry.lookup("ObserverService");
-//            editorModelService.setTextAreaString();
-            observerService.addObserver(editorModelService);
-            mainTextArea.textProperty().addListener(new ChangeListener<String>() {
-                @Override
-                public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                    try {
-                        editorModelService.setTextAreaString(newValue);
-                    } catch (RemoteException e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
-        } catch (Exception ex) {
-            ex.printStackTrace();
+            registry = LocateRegistry.getRegistry("localhost", 4321);
+            editorModel = (EditorModel) registry.lookup("EditorModel");
+            observerModel = (ObserverModel) registry.lookup("ObserverModel");
+            observerModel.addObserver(editorModel);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        } catch (NotBoundException e) {
+            e.printStackTrace();
         }
+        clipboard = Clipboard.getSystemClipboard();
 
+        mainTextArea.textProperty().addListener((ChangeListener<String>) (observable, oldValue, newValue) -> {
+            try {
+                editorModel.setTextAreaString(newValue);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     private TextInputControl getFocusedText() {
@@ -124,7 +120,6 @@ public class EditorController extends UnicastRemoteObject implements Initializab
         //TODO: refactor this shit
         TextInputControl textInput = getFocusedText();
         if (textInput != null) {
-            System.out.println(textInput.getText());
             textInput.setText(textInput.getText(0, textInput.getCaretPosition()) + clipboard.getString() + textInput.getText(textInput.getCaretPosition(), textInput.getLength()));
         }
     }
