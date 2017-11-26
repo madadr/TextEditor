@@ -1,7 +1,7 @@
 package textEditor.controller;
 
-import textEditor.Client;
+import textEditor.RMIClient;
 
 public interface ClientInjectionTarget {
-    void injectClient(Client.RMIClient client);
+    void injectClient(RMIClient client);
 }

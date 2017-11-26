@@ -7,15 +7,16 @@ import javafx.scene.control.*;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.layout.HBox;
-import textEditor.Client;
+import textEditor.RMIClient;
 import textEditor.model.EditorModel;
 import textEditor.model.ObserverModel;
+import textEditor.view.WindowSwitcher;
 
 import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.ResourceBundle;
 
-public class EditorController implements Initializable, ClientInjectionTarget {
+public class EditorController implements Initializable, ClientInjectionTarget, WindowSwitcherInjectionTarget {
     @FXML
     private Menu fileMenu, editMenu, helpMenu;
     @FXML
@@ -36,17 +37,22 @@ public class EditorController implements Initializable, ClientInjectionTarget {
 
     private EditorModel editorModel;
     private ObserverModel observerModel;
-    private Client.RMIClient rmiClient;
+    private RMIClient rmiClient;
+    private WindowSwitcher switcher;
 
     public EditorController() {
     }
 
     @Override
-    public void injectClient(Client.RMIClient client) {
+    public void injectClient(RMIClient client) {
         this.rmiClient = client;
     }
 
-    //Run when app starts
+    @Override
+    public void injectWindowSwitcher(WindowSwitcher switcher) {
+        this.switcher = switcher;
+    }
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         clipboard = Clipboard.getSystemClipboard();
@@ -83,7 +89,7 @@ public class EditorController implements Initializable, ClientInjectionTarget {
     @FXML
     private void editCopyClicked() {
         ClipboardContent clipboardContent = new ClipboardContent();
-        //getting text from focused area
+        // getting text from focused area
         TextInputControl textInput = getFocusedText();
         if (textInput != null) {
             clipboardContent.putString(textInput.getSelectedText());
@@ -98,9 +104,9 @@ public class EditorController implements Initializable, ClientInjectionTarget {
         TextInputControl textInput = getFocusedText();
         if (textInput != null) {
             clipboardContent.putString(textInput.getSelectedText());
-            //clearing coresponding area from cuted text
+            // clearing coresponding area from cuted text
             IndexRange indexRange = textInput.getSelection();
-            //TODO this line should be refactor maybe use subString from stringUtils ?
+            // TODO this line should be refactor maybe use subString from stringUtils ?
             textInput.setText(textInput.getText(0, indexRange.getStart()) + textInput.getText(indexRange.getEnd(), textInput.getLength()));
             clipboard.setContent(clipboardContent);
         }

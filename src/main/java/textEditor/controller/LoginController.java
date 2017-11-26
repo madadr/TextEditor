@@ -2,23 +2,19 @@ package textEditor.controller;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.paint.Color;
-import javafx.stage.Stage;
-import textEditor.Client;
+import textEditor.RMIClient;
+import textEditor.view.WindowSwitcher;
 
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class LoginController implements Initializable, ClientInjectionTarget {
+public class LoginController implements Initializable, ClientInjectionTarget, WindowSwitcherInjectionTarget {
     @FXML
     private Button submitLogin, registrationLabel;
     @FXML
@@ -28,19 +24,25 @@ public class LoginController implements Initializable, ClientInjectionTarget {
     @FXML
     private TextField userPasswordField;
 
-    private Client.RMIClient rmiClient;
+    private RMIClient rmiClient;
+
+    private WindowSwitcher switcher;
 
     public LoginController() {
     }
 
     @Override
-    public void injectClient(Client.RMIClient client) {
+    public void injectClient(RMIClient client) {
         this.rmiClient = client;
     }
 
     @Override
-    public void initialize(URL location, ResourceBundle resources)
-    {
+    public void injectWindowSwitcher(WindowSwitcher switcher) {
+        this.switcher = switcher;
+    }
+
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
         resultOfAuthorization.setVisible(false);
 
     }
@@ -57,48 +59,20 @@ public class LoginController implements Initializable, ClientInjectionTarget {
             resultOfAuthorization.setTextFill(Color.web("#2eb82e"));
             resultOfAuthorization.setVisible(true);
 
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("Editor.fxml"));
-
-            loader.setControllerFactory(p -> {
-                Object controller = null;
-                try {
-                    controller = p.newInstance();
-
-                    if (controller instanceof ClientInjectionTarget) {
-                        ((ClientInjectionTarget) controller).injectClient(rmiClient);
-                    }
-                    return controller;
-                } catch (InstantiationException | IllegalAccessException e) {
-                    e.printStackTrace();
-                    return null;
-                }
-            });
-//            Parent parent = FXMLLoader.load(getClass().getResource("Editor.fxml"));
-
-//
-//            //Geting primaryStage
-            Stage primaryStage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
-            primaryStage.setResizable(true);
-            primaryStage.setScene(new Scene(loader.load(), 600, 400));
-//            primaryStage.setScene(editorScene);
-            primaryStage.show();
-        }
-        else{
+            switcher.loadEditorWindow();
+        } else {
             System.out.println("Authorization failed");
             resultOfAuthorization.setText("Authorization failed");
             resultOfAuthorization.setTextFill(Color.web("#ff3300"));
             resultOfAuthorization.setVisible(true);
         }
     }
-    private boolean checkLoginAndPassword()
-    {
-        if(userLoginField.getText().isEmpty() || userPasswordField.getText().isEmpty())
-        {
+
+    private boolean checkLoginAndPassword() {
+        if (userLoginField.getText().isEmpty() || userPasswordField.getText().isEmpty()) {
             System.out.println("Login or Password werent typed");
             return false;
-        }
-        else if(userLoginField.getText().equals("admin") && userPasswordField.getText().equals("admin"))
-        {
+        } else if (userLoginField.getText().equals("admin") && userPasswordField.getText().equals("admin")) {
             System.out.println("Correct Login and Password");
             return true;
         }
