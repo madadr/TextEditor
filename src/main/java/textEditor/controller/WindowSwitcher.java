@@ -3,7 +3,6 @@ package textEditor.controller;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import textEditor.RMIClient;
 
@@ -13,37 +12,38 @@ public class WindowSwitcher {
     private Stage stage;
     private FXMLLoader loader;
     private RMIClient rmiClient;
+    private final ControllerFactory controllerFactory;
 
     public WindowSwitcher(Stage stage) {
         this.stage = stage;
+
         rmiClient = new RMIClient();
-        loader = new FXMLLoader(getClass().getResource("..\\view\\Login.fxml"));
-        loader.setControllerFactory(new ControllerFactory(rmiClient, this));
+
+        controllerFactory = new ControllerFactory(rmiClient, this);
     }
 
     public void setLoginWindow() throws IOException {
-        stage.setTitle("Editor");
+        if(stage != null && stage.isShowing()) {
+            stage.close();
+        }
+
+        loader = new FXMLLoader(getClass().getResource("Login.fxml"));
+        loader.setControllerFactory(controllerFactory);
+
+        stage.setTitle("Editor - login");
         stage.setResizable(false);
         stage.setScene(new Scene((Parent) loader.load(), 600, 400));
         stage.show();
     }
 
     public void setEditorWindow() throws IOException {
-//        FXMLLoader loader = new FXMLLoader(getClass().getResource("Editor.fxml"));
+        loader = new FXMLLoader(getClass().getResource("Editor.fxml"));
+        loader.setControllerFactory(controllerFactory);
 
-//        loader.setControllerFactory(new ControllerFactory(rmiClient, switcher));
-//
-//            //Geting primaryStage
-//        Stage primaryStage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
-
-//        stage = new Stage();
-
-        ((AnchorPane) stage.getScene().getRoot()).getChildren().setAll(new Scene(loader.load("Editor.fxml")));
-
-//        loader.setLocation(getClass().getResource("Editor.fxml"));
-//        stage.setResizable(true);
-//        stage.setScene(new Scene(loader.load(), 600, 400));
-////            primaryStage.setScene(editorScene);
-//        stage.show();
+        stage.setTitle("Editor");
+        stage.setResizable(true);
+        stage.setScene(new Scene((Parent) loader.load()));
+        stage.setMaximized(true);
+        stage.show();
     }
 }
