@@ -2,6 +2,7 @@ package textEditor.controller;
 
 import javafx.util.Callback;
 import textEditor.RMIClient;
+import textEditor.view.WindowSwitcher;
 
 public class ControllerFactory implements Callback<Class<?>, Object> {
     private RMIClient rmiClient;

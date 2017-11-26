@@ -10,6 +10,7 @@ import javafx.scene.layout.HBox;
 import textEditor.RMIClient;
 import textEditor.model.EditorModel;
 import textEditor.model.ObserverModel;
+import textEditor.view.WindowSwitcher;
 
 import java.net.URL;
 import java.rmi.RemoteException;

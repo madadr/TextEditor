@@ -1,49 +1,58 @@
-package textEditor.controller;
+package textEditor.view;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import textEditor.RMIClient;
+import textEditor.controller.ControllerFactory;
 
 import java.io.IOException;
 
 public class WindowSwitcher {
     private Stage stage;
     private FXMLLoader loader;
-    private RMIClient rmiClient;
     private final ControllerFactory controllerFactory;
 
     public WindowSwitcher(Stage stage) {
         this.stage = stage;
 
-        rmiClient = new RMIClient();
+        RMIClient rmiClient = new RMIClient();
 
         controllerFactory = new ControllerFactory(rmiClient, this);
     }
 
-    public void setLoginWindow() throws IOException {
-        if(stage != null && stage.isShowing()) {
-            stage.close();
-        }
-
-        loader = new FXMLLoader(getClass().getResource("Login.fxml"));
-        loader.setControllerFactory(controllerFactory);
+    public void loadLoginWindow() throws IOException {
+        loadWindow("Login.fxml");
 
         stage.setTitle("Editor - login");
         stage.setResizable(false);
         stage.setScene(new Scene((Parent) loader.load(), 600, 400));
-        stage.show();
+
+        if(!isStageDisplayed()) {
+            stage.show();
+        }
     }
 
-    public void setEditorWindow() throws IOException {
-        loader = new FXMLLoader(getClass().getResource("Editor.fxml"));
-        loader.setControllerFactory(controllerFactory);
+    public void loadEditorWindow() throws IOException {
+        loadWindow("Editor.fxml");
 
         stage.setTitle("Editor");
         stage.setResizable(true);
         stage.setScene(new Scene((Parent) loader.load()));
         stage.setMaximized(true);
-        stage.show();
+
+        if(!isStageDisplayed()) {
+            stage.show();
+        }
+    }
+
+    private void loadWindow(String resource) {
+        loader = new FXMLLoader(getClass().getResource(resource));
+        loader.setControllerFactory(controllerFactory);
+    }
+
+    private boolean isStageDisplayed() {
+        return stage != null && stage.isShowing();
     }
 }

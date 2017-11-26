@@ -8,6 +8,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.paint.Color;
 import textEditor.RMIClient;
+import textEditor.view.WindowSwitcher;
 
 import java.io.IOException;
 import java.net.URL;
@@ -58,18 +59,7 @@ public class LoginController implements Initializable, ClientInjectionTarget, Wi
             resultOfAuthorization.setTextFill(Color.web("#2eb82e"));
             resultOfAuthorization.setVisible(true);
 
-            switcher.setEditorWindow();
-
-//            FXMLLoader loader = new FXMLLoader(getClass().getResource("Editor.fxml"));
-//
-//            loader.setControllerFactory(new ControllerFactory(rmiClient, switcher));
-////
-////            //Geting primaryStage
-//            Stage primaryStage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
-//            primaryStage.setResizable(true);
-//            primaryStage.setScene(new Scene(loader.load(), 600, 400));
-////            primaryStage.setScene(editorScene);
-//            primaryStage.show();
+            switcher.loadEditorWindow();
         } else {
             System.out.println("Authorization failed");
             resultOfAuthorization.setText("Authorization failed");
