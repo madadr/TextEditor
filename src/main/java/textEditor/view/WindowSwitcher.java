@@ -29,7 +29,7 @@ public class WindowSwitcher {
         stage.setResizable(false);
         stage.setScene(new Scene((Parent) loader.load(), 600, 400));
 
-        if(!isStageDisplayed()) {
+        if (!isStageDisplayed()) {
             stage.show();
         }
     }
@@ -42,7 +42,7 @@ public class WindowSwitcher {
         stage.setScene(new Scene((Parent) loader.load()));
         stage.setMaximized(true);
 
-        if(!isStageDisplayed()) {
+        if (!isStageDisplayed()) {
             stage.show();
         }
     }

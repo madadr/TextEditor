@@ -53,7 +53,6 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
         this.switcher = switcher;
     }
 
-    //Run when app starts
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         clipboard = Clipboard.getSystemClipboard();
@@ -90,7 +89,7 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     @FXML
     private void editCopyClicked() {
         ClipboardContent clipboardContent = new ClipboardContent();
-        //getting text from focused area
+        // getting text from focused area
         TextInputControl textInput = getFocusedText();
         if (textInput != null) {
             clipboardContent.putString(textInput.getSelectedText());
@@ -105,9 +104,9 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
         TextInputControl textInput = getFocusedText();
         if (textInput != null) {
             clipboardContent.putString(textInput.getSelectedText());
-            //clearing coresponding area from cuted text
+            // clearing coresponding area from cuted text
             IndexRange indexRange = textInput.getSelection();
-            //TODO this line should be refactor maybe use subString from stringUtils ?
+            // TODO this line should be refactor maybe use subString from stringUtils ?
             textInput.setText(textInput.getText(0, indexRange.getStart()) + textInput.getText(indexRange.getEnd(), textInput.getLength()));
             clipboard.setContent(clipboardContent);
         }

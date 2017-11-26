@@ -23,7 +23,7 @@ public class ControllerFactory implements Callback<Class<?>, Object> {
                 ((ClientInjectionTarget) controller).injectClient(rmiClient);
             }
 
-            if(controller instanceof WindowSwitcherInjectionTarget) {
+            if (controller instanceof WindowSwitcherInjectionTarget) {
                 ((WindowSwitcherInjectionTarget) controller).injectWindowSwitcher(switcher);
             }
 
