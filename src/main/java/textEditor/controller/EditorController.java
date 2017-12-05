@@ -1,5 +1,6 @@
 package textEditor.controller;
 
+import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -15,6 +16,7 @@ import textEditor.model.ObserverModel;
 import textEditor.view.WindowSwitcher;
 
 import java.net.URL;
+import java.rmi.RemoteException;
 import java.util.ResourceBundle;
 
 public class EditorController implements Initializable, ClientInjectionTarget, WindowSwitcherInjectionTarget {
@@ -59,20 +61,16 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
         clipboard = Clipboard.getSystemClipboard();
         editorModel = (EditorModel) rmiClient.getModel("EditorModel");
 
-//        mainTextArea.textProperty().addListener((ChangeListener<String>) (observable, oldValue, newValue) -> {
-//            try {
-//                editorModel.setTextAreaString(newValue);
-//            } catch (RemoteException e) {
-//                e.printStackTrace();
-//            }
-//        });
+        mainTextArea.textProperty().addListener((ChangeListener<String>) (observable, oldValue, newValue) -> {
+            try {
+                editorModel.setTextAreaString(newValue);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     private StyledTextArea getFocusedText() {
-        if (mainTextArea == null) {
-            System.out.println("nulll");
-        }
-
         if (mainTextArea.isFocused()) {
             return mainTextArea;
 
