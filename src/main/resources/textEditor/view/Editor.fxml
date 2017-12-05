@@ -5,6 +5,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 <?import org.fxmisc.richtext.StyleClassedTextArea?>
+<?import org.fxmisc.richtext.InlineCssTextArea?>
 <AnchorPane minHeight="776.0" minWidth="1328.0" prefHeight="776.0" prefWidth="1328.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="textEditor.controller.EditorController">
     <children>
         <MenuBar>
@@ -86,18 +87,14 @@
                 </AnchorPane>
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
                     <children>
-                        <StyleClassedTextArea fx:id="mainGenericStyledArea" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-                        <!--<GenericStyledArea fx:id="mainGenericStyledArea" layoutX="183.0" layoutY="64.0" prefHeight="681.0" prefWidth="1326.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />-->
+                        <StyleClassedTextArea fx:id="mainTextArea" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                         <HBox fx:id="searchBox" alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="1326.0" spacing="10.0" visible="false">
                             <children>
-                                <TextField fx:id="searchTextField" minHeight="23.0" minWidth="154.0" prefHeight="23.0" prefWidth="154.0" promptText="Type searched string....">
-                                    <font>
-                                        <Font size="10.0" />
-                                    </font>
+                                <InlineCssTextArea fx:id="searchArea" minHeight="23.0" minWidth="154.0" prefHeight="23.0" prefWidth="154.0">
                                     <opaqueInsets>
                                         <Insets />
                                     </opaqueInsets>
-                                </TextField>
+                                </InlineCssTextArea>
                                 <Button fx:id="searchButton" minHeight="23.0" minWidth="44.0" mnemonicParsing="false" onAction="#searchButtonClicked" prefHeight="19.0" prefWidth="44.0" text="Search" textAlignment="CENTER">
                                     <font>
                                         <Font size="10.0" />

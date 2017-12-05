@@ -6,7 +6,9 @@ import javafx.scene.control.*;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.layout.HBox;
+import org.fxmisc.richtext.InlineCssTextArea;
 import org.fxmisc.richtext.StyleClassedTextArea;
+import org.fxmisc.richtext.StyledTextArea;
 import textEditor.RMIClient;
 import textEditor.model.EditorModel;
 import textEditor.model.ObserverModel;
@@ -28,9 +30,9 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     private ToggleButton boldButton, italicButton, underscoreButton,
             aligmentLeftButton, aligmentCenterButton, aligmentRightButton, aligmentAdjustButton;
     @FXML
-    private TextField searchTextField;
+    private InlineCssTextArea searchArea;
     @FXML
-    private StyleClassedTextArea mainStyleClassedTextArea;
+    private StyleClassedTextArea mainTextArea;
 
     private Clipboard clipboard;
 
@@ -56,7 +58,8 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     public void initialize(URL location, ResourceBundle resources) {
         clipboard = Clipboard.getSystemClipboard();
         editorModel = (EditorModel) rmiClient.getModel("EditorModel");
-//        mainStyleClassedTextArea.textProperty().addListener((ChangeListener<String>) (observable, oldValue, newValue) -> {
+
+//        mainTextArea.textProperty().addListener((ChangeListener<String>) (observable, oldValue, newValue) -> {
 //            try {
 //                editorModel.setTextAreaString(newValue);
 //            } catch (RemoteException e) {
@@ -65,13 +68,17 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
 //        });
     }
 
-    private TextInputControl getFocusedText() {
-//        if (mainStyleClassedTextArea.isFocused()) {
-//            return mainStyleClassedTextArea;
-//
-//        } else if (searchTextField.isFocused()) {
-//            return searchTextField;
-//        }
+    private StyledTextArea getFocusedText() {
+        if (mainTextArea == null) {
+            System.out.println("nulll");
+        }
+
+        if (mainTextArea.isFocused()) {
+            return mainTextArea;
+
+        } else if (searchArea.isFocused()) {
+            return searchArea;
+        }
         return null;
     }
 
@@ -89,35 +96,34 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     private void editCopyClicked() {
         ClipboardContent clipboardContent = new ClipboardContent();
         // getting text from focused area
-//        TextInputControl textInput = getFocusedText();
-//        if (textInput != null) {
-//            clipboardContent.putString(textInput.getSelectedText());
-//            clipboard.setContent(clipboardContent);
-//        }
-
+        StyledTextArea textInput = getFocusedText();
+        if (textInput != null) {
+            clipboardContent.putString(textInput.getSelectedText());
+            clipboard.setContent(clipboardContent);
+        }
     }
 
     @FXML
     private void editCutClicked() {
         ClipboardContent clipboardContent = new ClipboardContent();
-//        TextInputControl textInput = getFocusedText();
-//        if (textInput != null) {
-//            clipboardContent.putString(textInput.getSelectedText());
-        // clearing coresponding area from cuted text
-//            IndexRange indexRange = textInput.getSelection();
-        // TODO this line should be refactor maybe use subString from stringUtils ?
-//            textInput.setText(textInput.getText(0, indexRange.getStart()) + textInput.getText(indexRange.getEnd(), textInput.getLength()));
-//            clipboard.setContent(clipboardContent);
-//        }
+        StyledTextArea textInput = getFocusedText();
+        if (textInput != null) {
+            clipboardContent.putString(textInput.getSelectedText());
+            // clearing coresponding area from cuted text
+            IndexRange indexRange = textInput.getSelection();
+            textInput.replaceText(indexRange, "");
+
+            clipboard.setContent(clipboardContent);
+        }
     }
 
     @FXML
     private void editPasteClicked() {
         //TODO: refactor this shit
-//        TextInputControl textInput = getFocusedText();
-//        if (textInput != null) {
-//            textInput.setText(textInput.getText(0, textInput.getCaretPosition()) + clipboard.getString() + textInput.getText(textInput.getCaretPosition(), textInput.getLength()));
-//        }
+        StyledTextArea textInput = getFocusedText();
+        if (textInput != null) {
+            textInput.appendText(textInput.getText(0, textInput.getCaretPosition()) + clipboard.getString() + textInput.getText(textInput.getCaretPosition(), textInput.getLength()));
+        }
     }
 
     @FXML
@@ -164,9 +170,9 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     private void boldButtonClicked() {
 
         if (boldButton.isSelected()) {
-            mainStyleClassedTextArea.setStyle("-fx-font-weight: bold");
+            mainTextArea.setStyle("-fx-font-weight: bold");
         } else {
-            mainStyleClassedTextArea.setStyle("-fx-font-weight: normal");
+            mainTextArea.setStyle("-fx-font-weight: normal");
         }
 
     }
@@ -174,9 +180,9 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     @FXML
     private void italicButtonClicked() {
         if (boldButton.isSelected()) {
-            mainStyleClassedTextArea.setStyle("-fx-font-style: italic");
+            mainTextArea.setStyle("-fx-font-style: italic");
         } else {
-            mainStyleClassedTextArea.setStyle("-fx-font-style: normal");
+            mainTextArea.setStyle("-fx-font-style: normal");
         }
 
     }
