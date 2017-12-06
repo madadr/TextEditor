@@ -70,8 +70,19 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
             }
         });
 
+        loadCssStyleSheet();
+
+        initTextSelection();
+    }
+
+    private void loadCssStyleSheet() {
+        mainTextArea.getStylesheets().add(EditorController.class.getResource("styles.css").toExternalForm());
+    }
+
+    private void initTextSelection() {
         // HIGHLY dependent on boldButtonClicked() and italicButtonClicked() methods
         mainTextArea.selectedTextProperty().addListener((observable, oldValue, newValue) -> {
+            // make both buttons unselected, when user didn't select any text
             if(newValue.equals("")) {
                 boldButton.setSelected(false);
                 italicButton.setSelected(false);
@@ -79,26 +90,26 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
                 return;
             }
 
-            boolean isAllBold = true;
-            boolean isAllItalic = true;
+            // check if whole selected text is bold or whole selected text is italic
+            boolean isWholeBold = true;
+            boolean isWholeItalic = true;
             IndexRange range = mainTextArea.getSelection();
 
             for (int i = range.getStart(); i < range.getEnd(); ++i) {
                 Collection<String> list = new ArrayList<String>(mainTextArea.getStyleOfChar(i));
-                if (isAllBold && !list.contains("boldWeight")) {
-                    isAllBold = false;
+                if (isWholeBold && !list.contains("boldWeight")) {
+                    isWholeBold = false;
                 }
 
-                if (isAllItalic && !list.contains("italicStyle")) {
-                    isAllItalic = false;
+                if (isWholeItalic && !list.contains("italicStyle")) {
+                    isWholeItalic = false;
                 }
             }
 
-            boldButton.setSelected(isAllBold);
-            italicButton.setSelected(isAllItalic);
+            boldButton.setSelected(isWholeBold);
+            italicButton.setSelected(isWholeItalic);
         });
 
-        mainTextArea.getStylesheets().add(EditorController.class.getResource("styles.css").toExternalForm());
     }
 
     private StyledTextArea getFocusedText() {
@@ -242,7 +253,6 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
                     list.remove("normalStyle");
                     mainTextArea.setStyle(i, i + 1, list);
                 }
-//                mainTextArea.setStyle(i, i + 1, list);
             }
         } else {
             IndexRange range = mainTextArea.getSelection();
