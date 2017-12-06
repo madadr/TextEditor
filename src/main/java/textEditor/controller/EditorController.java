@@ -1,6 +1,5 @@
 package textEditor.controller;
 
-import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -17,6 +16,8 @@ import textEditor.view.WindowSwitcher;
 
 import java.net.URL;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.ResourceBundle;
 
 public class EditorController implements Initializable, ClientInjectionTarget, WindowSwitcherInjectionTarget {
@@ -61,12 +62,40 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
         clipboard = Clipboard.getSystemClipboard();
         editorModel = (EditorModel) rmiClient.getModel("EditorModel");
 
-        mainTextArea.textProperty().addListener((ChangeListener<String>) (observable, oldValue, newValue) -> {
+        mainTextArea.textProperty().addListener((observable, oldValue, newValue) -> {
             try {
                 editorModel.setTextAreaString(newValue);
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
+        });
+
+        // HIGHLY dependent on boldButtonClicked() and italicButtonClicked() methods
+        mainTextArea.selectedTextProperty().addListener((observable, oldValue, newValue) -> {
+            if(newValue.equals("")) {
+                boldButton.setSelected(false);
+                italicButton.setSelected(false);
+
+                return;
+            }
+
+            boolean isAllBold = true;
+            boolean isAllItalic = true;
+            IndexRange range = mainTextArea.getSelection();
+
+            for (int i = range.getStart(); i < range.getEnd(); ++i) {
+                Collection<String> list = new ArrayList<String>(mainTextArea.getStyleOfChar(i));
+                if (isAllBold && !list.contains("boldWeight")) {
+                    isAllBold = false;
+                }
+
+                if (isAllItalic && !list.contains("italicStyle")) {
+                    isAllItalic = false;
+                }
+            }
+
+            boldButton.setSelected(isAllBold);
+            italicButton.setSelected(isAllItalic);
         });
 
         mainTextArea.getStylesheets().add(EditorController.class.getResource("styles.css").toExternalForm());
@@ -173,13 +202,29 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
 
         if (boldButton.isSelected()) {
             IndexRange range = mainTextArea.getSelection();
-            mainTextArea.setStyleClass(range.getStart(), range.getEnd(), "boldWeight");
-            mainTextArea.requestFocus();
+
+            for (int i = range.getStart(); i < range.getEnd(); ++i) {
+                Collection<String> list = new ArrayList<String>(mainTextArea.getStyleOfChar(i));
+                if(!list.contains("boldWeight")) {
+                    list.add("boldWeight");
+                    list.remove("normalWeight");
+                }
+                mainTextArea.setStyle(i, i + 1, list);
+            }
         } else {
             IndexRange range = mainTextArea.getSelection();
-            mainTextArea.setStyleClass(range.getStart(), range.getEnd(), "normalWeight");
-            mainTextArea.requestFocus();
+
+            for (int i = range.getStart(); i < range.getEnd(); ++i) {
+                Collection<String> list = new ArrayList<String>(mainTextArea.getStyleOfChar(i));
+                if(!list.contains("normalWeight")) {
+                    list.add("normalWeight");
+                    list.remove("boldWeight");
+                }
+                mainTextArea.setStyle(i, i + 1, list);
+            }
         }
+
+        mainTextArea.requestFocus();
     }
 
     @FXML
@@ -189,13 +234,31 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
 
         if (italicButton.isSelected()) {
             IndexRange range = mainTextArea.getSelection();
-            mainTextArea.setStyleClass(range.getStart(), range.getEnd(), "italicStyle");
-            mainTextArea.requestFocus();
+
+            for (int i = range.getStart(); i < range.getEnd(); ++i) {
+                Collection<String> list = new ArrayList<String>(mainTextArea.getStyleOfChar(i));
+                if(!list.contains("italicStyle")) {
+                    list.add("italicStyle");
+                    list.remove("normalStyle");
+                    mainTextArea.setStyle(i, i + 1, list);
+                }
+//                mainTextArea.setStyle(i, i + 1, list);
+            }
         } else {
             IndexRange range = mainTextArea.getSelection();
-            mainTextArea.setStyleClass(range.getStart(), range.getEnd(), "normalStyle");
-            mainTextArea.requestFocus();
+
+            for (int i = range.getStart(); i < range.getEnd(); ++i) {
+                Collection<String> list = new ArrayList<String>(mainTextArea.getStyleOfChar(i));
+                if(!list.contains("normalStyle")) {
+                    list.add("normalStyle");
+                    list.remove("italicStyle");
+                    mainTextArea.setStyle(i, i + 1, list);
+                }
+            }
+
         }
+
+        mainTextArea.requestFocus();
     }
 
     @FXML
