@@ -80,10 +80,11 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     }
 
     private void initTextSelection() {
+        // TODO: create another scalable solution
         // HIGHLY dependent on boldButtonClicked() and italicButtonClicked() methods
         mainTextArea.selectedTextProperty().addListener((observable, oldValue, newValue) -> {
             // make both buttons unselected, when user didn't select any text
-            if(newValue.equals("")) {
+            if (newValue.equals("")) {
                 boldButton.setSelected(false);
                 italicButton.setSelected(false);
 
@@ -208,71 +209,40 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
 
     @FXML
     private void boldButtonClicked() {
-        String selectedText = mainTextArea.getSelectedText();
-        IndexRange selection = mainTextArea.getSelection();
-
-        if (boldButton.isSelected()) {
-            IndexRange range = mainTextArea.getSelection();
-
-            for (int i = range.getStart(); i < range.getEnd(); ++i) {
-                Collection<String> list = new ArrayList<String>(mainTextArea.getStyleOfChar(i));
-                if(!list.contains("boldWeight")) {
-                    list.add("boldWeight");
-                    list.remove("normalWeight");
-                }
-                mainTextArea.setStyle(i, i + 1, list);
-            }
-        } else {
-            IndexRange range = mainTextArea.getSelection();
-
-            for (int i = range.getStart(); i < range.getEnd(); ++i) {
-                Collection<String> list = new ArrayList<String>(mainTextArea.getStyleOfChar(i));
-                if(!list.contains("normalWeight")) {
-                    list.add("normalWeight");
-                    list.remove("boldWeight");
-                }
-                mainTextArea.setStyle(i, i + 1, list);
-            }
-        }
-
-        mainTextArea.requestFocus();
+        transformTextStyle(mainTextArea, boldButton, "boldWeight", "normalWeight");
     }
 
     @FXML
     private void italicButtonClicked() {
-        String selectedText = mainTextArea.getSelectedText();
-        IndexRange selection = mainTextArea.getSelection();
+        transformTextStyle(mainTextArea, italicButton, "italicStyle", "normalStyle");
+    }
 
-        if (italicButton.isSelected()) {
-            IndexRange range = mainTextArea.getSelection();
+    private void transformTextStyle(StyleClassedTextArea area, ToggleButton triggeringButton, String transformedStyle, String normalStyle) {
+        String selectedText = area.getSelectedText();
+        IndexRange selection = area.getSelection();
 
-            for (int i = range.getStart(); i < range.getEnd(); ++i) {
-                Collection<String> list = new ArrayList<String>(mainTextArea.getStyleOfChar(i));
-                if(!list.contains("italicStyle")) {
-                    list.add("italicStyle");
-                    list.remove("normalStyle");
-                    mainTextArea.setStyle(i, i + 1, list);
-                }
+        IndexRange range = area.getSelection();
+
+        boolean replaceNormalStyle = triggeringButton.isSelected();
+
+        String newStyle = replaceNormalStyle ? transformedStyle : normalStyle;
+        String oldStyle = replaceNormalStyle ? normalStyle : transformedStyle;
+
+        for (int i = range.getStart(); i < range.getEnd(); ++i) {
+            Collection<String> list = new ArrayList<>(area.getStyleOfChar(i));
+            if (!list.contains(newStyle)) {
+                list.add(newStyle);
+                list.remove(oldStyle);
             }
-        } else {
-            IndexRange range = mainTextArea.getSelection();
-
-            for (int i = range.getStart(); i < range.getEnd(); ++i) {
-                Collection<String> list = new ArrayList<String>(mainTextArea.getStyleOfChar(i));
-                if(!list.contains("normalStyle")) {
-                    list.add("normalStyle");
-                    list.remove("italicStyle");
-                    mainTextArea.setStyle(i, i + 1, list);
-                }
-            }
-
+            area.setStyle(i, i + 1, list);
         }
 
-        mainTextArea.requestFocus();
+        area.requestFocus();
     }
 
     @FXML
     private void underscoreButtonClicked() {
+        // TODO: use transformTextStyle
         String selectedText = mainTextArea.getSelectedText();
         IndexRange selection = mainTextArea.getSelection();
 
