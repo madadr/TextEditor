@@ -68,6 +68,8 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
                 e.printStackTrace();
             }
         });
+
+        mainTextArea.getStylesheets().add(EditorController.class.getResource("styles.css").toExternalForm());
     }
 
     private StyledTextArea getFocusedText() {
@@ -166,28 +168,50 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
 
     @FXML
     private void boldButtonClicked() {
+        String selectedText = mainTextArea.getSelectedText();
+        IndexRange selection = mainTextArea.getSelection();
 
         if (boldButton.isSelected()) {
-            mainTextArea.setStyle("-fx-font-weight: bold");
+            IndexRange range = mainTextArea.getSelection();
+            mainTextArea.setStyleClass(range.getStart(), range.getEnd(), "boldWeight");
+            mainTextArea.requestFocus();
         } else {
-            mainTextArea.setStyle("-fx-font-weight: normal");
+            IndexRange range = mainTextArea.getSelection();
+            mainTextArea.setStyleClass(range.getStart(), range.getEnd(), "normalWeight");
+            mainTextArea.requestFocus();
         }
-
     }
 
     @FXML
     private void italicButtonClicked() {
-        if (boldButton.isSelected()) {
-            mainTextArea.setStyle("-fx-font-style: italic");
-        } else {
-            mainTextArea.setStyle("-fx-font-style: normal");
-        }
+        String selectedText = mainTextArea.getSelectedText();
+        IndexRange selection = mainTextArea.getSelection();
 
+        if (italicButton.isSelected()) {
+            IndexRange range = mainTextArea.getSelection();
+            mainTextArea.setStyleClass(range.getStart(), range.getEnd(), "italicStyle");
+            mainTextArea.requestFocus();
+        } else {
+            IndexRange range = mainTextArea.getSelection();
+            mainTextArea.setStyleClass(range.getStart(), range.getEnd(), "normalStyle");
+            mainTextArea.requestFocus();
+        }
     }
 
     @FXML
     private void underscoreButtonClicked() {
+        String selectedText = mainTextArea.getSelectedText();
+        IndexRange selection = mainTextArea.getSelection();
 
+        if (underscoreButton.isSelected()) {
+            IndexRange range = mainTextArea.getSelection();
+            mainTextArea.setStyleClass(range.getStart(), range.getEnd(), "underscoreDecoration");
+            mainTextArea.requestFocus();
+        } else {
+            IndexRange range = mainTextArea.getSelection();
+            mainTextArea.setStyleClass(range.getStart(), range.getEnd(), "normalDecoration");
+            mainTextArea.requestFocus();
+        }
     }
 
     @FXML

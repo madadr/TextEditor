@@ -1,0 +1,23 @@
+.boldWeight {
+    -fx-font-weight: bold;
+}
+
+.normalWeight {
+    -fx-font-weight: normal;
+}
+
+.italicStyle {
+    -fx-font-style: italic;
+}
+
+.normalStyle {
+    -fx-font-style: normal;
+}
+
+.underscoreDecoration {
+    -fx-text-decoration: underline;
+}
+
+.normalDecoration {
+    -fx-text-decoration: normal;
+}
