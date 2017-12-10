@@ -242,19 +242,7 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
 
     @FXML
     private void underscoreButtonClicked() {
-        // TODO: use transformTextStyle
-        String selectedText = mainTextArea.getSelectedText();
-        IndexRange selection = mainTextArea.getSelection();
-
-        if (underscoreButton.isSelected()) {
-            IndexRange range = mainTextArea.getSelection();
-            mainTextArea.setStyleClass(range.getStart(), range.getEnd(), "underscoreDecoration");
-            mainTextArea.requestFocus();
-        } else {
-            IndexRange range = mainTextArea.getSelection();
-            mainTextArea.setStyleClass(range.getStart(), range.getEnd(), "normalDecoration");
-            mainTextArea.requestFocus();
-        }
+        transformTextStyle(mainTextArea, underscoreButton, "underscoreDecoration", "normalDecoration");
     }
 
     @FXML

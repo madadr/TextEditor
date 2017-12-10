@@ -15,9 +15,9 @@
 }
 
 .underscoreDecoration {
-    -fx-text-decoration: underline;
+    -fx-underline: true;
 }
 
 .normalDecoration {
-    -fx-text-decoration: normal;
+    -fx-underline: false;
 }
