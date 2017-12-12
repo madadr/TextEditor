@@ -1,11 +1,13 @@
 package textEditor.controller;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import textEditor.RMIClient;
 import textEditor.view.WindowSwitcher;
@@ -44,7 +46,29 @@ public class LoginController implements Initializable, ClientInjectionTarget, Wi
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         resultOfAuthorization.setVisible(false);
+        runEnableKeyEventHandler();
+    }
 
+    private void runEnableKeyEventHandler() {
+        Platform.runLater(() -> {
+            while (this.switcher.getStage().getScene() == null) {
+
+            }
+            enableKeyEventHandler();
+        });
+    }
+
+    private void enableKeyEventHandler() {
+        this.switcher.getStage().getScene().setOnKeyPressed((keyEvent) -> {
+            if (keyEvent.getCode() == KeyCode.ENTER) {
+                try {
+                    onClickSubmit(null);
+                } catch (IOException ignored) {
+
+                }
+                keyEvent.consume();
+            }
+        });
     }
 
     @FXML
