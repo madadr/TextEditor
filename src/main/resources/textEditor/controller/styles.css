@@ -21,3 +21,15 @@
 .normalDecoration {
     -fx-underline: false;
 }
+.alligmentLeft {
+    -fx-text-alignment: left;
+}
+.alligmentRight {
+    -fx-text-alignment: right;
+}
+.alligmentCenter {
+    -fx-text-alignment: center;
+}
+.alligmentJustify  {
+    -fx-text-alignment: justify;
+}

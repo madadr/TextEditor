@@ -33,7 +33,10 @@ public class WindowSwitcher {
             stage.show();
         }
     }
-
+    public final Stage getStage()
+    {
+        return this.stage;
+    }
     public void loadEditorWindow() throws IOException {
         loadWindow("Editor.fxml");
 
@@ -51,6 +54,7 @@ public class WindowSwitcher {
         loader = new FXMLLoader(getClass().getResource(resource));
         loader.setControllerFactory(controllerFactory);
     }
+
 
     private boolean isStageDisplayed() {
         return stage != null && stage.isShowing();

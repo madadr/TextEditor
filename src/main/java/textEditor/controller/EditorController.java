@@ -1,11 +1,13 @@
 package textEditor.controller;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.layout.HBox;
+import javafx.stage.FileChooser;
 import org.fxmisc.richtext.InlineCssTextArea;
 import org.fxmisc.richtext.StyleClassedTextArea;
 import org.fxmisc.richtext.StyledTextArea;
@@ -14,6 +16,7 @@ import textEditor.model.EditorModel;
 import textEditor.model.ObserverModel;
 import textEditor.view.WindowSwitcher;
 
+import java.io.File;
 import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -169,27 +172,37 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
 
     @FXML
     private void helpHelpClicked() {
-
+        //TODO:  implement javafx stage appear with help content
     }
 
     @FXML
     private void helpAboutUsClicked() {
-
+        //TODO:  implement javafx stage appear with aboutUs content
     }
 
     @FXML
     private void editSearchClicked() {
         searchBox.setVisible(true);
+        //TODO:  implement search
     }
 
     @FXML
     private void fileNewClicked() {
         System.out.println("New file will be created");
+        //TODO: how this should look like ?
     }
 
     @FXML
     private void fileOpenClicked() {
         System.out.println("File will be open");
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Choose resource");
+        File file = fileChooser.showOpenDialog(switcher.getStage());
+        if(file!=null)
+        {
+            //TODO: handle this
+            //openFile(file);
+        }
     }
 
     @FXML
@@ -199,7 +212,7 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
 
     @FXML
     private void fileCloseClicked() {
-
+        Platform.exit();
     }
 
     @FXML
