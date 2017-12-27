@@ -34,6 +34,10 @@ public class WindowSwitcher {
         }
     }
 
+    public final Stage getStage() {
+        return this.stage;
+    }
+
     public void loadEditorWindow() throws IOException {
         loadWindow("Editor.fxml");
 

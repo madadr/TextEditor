@@ -1,0 +1,39 @@
+.boldWeight {
+    -fx-font-weight: bold;
+}
+
+.normalWeight {
+    -fx-font-weight: normal;
+}
+
+.italicStyle {
+    -fx-font-style: italic;
+}
+
+.normalStyle {
+    -fx-font-style: normal;
+}
+
+.underscoreDecoration {
+    -fx-underline: true;
+}
+
+.normalDecoration {
+    -fx-underline: false;
+}
+
+.alignmentLeft {
+    -fx-text-alignment: left;
+}
+
+.alignmentRight {
+    -fx-text-alignment: right;
+}
+
+.alignmentCenter {
+    -fx-text-alignment: center;
+}
+
+.alignmentJustify {
+    -fx-text-alignment: justify;
+}
