@@ -7,14 +7,11 @@ import javafx.scene.control.*;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.layout.HBox;
-import javafx.scene.text.TextAlignment;
 import javafx.stage.FileChooser;
 import org.fxmisc.richtext.InlineCssTextArea;
 import org.fxmisc.richtext.StyleClassedTextArea;
 import org.fxmisc.richtext.StyledTextArea;
-import org.fxmisc.richtext.model.Paragraph;
 import org.fxmisc.richtext.model.TwoDimensional;
-import org.reactfx.collection.LiveList;
 import textEditor.RMIClient;
 import textEditor.model.EditorModel;
 import textEditor.model.ObserverModel;
@@ -23,7 +20,10 @@ import textEditor.view.WindowSwitcher;
 import java.io.File;
 import java.net.URL;
 import java.rmi.RemoteException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.ResourceBundle;
 
 public class EditorController implements Initializable, ClientInjectionTarget, WindowSwitcherInjectionTarget {
     @FXML
@@ -200,8 +200,7 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Choose resource");
         File file = fileChooser.showOpenDialog(switcher.getStage());
-        if(file!=null)
-        {
+        if (file != null) {
             //TODO: handle this
             //openFile(file);
         }
@@ -254,28 +253,7 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
 
         area.requestFocus();
     }
-//    private void transformParagraphStyle(StyleClassedTextArea area, ToggleButton triggeringButton, String transformedStyle, String normalStyle) {
-//        String selectedText = area.getSelectedText();
-//        IndexRange selection = area.getSelection();
-//
-//        IndexRange range = area.getSelection();
-//
-//        boolean replaceNormalStyle = triggeringButton.isSelected();
-//
-//        String newStyle = replaceNormalStyle ? transformedStyle : normalStyle;
-//        String oldStyle = replaceNormalStyle ? normalStyle : transformedStyle;
-//
-//        for (int i = range.getStart(); i < range.getEnd(); ++i) {
-//            Collection<String> list = new ArrayList<>(area.getStyleOfChar(i));
-//            if (!list.contains(newStyle)) {
-//                list.add(newStyle);
-//                list.remove(oldStyle);
-//            }
-//            area.setStyle(i, i + 1, list);
-//        }
-//
-//        area.requestFocus();
-//    }
+
     @FXML
     private void underscoreButtonClicked() {
         transformTextStyle(mainTextArea, underscoreButton, "underscoreDecoration", "normalDecoration");
@@ -283,10 +261,7 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
 
     @FXML
     private void fontSizePlusButtonClicked() {
-        int startParagraphInSelection = mainTextArea.offsetToPosition(mainTextArea.getSelection().getStart(), TwoDimensional.Bias.Forward).getMajor();
-        int lastParagraphInSelection = mainTextArea.offsetToPosition(mainTextArea.getSelection().getEnd(), TwoDimensional.Bias.Backward).getMajor();
-        for(int paragraph = startParagraphInSelection; paragraph< lastParagraphInSelection+1;paragraph++ )
-            mainTextArea.setParagraphStyle(paragraph,Collections.singleton("alligmentCenter"));
+
     }
 
     @FXML
@@ -301,12 +276,15 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
 
     @FXML
     private void alligmentCenterButtonClicked() {
-
+        int startParagraphInSelection = mainTextArea.offsetToPosition(mainTextArea.getSelection().getStart(), TwoDimensional.Bias.Forward).getMajor();
+        int lastParagraphInSelection = mainTextArea.offsetToPosition(mainTextArea.getSelection().getEnd(), TwoDimensional.Bias.Backward).getMajor();
+        for (int paragraph = startParagraphInSelection; paragraph < lastParagraphInSelection + 1; paragraph++)
+            mainTextArea.setParagraphStyle(paragraph, Collections.singleton("alligmentCenter"));
     }
 
     @FXML
     private void alligmentRightButtonClicked() {
-     }
+    }
 
     @FXML
     private void aligmentAdjustButtonClicked() {
