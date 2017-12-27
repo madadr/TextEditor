@@ -130,12 +130,12 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
 
     @FXML
     private void editUndoClicked() {
-
+        mainTextArea.undo();
     }
 
     @FXML
     private void editRedoClicked() {
-
+        mainTextArea.redo();
     }
 
     @FXML
