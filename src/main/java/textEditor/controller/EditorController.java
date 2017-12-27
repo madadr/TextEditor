@@ -36,7 +36,7 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     private Button searchButton, nextSearchButton, previousSearchButton, closeSearchBox;
     @FXML
     private ToggleButton boldButton, italicButton, underscoreButton,
-            aligmentLeftButton, aligmentCenterButton, aligmentRightButton, aligmentAdjustButton;
+            alignmentLeftButton, alignmentCenterButton, alignmentRightButton, alignmentAdjustButton;
     @FXML
     private InlineCssTextArea searchArea;
     @FXML
@@ -233,8 +233,6 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
 
     private void transformTextStyle(StyleClassedTextArea area, ToggleButton triggeringButton, String transformedStyle, String normalStyle) {
         String selectedText = area.getSelectedText();
-        IndexRange selection = area.getSelection();
-
         IndexRange range = area.getSelection();
 
         boolean replaceNormalStyle = triggeringButton.isSelected();
@@ -270,24 +268,24 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     }
 
     @FXML
-    private void alligmentLeftButtonClicked() {
+    private void alignmentLeftButtonClicked() {
 
     }
 
     @FXML
-    private void alligmentCenterButtonClicked() {
+    private void alignmentCenterButtonClicked() {
         int startParagraphInSelection = mainTextArea.offsetToPosition(mainTextArea.getSelection().getStart(), TwoDimensional.Bias.Forward).getMajor();
         int lastParagraphInSelection = mainTextArea.offsetToPosition(mainTextArea.getSelection().getEnd(), TwoDimensional.Bias.Backward).getMajor();
         for (int paragraph = startParagraphInSelection; paragraph < lastParagraphInSelection + 1; paragraph++)
-            mainTextArea.setParagraphStyle(paragraph, Collections.singleton("alligmentCenter"));
+            mainTextArea.setParagraphStyle(paragraph, Collections.singleton("alignmentCenter"));
     }
 
     @FXML
-    private void alligmentRightButtonClicked() {
+    private void alignmentRightButtonClicked() {
     }
 
     @FXML
-    private void aligmentAdjustButtonClicked() {
+    private void alignmentAdjustButtonClicked() {
 
     }
 
