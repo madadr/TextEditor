@@ -119,6 +119,7 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
 
             boldButton.setSelected(isWholeBold);
             italicButton.setSelected(isWholeItalic);
+            underscoreButton.setSelected(isWholeUnderscore);
 
             //check if paragraph styles
             paragraphStyleButtons();
