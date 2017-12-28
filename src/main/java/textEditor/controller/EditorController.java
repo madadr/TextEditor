@@ -247,6 +247,8 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
             return style;
         });
         mainTextArea.setStyleSpans(range.getStart(), newSpans);
+
+        mainTextArea.requestFocus();
     }
 
     @FXML
