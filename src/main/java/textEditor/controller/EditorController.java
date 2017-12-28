@@ -240,11 +240,11 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
 
         StyleSpans<Collection<String>> spans = mainTextArea.getStyleSpans(range);
 
-        StyleSpans<Collection<String>> newSpans = spans.mapStyles(style -> {
-            ArrayList<String> al = new ArrayList<String>(Arrays.asList(newStyle));
-            al.addAll(style);
-            al.remove(oldStyle);
-            return al;
+        StyleSpans<Collection<String>> newSpans = spans.mapStyles(currentStyle -> {
+            List<String> style = new ArrayList<String>(Arrays.asList(newStyle));
+            style.addAll(currentStyle);
+            style.remove(oldStyle);
+            return style;
         });
         mainTextArea.setStyleSpans(range.getStart(), newSpans);
     }
