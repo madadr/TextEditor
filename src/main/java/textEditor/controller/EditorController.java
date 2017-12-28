@@ -11,6 +11,7 @@ import javafx.stage.FileChooser;
 import org.fxmisc.richtext.InlineCssTextArea;
 import org.fxmisc.richtext.StyleClassedTextArea;
 import org.fxmisc.richtext.StyledTextArea;
+import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.TwoDimensional;
 import textEditor.RMIClient;
 import textEditor.model.EditorModel;
@@ -20,10 +21,7 @@ import textEditor.view.WindowSwitcher;
 import java.io.File;
 import java.net.URL;
 import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.ResourceBundle;
+import java.util.*;
 
 public class EditorController implements Initializable, ClientInjectionTarget, WindowSwitcherInjectionTarget {
     @FXML
@@ -240,16 +238,15 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
         String newStyle = replaceNormalStyle ? transformedStyle : normalStyle;
         String oldStyle = replaceNormalStyle ? normalStyle : transformedStyle;
 
-        for (int i = range.getStart(); i < range.getEnd(); ++i) {
-            Collection<String> list = new ArrayList<>(area.getStyleOfChar(i));
-            if (!list.contains(newStyle)) {
-                list.add(newStyle);
-                list.remove(oldStyle);
-            }
-            area.setStyle(i, i + 1, list);
-        }
+        StyleSpans<Collection<String>> spans = mainTextArea.getStyleSpans(range);
 
-        area.requestFocus();
+        StyleSpans<Collection<String>> newSpans = spans.mapStyles(style -> {
+            ArrayList<String> al = new ArrayList<String>(Arrays.asList(newStyle));
+            al.addAll(style);
+            al.remove(oldStyle);
+            return al;
+        });
+        mainTextArea.setStyleSpans(range.getStart(), newSpans);
     }
 
     @FXML
