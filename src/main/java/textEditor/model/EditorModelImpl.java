@@ -7,21 +7,27 @@ import java.util.Observable;
 import java.util.Observer;
 
 public class EditorModelImpl extends Observable implements EditorModel {
-    private String textAreaString = "";
+    private String text = "";
+    private StyleSpans<String> styleSpans;
 
     @Override
-    public synchronized void setTextString(String value) throws RemoteException {
-        // TODO: fix implementation
-        textAreaString = value;
-        if (!value.isEmpty()) {
-            System.out.print(textAreaString.charAt(textAreaString.length() - 1));
+    public synchronized void setTextString(String text) throws RemoteException {
+        if (text != null) {
+            System.out.println("Updating text to:");
+            System.out.println("\t" + text);
+            this.text = text;
             notifyObservers();
         }
     }
 
     @Override
     public synchronized void setTextStyle(int from, StyleSpans<String> styleSpans) {
-        // TODO: add implementation
+        if(styleSpans != null) {
+            System.out.println("Updating style to to:");
+            System.out.println("\t" + styleSpans);
+            this.styleSpans = styleSpans;
+            notifyObservers();
+        }
     }
 
     @Override
