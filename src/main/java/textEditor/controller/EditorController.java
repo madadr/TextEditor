@@ -23,6 +23,8 @@ import java.io.File;
 import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class EditorController implements Initializable, ClientInjectionTarget, WindowSwitcherInjectionTarget {
     @FXML
@@ -49,7 +51,7 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     private ObserverModel observerModel;
     private RMIClient rmiClient;
     private WindowSwitcher switcher;
-
+    private Pattern fontSizePattern;
     public EditorController() {
     }
 
@@ -89,7 +91,10 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     private void initialTextSettings()
     {
         //FontSize
-        fontSize.getItems().addAll("10px","12px","14px","16px","18px","20px","22px","32px","48px","70px");
+        String matchFontSize = "fontsize\\d{1,2}px";
+        fontSizePattern = Pattern.compile(matchFontSize);
+
+        fontSize.getItems().addAll(" ","10px","12px","14px","16px","18px","20px","22px","32px","48px","70px");
         fontSize.setValue("12px");
         mainTextArea.setStyle("-fx-font-size: " + fontSize.getValue());
         fontSize.getSelectionModel().selectedItemProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> fontSizeChange(newValue) );
@@ -113,16 +118,39 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
             IndexRange range = mainTextArea.getSelection();
 
             for (int i = range.getStart(); i < range.getEnd(); ++i) {
-                Collection<String> list = new ArrayList<String>(mainTextArea.getStyleOfChar(i));
+                ArrayList<String> list = new ArrayList<String>(mainTextArea.getStyleOfChar(i));
                 if (isWholeBold && !list.contains("boldWeight")) {
                     isWholeBold = false;
                 }
-
                 if (isWholeItalic && !list.contains("italicStyle")) {
                     isWholeItalic = false;
                 }
                 if (isWholeUnderscore && !list.contains("underscoreDecoration")) {
                     isWholeUnderscore = false;
+                }
+
+                ArrayList<String> newValuesSize = new ArrayList<String>();
+                for (String input: list)
+                {
+                    if(fontSizePattern.matcher(input).matches())
+                    {
+                        newValuesSize.add(input);
+                    }
+                }
+                System.out.println(newValuesSize.size());
+                if(newValuesSize.size() == 0)
+                {
+                  fontSize.setValue("12px");
+                }
+                else if(newValuesSize.size() >= 2)
+                {
+                    fontSize.setValue(" ");
+                }
+                else
+                {
+                    String newValueSize = newValuesSize.get(0).replace("fontsize","");
+                    System.out.println(newValueSize);
+                    fontSize.setValue(newValueSize);
                 }
             }
 
@@ -132,6 +160,7 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
 
             //check if paragraph styles
             paragraphStyleButtons();
+
 
         });
 
@@ -274,6 +303,7 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     }
 
     private void transformTextStyle(StyleClassedTextArea area, ToggleButton triggeringButton, String transformedStyle, String normalStyle) {
+        //TODO: Should we make one method for textStyle paragraphStyle and also for TextSize ?
         String selectedText = area.getSelectedText();
         IndexRange range = area.getSelection();
 
@@ -303,10 +333,13 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     @FXML
     private void fontSizePlusButtonClicked()
     {
-
+        int oldValueIndex = fontSize.getItems().indexOf(fontSize.getValue());
+        String newValue = fontSize.getItems().get(oldValueIndex+1);
+        fontSizeChange(newValue);
     }
     private void fontSizeChange(String newValue)
     {
+        //TODO: Should we make one method for textStyle paragraphStyle and also for TextSize ?
         String selectedText = mainTextArea.getSelectedText();
         IndexRange range = mainTextArea.getSelection();
 
@@ -314,7 +347,16 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
 
         StyleSpans<Collection<String>> newSpans = spans.mapStyles(currentStyle -> {
             List<String> style = new ArrayList<String>(Arrays.asList("fontsize"+newValue));
+            List<String> stylesToRemove = new ArrayList<String>();
+            for (String input: currentStyle)
+            {
+                if(fontSizePattern.matcher(input).matches())
+                {
+                    stylesToRemove.add(input);
+                }
+            }
             style.addAll(currentStyle);
+            style.removeAll(stylesToRemove);
             return style;
         });
         mainTextArea.setStyleSpans(range.getStart(), newSpans);
@@ -349,9 +391,9 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
         int startParagraphInSelection = mainTextArea.offsetToPosition(mainTextArea.getSelection().getStart(), TwoDimensional.Bias.Forward).getMajor();
         int lastParagraphInSelection = mainTextArea.offsetToPosition(mainTextArea.getSelection().getEnd(), TwoDimensional.Bias.Backward).getMajor();
         changeParagraphs(startParagraphInSelection,lastParagraphInSelection,alignmentAdjustButton,"alignmentJustify");
-
     }
     private void changeParagraphs(int firstParagraph, int lastParagraph,ToggleButton toggleButton,String style) {
+        //TODO: Should we make one method for textStyle paragraphStyle and also for TextSize ?
         if(toggleButton.isSelected())
         {
             for (int paragraph = firstParagraph; paragraph < lastParagraph + 1; paragraph++)
