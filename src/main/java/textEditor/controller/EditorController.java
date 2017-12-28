@@ -1,6 +1,7 @@
 package textEditor.controller;
 
 import javafx.application.Platform;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -27,7 +28,9 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     @FXML
     private Menu fileMenu, editMenu, helpMenu;
     @FXML
-    private ChoiceBox fontType, fontSize;
+    private ChoiceBox fontType;
+    @FXML
+    private ChoiceBox<String> fontSize;
     @FXML
     private HBox searchBox;
     @FXML
@@ -65,6 +68,8 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
         clipboard = Clipboard.getSystemClipboard();
         editorModel = (EditorModel) rmiClient.getModel("EditorModel");
 
+        initialTextSettings();
+
         mainTextArea.textProperty().addListener((observable, oldValue, newValue) -> {
             try {
                 editorModel.setTextAreaString(newValue);
@@ -81,7 +86,14 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     private void loadCssStyleSheet() {
         mainTextArea.getStylesheets().add(EditorController.class.getResource("styles.css").toExternalForm());
     }
-
+    private void initialTextSettings()
+    {
+        //FontSize
+        fontSize.getItems().addAll("10px","12px","14px","16px","18px","20px","22px","32px","48px","70px");
+        fontSize.setValue("12px");
+        mainTextArea.setStyle("-fx-font-size: " + fontSize.getValue());
+        fontSize.getSelectionModel().selectedItemProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> fontSizeChange(newValue) );
+    }
     private void initTextSelection() {
         // TODO: create another scalable solution
         //SOLUTION: Meybe we should create enum ? to make this easier ?
@@ -94,7 +106,6 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
                 underscoreButton.setSelected(false);
                 return;
             }
-
             // check if whole selected text is bold or whole selected text is italic
             boolean isWholeBold = true;
             boolean isWholeItalic = true;
@@ -129,9 +140,10 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     {
         int startParagraphInSelection = mainTextArea.offsetToPosition(mainTextArea.getSelection().getStart(), TwoDimensional.Bias.Forward).getMajor();
         int lastParagraphInSelection = mainTextArea.offsetToPosition(mainTextArea.getSelection().getEnd(), TwoDimensional.Bias.Backward).getMajor();
+
         for (int paragraph = startParagraphInSelection;paragraph<=lastParagraphInSelection;paragraph++)
         {
-            Collection style = mainTextArea.getParagraph(paragraph).getParagraphStyle();
+            Collection<String> style = mainTextArea.getParagraph(paragraph).getParagraphStyle();
             if(style.equals(Collections.singleton("alignmentRight")))
             {
                 alignmentRightButton.setSelected(true);
@@ -289,10 +301,25 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     }
 
     @FXML
-    private void fontSizePlusButtonClicked() {
+    private void fontSizePlusButtonClicked()
+    {
 
     }
+    private void fontSizeChange(String newValue)
+    {
+        String selectedText = mainTextArea.getSelectedText();
+        IndexRange range = mainTextArea.getSelection();
 
+        StyleSpans<Collection<String>> spans = mainTextArea.getStyleSpans(range);
+
+        StyleSpans<Collection<String>> newSpans = spans.mapStyles(currentStyle -> {
+            List<String> style = new ArrayList<String>(Arrays.asList("fontsize"+newValue));
+            style.addAll(currentStyle);
+            return style;
+        });
+        mainTextArea.setStyleSpans(range.getStart(), newSpans);
+        mainTextArea.requestFocus();
+    }
     @FXML
     private void fontSizeMinusButtonClicked() {
 

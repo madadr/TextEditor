@@ -55,7 +55,7 @@
                                 <ToggleButton fx:id="underscoreButton" mnemonicParsing="false"
                                               onAction="#underscoreButtonClicked" text="Underscore"/>
                                 <ChoiceBox fx:id="fontType" prefWidth="150.0"/>
-                                <ChoiceBox fx:id="fontSize" prefHeight="25.0" prefWidth="40.0"/>
+                                <ChoiceBox fx:id="fontSize" prefHeight="25.0" prefWidth="55.0"/>
                                 <Button fx:id="fontSizePlusButton" mnemonicParsing="false"
                                         onAction="#fontSizePlusButtonClicked" text="+"/>
                                 <Button fx:id="fontSizeMinusButton" mnemonicParsing="false"
