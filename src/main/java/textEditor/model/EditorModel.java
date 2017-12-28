@@ -7,5 +7,5 @@ import java.rmi.RemoteException;
 
 public interface EditorModel extends Remote, ObservableModel {
     void setTextString(String value) throws RemoteException;
-    void setTextStyle(int from, StyleSpans<String> styleSpans);
+    void setTextStyle(int from, StyleSpans<String> styleSpans) throws RemoteException;
 }
