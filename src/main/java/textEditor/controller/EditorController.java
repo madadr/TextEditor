@@ -15,7 +15,6 @@ import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.TwoDimensional;
 import textEditor.RMIClient;
 import textEditor.model.EditorModel;
-import textEditor.model.ObserverModel;
 import textEditor.view.WindowSwitcher;
 
 import java.io.File;
@@ -43,7 +42,6 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     private Clipboard clipboard;
 
     private EditorModel editorModel;
-    private ObserverModel observerModel;
     private RMIClient rmiClient;
     private WindowSwitcher switcher;
 
