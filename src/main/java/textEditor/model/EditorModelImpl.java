@@ -1,15 +1,17 @@
 package textEditor.model;
 
-import java.io.Serializable;
+import org.fxmisc.richtext.model.StyleSpans;
+
 import java.rmi.RemoteException;
 import java.util.Observable;
 import java.util.Observer;
 
-public class EditorModelImpl extends Observable implements EditorModel, ObserverModel {
+public class EditorModelImpl extends Observable implements EditorModel {
     private String textAreaString = "";
 
     @Override
-    public void setTextAreaString(String value) throws RemoteException {
+    public synchronized void setTextString(String value) throws RemoteException {
+        // TODO: fix implementation
         textAreaString = value;
         if (!value.isEmpty()) {
             System.out.print(textAreaString.charAt(textAreaString.length() - 1));
@@ -18,26 +20,27 @@ public class EditorModelImpl extends Observable implements EditorModel, Observer
     }
 
     @Override
-    public void addObserver(EditorModel editorModel) throws RemoteException {
-        WrappedObserver wrappedObserver = new WrappedObserver(editorModel);
-        addObserver(wrappedObserver);
-        System.out.println("Obserwator został dodany milordzie! :)");
+    public synchronized void setTextStyle(int from, StyleSpans<String> styleSpans) {
+        // TODO: add implementation
     }
 
-    private class WrappedObserver implements Observer, Serializable {
-        public WrappedObserver(EditorModel editorModel) {
-            this.editorModel = editorModel;
-        }
+    @Override
+    public synchronized void addObserver(Observer o) {
+        super.addObserver(o);
+    }
 
-        private EditorModel editorModel;
+    @Override
+    public synchronized void deleteObserver(Observer o) {
+        super.deleteObserver(o);
+    }
 
-        @Override
-        public void update(Observable o, Object arg) {
-            try {
-                editorModel.setTextAreaString(o.toString() + " " + arg);
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
-        }
+    @Override
+    public void notifyObservers() {
+        super.notifyObservers();
+    }
+
+    @Override
+    public synchronized void deleteObservers() {
+        super.deleteObservers();
     }
 }

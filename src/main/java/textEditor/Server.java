@@ -19,12 +19,10 @@ public class Server {
 
             //Exporting models interface to client
             EditorModel editorModel = (EditorModel) UnicastRemoteObject.exportObject(editorModelImpl, 0);
-            ObserverModel observerEditorModel = (ObserverModel) editorModel;
             DatabaseModel databaseModel = (DatabaseModel) UnicastRemoteObject.exportObject(databaseModelImpl, 0);
 
             //Binding names and models interfaces
             registry.rebind("EditorModel", editorModel);
-            registry.rebind("ObserverEditorModel", observerEditorModel);
             registry.rebind("DatabaseModel", databaseModel);
         } catch (RemoteException e) {
             e.printStackTrace();

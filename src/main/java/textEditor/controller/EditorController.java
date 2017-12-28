@@ -67,7 +67,7 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
 
         mainTextArea.textProperty().addListener((observable, oldValue, newValue) -> {
             try {
-                editorModel.setTextAreaString(newValue);
+                editorModel.setTextString(newValue);
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
