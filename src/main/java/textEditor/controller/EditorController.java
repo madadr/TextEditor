@@ -238,7 +238,7 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
         String newStyle = replaceNormalStyle ? transformedStyle : normalStyle;
         String oldStyle = replaceNormalStyle ? normalStyle : transformedStyle;
 
-        StyleSpans<Collection<String>> spans = mainTextArea.getStyleSpans(range);
+        StyleSpans<Collection<String>> spans = area.getStyleSpans(range);
 
         StyleSpans<Collection<String>> newSpans = spans.mapStyles(currentStyle -> {
             List<String> style = new ArrayList<String>(Arrays.asList(newStyle));
@@ -246,9 +246,9 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
             style.remove(oldStyle);
             return style;
         });
-        mainTextArea.setStyleSpans(range.getStart(), newSpans);
+        area.setStyleSpans(range.getStart(), newSpans);
 
-        mainTextArea.requestFocus();
+        area.requestFocus();
     }
 
     @FXML
