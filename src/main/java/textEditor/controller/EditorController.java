@@ -86,19 +86,21 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
 
     private void initTextSelection() {
         // TODO: create another scalable solution
+        //SOLUTION: Meybe we should create enum ? to make this easier ?
         // HIGHLY dependent on boldButtonClicked() and italicButtonClicked() methods
         mainTextArea.selectedTextProperty().addListener((observable, oldValue, newValue) -> {
             // make both buttons unselected, when user didn't select any text
             if (newValue.equals("")) {
                 boldButton.setSelected(false);
                 italicButton.setSelected(false);
-
+                underscoreButton.setSelected(false);
                 return;
             }
 
             // check if whole selected text is bold or whole selected text is italic
             boolean isWholeBold = true;
             boolean isWholeItalic = true;
+            boolean isWholeUnderscore = true;
             IndexRange range = mainTextArea.getSelection();
 
             for (int i = range.getStart(); i < range.getEnd(); ++i) {
@@ -110,14 +112,43 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
                 if (isWholeItalic && !list.contains("italicStyle")) {
                     isWholeItalic = false;
                 }
+                if (isWholeUnderscore && !list.contains("underscoreDecoration")) {
+                    isWholeUnderscore = false;
+                }
             }
 
             boldButton.setSelected(isWholeBold);
             italicButton.setSelected(isWholeItalic);
+
+            //check if paragraph styles
+            paragraphStyleButtons();
+
         });
 
     }
-
+    private void paragraphStyleButtons()
+    {
+        int startParagraphInSelection = mainTextArea.offsetToPosition(mainTextArea.getSelection().getStart(), TwoDimensional.Bias.Forward).getMajor();
+        int lastParagraphInSelection = mainTextArea.offsetToPosition(mainTextArea.getSelection().getEnd(), TwoDimensional.Bias.Backward).getMajor();
+        for (int paragraph = startParagraphInSelection;paragraph<=lastParagraphInSelection;paragraph++)
+        {
+            Collection style = mainTextArea.getParagraph(paragraph).getParagraphStyle();
+            if(style.equals(Collections.singleton("alignmentRight")))
+            {
+                alignmentRightButton.setSelected(true);
+            }
+            else if(style.equals(Collections.singleton("alignmentCenter"))){
+                alignmentCenterButton.setSelected(true);
+            }
+            else if(style.equals(Collections.singleton("alignmentJustify"))){
+                alignmentAdjustButton.setSelected(true);
+            }
+            else
+            {
+                alignmentLeftButton.setSelected(true);
+            }
+        }
+    }
     private StyledTextArea getFocusedText() {
         if (mainTextArea.isFocused()) {
             return mainTextArea;
@@ -269,26 +300,43 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
 
     @FXML
     private void alignmentLeftButtonClicked() {
-
+        int startParagraphInSelection = mainTextArea.offsetToPosition(mainTextArea.getSelection().getStart(), TwoDimensional.Bias.Forward).getMajor();
+        int lastParagraphInSelection = mainTextArea.offsetToPosition(mainTextArea.getSelection().getEnd(), TwoDimensional.Bias.Backward).getMajor();
+        changeParagraphs(startParagraphInSelection,lastParagraphInSelection,alignmentLeftButton,"alignmentLeft");
     }
 
     @FXML
     private void alignmentCenterButtonClicked() {
         int startParagraphInSelection = mainTextArea.offsetToPosition(mainTextArea.getSelection().getStart(), TwoDimensional.Bias.Forward).getMajor();
         int lastParagraphInSelection = mainTextArea.offsetToPosition(mainTextArea.getSelection().getEnd(), TwoDimensional.Bias.Backward).getMajor();
-        for (int paragraph = startParagraphInSelection; paragraph < lastParagraphInSelection + 1; paragraph++)
-            mainTextArea.setParagraphStyle(paragraph, Collections.singleton("alignmentCenter"));
+        changeParagraphs(startParagraphInSelection, lastParagraphInSelection, alignmentCenterButton, "alignmentCenter");
     }
-
     @FXML
     private void alignmentRightButtonClicked() {
+            int startParagraphInSelection = mainTextArea.offsetToPosition(mainTextArea.getSelection().getStart(), TwoDimensional.Bias.Forward).getMajor();
+            int lastParagraphInSelection = mainTextArea.offsetToPosition(mainTextArea.getSelection().getEnd(), TwoDimensional.Bias.Backward).getMajor();
+            changeParagraphs(startParagraphInSelection, lastParagraphInSelection, alignmentRightButton, "alignmentRight");
     }
-
     @FXML
     private void alignmentAdjustButtonClicked() {
+        int startParagraphInSelection = mainTextArea.offsetToPosition(mainTextArea.getSelection().getStart(), TwoDimensional.Bias.Forward).getMajor();
+        int lastParagraphInSelection = mainTextArea.offsetToPosition(mainTextArea.getSelection().getEnd(), TwoDimensional.Bias.Backward).getMajor();
+        changeParagraphs(startParagraphInSelection,lastParagraphInSelection,alignmentAdjustButton,"alignmentJustify");
 
     }
+    private void changeParagraphs(int firstParagraph, int lastParagraph,ToggleButton toggleButton,String style) {
+        if(toggleButton.isSelected())
+        {
+            for (int paragraph = firstParagraph; paragraph < lastParagraph + 1; paragraph++)
+                mainTextArea.setParagraphStyle(paragraph, Collections.singleton(style));
+        }
+        else
+        {
+            for (int paragraph = firstParagraph; paragraph < lastParagraph + 1; paragraph++)
+                mainTextArea.setParagraphStyle(paragraph, Collections.singleton("alignmentLeft"));
+        }
 
+    }
     @FXML
     private void searchButtonClicked() {
 
