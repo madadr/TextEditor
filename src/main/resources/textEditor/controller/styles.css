@@ -1,3 +1,4 @@
+/**************Text Decorations*****************/
 .boldWeight {
     -fx-font-weight: bold;
 }
@@ -21,7 +22,7 @@
 .normalDecoration {
     -fx-underline: false;
 }
-
+/**************Text Alignments*****************/
 .alignmentLeft {
     -fx-text-alignment: left;
 }
@@ -37,7 +38,7 @@
 .alignmentJustify {
     -fx-text-alignment: justify;
 }
-
+/**************Font Sizes*****************/
 .fontsize10px {
     -fx-font-size: 10px;
 }
@@ -67,4 +68,18 @@
 }
 .fontsize70px {
     -fx-font-size: 70px;
+}
+/**************Font Family*****************/
+.fontFamilyBroadway{
+    -fx-font-family: Broadway;
+}
+.fontFamilyArial{
+    -fx-font-family: Arial;
+}
+.fontFamilyCalibri
+{
+    -fx-font-family: Calibri;
+}
+.fontFamilyCourierNew{
+    -fx-font-family: Courier New;
 }
