@@ -327,18 +327,17 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     }
 
     @FXML
-    private void replaceButtonClicked()
-    {
+    private void replaceButtonClicked() {
 
     }
+
     @FXML
-    private void replaceAllButtonClicked()
-    {
+    private void replaceAllButtonClicked() {
 
     }
+
     @FXML
-    private void closeReplaceBoxClicked()
-    {
+    private void closeReplaceBoxClicked() {
 
     }
 

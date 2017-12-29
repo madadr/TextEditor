@@ -108,12 +108,13 @@
                         <HBox fx:id="searchBox" alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="1326.0"
                               spacing="10.0" visible="false">
                             <children>
-                                <TextField fx:id="searchTextField" minHeight="23.0" minWidth="149.0" prefHeight="23.0" prefWidth="153.0" promptText="Type search string...">
+                                <TextField fx:id="searchTextField" minHeight="23.0" minWidth="149.0" prefHeight="23.0"
+                                           prefWidth="153.0" promptText="Type search string...">
                                     <font>
-                                        <Font size="10.0" />
+                                        <Font size="10.0"/>
                                     </font>
                                     <opaqueInsets>
-                                        <Insets />
+                                        <Insets/>
                                     </opaqueInsets>
                                 </TextField>
                                 <Button fx:id="searchButton" minHeight="23.0" minWidth="44.0" mnemonicParsing="false"
@@ -151,38 +152,45 @@
                                 <Insets right="10.0"/>
                             </padding>
                         </HBox>
-                        <HBox fx:id="replaceBox" alignment="CENTER_RIGHT" layoutY="28.0" prefHeight="25.0" prefWidth="1326.0" spacing="10.0" visible="false">
+                        <HBox fx:id="replaceBox" alignment="CENTER_RIGHT" layoutY="28.0" prefHeight="25.0"
+                              prefWidth="1326.0" spacing="10.0" visible="false">
                             <children>
-                                <TextField fx:id="replaceTextField" minHeight="23.0" minWidth="149.0" prefHeight="23.0" prefWidth="153.0" promptText="Type replace string...">
+                                <TextField fx:id="replaceTextField" minHeight="23.0" minWidth="149.0" prefHeight="23.0"
+                                           prefWidth="153.0" promptText="Type replace string...">
                                     <font>
-                                        <Font size="10.0" />
+                                        <Font size="10.0"/>
                                     </font>
                                     <opaqueInsets>
-                                        <Insets />
+                                        <Insets/>
                                     </opaqueInsets>
                                 </TextField>
-                                <Button fx:id="replaceButton" minHeight="23.0" minWidth="44.0" mnemonicParsing="false" onAction="#replaceButtonClicked" prefHeight="23.0" prefWidth="52.0" text="Replace" textAlignment="CENTER">
+                                <Button fx:id="replaceButton" minHeight="23.0" minWidth="44.0" mnemonicParsing="false"
+                                        onAction="#replaceButtonClicked" prefHeight="23.0" prefWidth="52.0"
+                                        text="Replace" textAlignment="CENTER">
                                     <font>
-                                        <Font size="10.0" />
+                                        <Font size="10.0"/>
                                     </font>
                                 </Button>
-                                <Button fx:id="replaceAllButton" minHeight="23.0" minWidth="44.0" mnemonicParsing="false" onAction="#replaceAllButtonClicked" prefHeight="23.0" prefWidth="67.0" text="Replace All" textAlignment="CENTER">
+                                <Button fx:id="replaceAllButton" minHeight="23.0" minWidth="44.0"
+                                        mnemonicParsing="false" onAction="#replaceAllButtonClicked" prefHeight="23.0"
+                                        prefWidth="67.0" text="Replace All" textAlignment="CENTER">
                                     <font>
-                                        <Font size="10.0" />
+                                        <Font size="10.0"/>
                                     </font>
                                 </Button>
-                                <Region prefHeight="25.0" prefWidth="23.0" />
-                                <Button fx:id="closeReplaceBox" minHeight="23.0" minWidth="44.0" mnemonicParsing="false" onAction="#closeReplaceBoxClicked" prefHeight="18.0" prefWidth="38.0" text="X">
+                                <Region prefHeight="25.0" prefWidth="23.0"/>
+                                <Button fx:id="closeReplaceBox" minHeight="23.0" minWidth="44.0" mnemonicParsing="false"
+                                        onAction="#closeReplaceBoxClicked" prefHeight="18.0" prefWidth="38.0" text="X">
                                     <font>
-                                        <Font size="10.0" />
+                                        <Font size="10.0"/>
                                     </font>
                                 </Button>
                             </children>
                             <opaqueInsets>
-                                <Insets />
+                                <Insets/>
                             </opaqueInsets>
                             <padding>
-                                <Insets right="10.0" />
+                                <Insets right="10.0"/>
                             </padding>
                         </HBox>
                     </children>
