@@ -63,6 +63,18 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
             fontSizeChange(newValue);
         }
     };
+    private ChangeListener<? super String> fontFamilyListner = new ChangeListener<String>() {
+        @Override
+        public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+            fontFamilyChange(newValue);
+        }
+    };
+    private ChangeListener<? super String> fontColorListner = new ChangeListener<String>() {
+        @Override
+        public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+            fontColorChange(newValue);
+        }
+    };
 
     public EditorController() {
     }
@@ -118,11 +130,11 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
         //Font Type
         fontType.getItems().addAll(" ", "Broadway", "Arial", "Calibri", "CourierNew");
         fontType.setValue("CourierNew");
-        fontType.getSelectionModel().selectedItemProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> fontFamilyChange(newValue));
+        fontType.getSelectionModel().selectedItemProperty().addListener(fontFamilyListner);
         //Font Color
-        fontColor.getItems().addAll("Red", "Blue", "Green", "Yellow", "Purple", "White", "Black");
+        fontColor.getItems().addAll(" ","Red", "Blue", "Green", "Yellow", "Purple", "White", "Black");
         fontColor.setValue("Black");
-        fontColor.getSelectionModel().selectedItemProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> fontColorChange(newValue));
+        fontColor.getSelectionModel().selectedItemProperty().addListener(fontColorListner);
     }
 
     private void fontColorChange(String newValue) {
@@ -205,7 +217,10 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
 
 
             //FontSize handling
-            fontSizeBoxStyle(range);
+            //TODO: Extract in method replaceText from Patterns
+            fontBoxStyle(fontSize,fontSizeListner,fontSizePattern,"12px","fontsize");
+            fontBoxStyle(fontType,fontFamilyListner,fontFamilyPattern,"CourierNew","fontFamily");
+            fontBoxStyle(fontColor,fontColorListner,fontColorPattern,"Black","color");
 
             boldButton.setSelected(isWholeBold);
             italicButton.setSelected(isWholeItalic);
@@ -236,37 +251,38 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
             }
         }
     }
-    private void fontSizeBoxStyle(IndexRange range)
+    private void fontBoxStyle(ChoiceBox<String> box,ChangeListener<? super String> listener,Pattern pattern,String defaultValue,String replaceText)
     {
-        //Ceasing listner handling
-        fontSize.getSelectionModel().selectedItemProperty().removeListener(fontSizeListner);
+        IndexRange range = mainTextArea.getSelection();
+        //Ceasing listener handling
+        box.getSelectionModel().selectedItemProperty().removeListener(listener);
 
         StyleSpans<Collection<String>> styleSpans = mainTextArea.getStyleSpans(range);
 
         ArrayList<String> currentStyles = new ArrayList<>(styleSpans.getStyleSpan(0).getStyle());
 
-        currentStyles.removeIf(s -> !fontSizePattern.matcher(s).matches());
+        currentStyles.removeIf(s -> !pattern.matcher(s).matches());
 
         for (String input : currentStyles) {
-            if (!fontSizePattern.matcher(input).matches()) {
+            if (!pattern.matcher(input).matches()) {
                 currentStyles.remove(input);
             }
         }
 
         if (styleSpans.getSpanCount() == 1) {
             if (currentStyles.isEmpty()) {
-                fontSize.setValue("12px");
+                box.setValue(defaultValue);
             } else {
                 String actualSizes = currentStyles.get(0);
-                actualSizes = actualSizes.replace("fontsize","");
-                fontSize.setValue(actualSizes);
+                actualSizes = actualSizes.replace(replaceText,"");
+                box.setValue(actualSizes);
             }
         }
         else{
-            fontSize.setValue(" ");
+            box.setValue(" ");
         }
         //listner handling is now raised
-        fontSize.getSelectionModel().selectedItemProperty().addListener(fontSizeListner);
+        box.getSelectionModel().selectedItemProperty().addListener(listener);
     }
 
     private StyledTextArea getFocusedText() {
