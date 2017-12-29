@@ -1,6 +1,7 @@
 package textEditor.controller;
 
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -34,7 +35,7 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     @FXML
     private Menu fileMenu, editMenu, helpMenu;
     @FXML
-    private ChoiceBox<String> fontSize,fontType,fontColor;
+    private ChoiceBox<String> fontSize, fontType, fontColor;
     @FXML
     private HBox searchBox;
     @FXML
@@ -54,6 +55,14 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     private RMIClient rmiClient;
     private WindowSwitcher switcher;
     private Pattern fontSizePattern, fontFamilyPattern, fontColorPattern;
+
+    //FontStyle Listners
+    private ChangeListener<? super String> fontSizeListner = new ChangeListener<String>() {
+        @Override
+        public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+            fontSizeChange(newValue);
+        }
+    };
 
     public EditorController() {
     }
@@ -102,15 +111,16 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
         fontColorPattern = Pattern.compile(matchFontColor);
 
         //Font Size
+
         fontSize.getItems().addAll(" ", "10px", "12px", "14px", "16px", "18px", "20px", "22px", "32px", "48px", "70px");
         fontSize.setValue("12px");
-        fontSize.getSelectionModel().selectedItemProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> fontSizeChange(newValue));
+        fontSize.getSelectionModel().selectedItemProperty().addListener(fontSizeListner);
         //Font Type
-        fontType.getItems().addAll(" ", "Broadway","Arial","Calibri","CourierNew");
+        fontType.getItems().addAll(" ", "Broadway", "Arial", "Calibri", "CourierNew");
         fontType.setValue("CourierNew");
         fontType.getSelectionModel().selectedItemProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> fontFamilyChange(newValue));
         //Font Color
-        fontColor.getItems().addAll("Red","Blue","Green","Yellow","Purple","White","Black");
+        fontColor.getItems().addAll("Red", "Blue", "Green", "Yellow", "Purple", "White", "Black");
         fontColor.setValue("Black");
         fontColor.getSelectionModel().selectedItemProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> fontColorChange(newValue));
     }
@@ -118,7 +128,7 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     private void fontColorChange(String newValue) {
         String selectedText = mainTextArea.getSelectedText();
         IndexRange range = mainTextArea.getSelection();
-        String newStyleValue = "color"+newValue;
+        String newStyleValue = "color" + newValue;
         StyleSpans<Collection<String>> spans = mainTextArea.getStyleSpans(range);
 
         StyleSpans<Collection<String>> newSpans = spans.mapStyles(currentStyle -> {
@@ -139,11 +149,10 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
 
     }
 
-    private void fontFamilyChange(String newValue)
-    {
+    private void fontFamilyChange(String newValue) {
         String selectedText = mainTextArea.getSelectedText();
         IndexRange range = mainTextArea.getSelection();
-        String newStyleValue = "fontFamily"+newValue;
+        String newStyleValue = "fontFamily" + newValue;
         StyleSpans<Collection<String>> spans = mainTextArea.getStyleSpans(range);
 
         StyleSpans<Collection<String>> newSpans = spans.mapStyles(currentStyle -> {
@@ -194,6 +203,10 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
                 }
             }
 
+
+            //FontSize handling
+            fontSizeBoxStyle(range);
+
             boldButton.setSelected(isWholeBold);
             italicButton.setSelected(isWholeItalic);
             underscoreButton.setSelected(isWholeUnderscore);
@@ -222,6 +235,38 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
                 alignmentLeftButton.setSelected(true);
             }
         }
+    }
+    private void fontSizeBoxStyle(IndexRange range)
+    {
+        //Ceasing listner handling
+        fontSize.getSelectionModel().selectedItemProperty().removeListener(fontSizeListner);
+
+        StyleSpans<Collection<String>> styleSpans = mainTextArea.getStyleSpans(range);
+
+        ArrayList<String> currentStyles = new ArrayList<>(styleSpans.getStyleSpan(0).getStyle());
+
+        currentStyles.removeIf(s -> !fontSizePattern.matcher(s).matches());
+
+        for (String input : currentStyles) {
+            if (!fontSizePattern.matcher(input).matches()) {
+                currentStyles.remove(input);
+            }
+        }
+
+        if (styleSpans.getSpanCount() == 1) {
+            if (currentStyles.isEmpty()) {
+                fontSize.setValue("12px");
+            } else {
+                String actualSizes = currentStyles.get(0);
+                actualSizes = actualSizes.replace("fontsize","");
+                fontSize.setValue(actualSizes);
+            }
+        }
+        else{
+            fontSize.setValue(" ");
+        }
+        //listner handling is now raised
+        fontSize.getSelectionModel().selectedItemProperty().addListener(fontSizeListner);
     }
 
     private StyledTextArea getFocusedText() {
