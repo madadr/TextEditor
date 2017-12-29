@@ -87,7 +87,12 @@ public class EditorModelImpl implements EditorModel, RemoteObservable {
         System.out.println("observers: " + observers);
         for (RemoteObserver observer : observers) {
             System.out.println("observer update: " + observer);
-            observer.update(this);
+            try {
+                observer.update(this);
+            } catch (RemoteException e) {
+                System.out.println("\tError, removing observer");
+                deleteObserver(observer);
+            }
         }
     }
 }

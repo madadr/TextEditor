@@ -68,19 +68,15 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
         clipboard = Clipboard.getSystemClipboard();
         editorModel = (EditorModel) rmiClient.getModel("EditorModel");
 
-        try {
-            observer = new RemoteObserverImpl(new EditorControllerObserver());
-        } catch (RemoteException e) {
-            System.out.println(e.getMessage());
-            System.out.println("Cannot CREATE observer!");
-        }
+        initTextArea();
 
-        try {
-            editorModel.addObserver(observer);
-        } catch (RemoteException e) {
-            System.out.println(e.getMessage());
-            System.out.println("Cannot add observer!");
-        }
+        loadCssStyleSheet();
+
+        initTextSelection();
+    }
+
+    private void initTextArea() {
+        initObserver();
 
         mainTextArea.textProperty().addListener((observable, oldValue, newValue) -> {
             try {
@@ -91,9 +87,18 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
             }
         });
 
-        loadCssStyleSheet();
+    }
 
-        initTextSelection();
+    private void initObserver() {
+        try {
+            observer = new RemoteObserverImpl(new EditorControllerObserver());
+
+            editorModel.addObserver(observer);
+
+            observer.update(editorModel);
+        } catch (RemoteException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     private void loadCssStyleSheet() {
@@ -369,12 +374,21 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     public class EditorControllerObserver implements Serializable, RemoteObserver {
         @Override
         public void update(RemoteObservable observable) throws RemoteException {
-            System.out.println("\tEditorControllerObserver::update");
-            String text = editorModel.getTextString();
+            Platform.runLater(() -> {
+                int caretPosition = mainTextArea.getCaretPosition();
+                String oldText = mainTextArea.getText();
+                String newText = null;
+                try {
+                    newText = editorModel.getTextString();
+                } catch (RemoteException ignored) {
+                }
+                mainTextArea.replaceText(newText);
 
-            System.out.println("\t\tEditorControllerObserver::update::getTextString=" + text);
-            mainTextArea.replaceText(text);
-            System.out.println("\t\tEditorControllerObserver::update::replaceText");
+                Thread.currentThread().interrupt();
+
+//                mainTextArea.getCaretBounds();
+//                mainTextArea.displaceCaret(caretPosition);
+            });
         }
     }
 }
