@@ -5,9 +5,12 @@ import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Menu;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.layout.HBox;
+import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import org.fxmisc.richtext.InlineCssTextArea;
 import org.fxmisc.richtext.StyleClassedTextArea;
@@ -19,17 +22,19 @@ import textEditor.model.EditorModel;
 import textEditor.model.ObserverModel;
 import textEditor.view.WindowSwitcher;
 
+import java.awt.*;
 import java.io.File;
 import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.*;
+import java.util.List;
 import java.util.regex.Pattern;
 
 public class EditorController implements Initializable, ClientInjectionTarget, WindowSwitcherInjectionTarget {
     @FXML
     private Menu fileMenu, editMenu, helpMenu;
     @FXML
-    private ChoiceBox<String> fontSize,fontType;
+    private ChoiceBox<String> fontSize,fontType,fontColor;
     @FXML
     private HBox searchBox;
     @FXML
@@ -48,7 +53,7 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     private ObserverModel observerModel;
     private RMIClient rmiClient;
     private WindowSwitcher switcher;
-    private Pattern fontSizePattern, fontFamilyPattern;
+    private Pattern fontSizePattern, fontFamilyPattern, fontColorPattern;
 
     public EditorController() {
     }
@@ -91,16 +96,47 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
         //Patterns
         String matchFontSize = "fontsize\\d{1,2}px";
         String matchFontFamily = "fontFamily\\w{1,}";
+        String matchFontColor = "color\\w{1,}";
         fontSizePattern = Pattern.compile(matchFontSize);
         fontFamilyPattern = Pattern.compile(matchFontFamily);
+        fontColorPattern = Pattern.compile(matchFontColor);
+
         //Font Size
         fontSize.getItems().addAll(" ", "10px", "12px", "14px", "16px", "18px", "20px", "22px", "32px", "48px", "70px");
         fontSize.setValue("12px");
         fontSize.getSelectionModel().selectedItemProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> fontSizeChange(newValue));
         //Font Type
         fontType.getItems().addAll(" ", "Broadway","Arial","Calibri","CourierNew");
-        fontType.setValue("TimesNewRoman");
+        fontType.setValue("CourierNew");
         fontType.getSelectionModel().selectedItemProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> fontFamilyChange(newValue));
+        //Font Color
+        fontColor.getItems().addAll("Red","Blue","Green","Yellow","Purple","White","Black");
+        fontColor.setValue("Black");
+        fontColor.getSelectionModel().selectedItemProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> fontColorChange(newValue));
+    }
+
+    private void fontColorChange(String newValue) {
+        String selectedText = mainTextArea.getSelectedText();
+        IndexRange range = mainTextArea.getSelection();
+        String newStyleValue = "color"+newValue;
+        StyleSpans<Collection<String>> spans = mainTextArea.getStyleSpans(range);
+
+        StyleSpans<Collection<String>> newSpans = spans.mapStyles(currentStyle -> {
+            List<String> style = new ArrayList<String>(Arrays.asList(newStyleValue));
+            List<String> stylesToRemove = new ArrayList<String>();
+            for (String input : currentStyle) {
+                if (fontColorPattern.matcher(input).matches()) {
+                    stylesToRemove.add(input);
+                }
+            }
+            style.addAll(currentStyle);
+            style.removeAll(stylesToRemove);
+            return style;
+        });
+
+        mainTextArea.setStyleSpans(range.getStart(), newSpans);
+        mainTextArea.requestFocus();
+
     }
 
     private void fontFamilyChange(String newValue)
@@ -122,6 +158,7 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
             style.removeAll(stylesToRemove);
             return style;
         });
+
         mainTextArea.setStyleSpans(range.getStart(), newSpans);
         mainTextArea.requestFocus();
     }

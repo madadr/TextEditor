@@ -83,3 +83,26 @@
 .fontFamilyCourierNew{
     -fx-font-family: Courier New;
 }
+/**************Text Color*****************/
+.colorRed{
+    -fx-fill: red;
+}
+.colorBlue{
+    -fx-fill: blue;
+}
+.colorGreen{
+    -fx-fill: green;
+}
+.colorYellow{
+    -fx-fill: yellow;
+}
+
+.colorPurple{
+    -fx-fill: purple;
+}
+.colorWhite{
+    -fx-fill: white;
+}
+.colorBlack{
+    -fx-fill: black;
+}

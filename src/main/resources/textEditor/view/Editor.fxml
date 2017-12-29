@@ -56,6 +56,7 @@
                                               onAction="#underscoreButtonClicked" text="Underscore"/>
                                 <ChoiceBox fx:id="fontType" prefWidth="150.0"/>
                                 <ChoiceBox fx:id="fontSize" prefHeight="25.0" prefWidth="55.0"/>
+                                <ChoiceBox fx:id="fontColor" prefWidth="85"/>
                             </children>
                         </HBox>
                         <HBox alignment="TOP_CENTER" layoutY="39.0" prefHeight="31.0" prefWidth="528.0">
