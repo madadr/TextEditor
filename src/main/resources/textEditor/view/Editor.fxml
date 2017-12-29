@@ -107,7 +107,7 @@
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
                     <children>
                         <StyleClassedTextArea fx:id="mainTextArea" AnchorPane.bottomAnchor="0.0"
-                                              AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
+                                              AnchorPane.leftAnchor="0.01" AnchorPane.rightAnchor="0.0"
                                               AnchorPane.topAnchor="0.0"/>
                         <HBox fx:id="searchBox" alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="1326.0"
                               spacing="10.0" visible="false">
