@@ -1,6 +1,9 @@
 package textEditor;
 
-import textEditor.model.*;
+import textEditor.model.DatabaseModel;
+import textEditor.model.DatabaseModelImpl;
+import textEditor.model.EditorModel;
+import textEditor.model.EditorModelImpl;
 
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;

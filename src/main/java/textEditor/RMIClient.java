@@ -10,11 +10,14 @@ public class RMIClient {
     private Registry registry;
 
     public RMIClient() {
+        System.out.println("RMIClient::ctor start");
         try {
             registry = LocateRegistry.getRegistry("localhost", 4321);
         } catch (RemoteException e) {
             e.printStackTrace();
         }
+        System.out.println("RMIClient::ctor end");
+
     }
 
     public Remote getModel(String modelName) {

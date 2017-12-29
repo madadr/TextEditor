@@ -15,9 +15,13 @@ import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.TwoDimensional;
 import textEditor.RMIClient;
 import textEditor.model.EditorModel;
+import textEditor.model.RemoteObservable;
+import textEditor.model.RemoteObserver;
+import textEditor.model.RemoteObserverImpl;
 import textEditor.view.WindowSwitcher;
 
 import java.io.File;
+import java.io.Serializable;
 import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.*;
@@ -44,6 +48,7 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     private EditorModel editorModel;
     private RMIClient rmiClient;
     private WindowSwitcher switcher;
+    private RemoteObserver observer;
 
     public EditorController() {
     }
@@ -63,10 +68,25 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
         clipboard = Clipboard.getSystemClipboard();
         editorModel = (EditorModel) rmiClient.getModel("EditorModel");
 
+        try {
+            observer = new RemoteObserverImpl(new EditorControllerObserver());
+        } catch (RemoteException e) {
+            System.out.println(e.getMessage());
+            System.out.println("Cannot CREATE observer!");
+        }
+
+        try {
+            editorModel.addObserver(observer);
+        } catch (RemoteException e) {
+            System.out.println(e.getMessage());
+            System.out.println("Cannot add observer!");
+        }
+
         mainTextArea.textProperty().addListener((observable, oldValue, newValue) -> {
             try {
                 editorModel.setTextString(newValue);
             } catch (RemoteException e) {
+                System.out.println(e.getMessage());
                 e.printStackTrace();
             }
         });
@@ -123,29 +143,24 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
         });
 
     }
-    private void paragraphStyleButtons()
-    {
+
+    private void paragraphStyleButtons() {
         int startParagraphInSelection = mainTextArea.offsetToPosition(mainTextArea.getSelection().getStart(), TwoDimensional.Bias.Forward).getMajor();
         int lastParagraphInSelection = mainTextArea.offsetToPosition(mainTextArea.getSelection().getEnd(), TwoDimensional.Bias.Backward).getMajor();
-        for (int paragraph = startParagraphInSelection;paragraph<=lastParagraphInSelection;paragraph++)
-        {
+        for (int paragraph = startParagraphInSelection; paragraph <= lastParagraphInSelection; paragraph++) {
             Collection style = mainTextArea.getParagraph(paragraph).getParagraphStyle();
-            if(style.equals(Collections.singleton("alignmentRight")))
-            {
+            if (style.equals(Collections.singleton("alignmentRight"))) {
                 alignmentRightButton.setSelected(true);
-            }
-            else if(style.equals(Collections.singleton("alignmentCenter"))){
+            } else if (style.equals(Collections.singleton("alignmentCenter"))) {
                 alignmentCenterButton.setSelected(true);
-            }
-            else if(style.equals(Collections.singleton("alignmentJustify"))){
+            } else if (style.equals(Collections.singleton("alignmentJustify"))) {
                 alignmentAdjustButton.setSelected(true);
-            }
-            else
-            {
+            } else {
                 alignmentLeftButton.setSelected(true);
             }
         }
     }
+
     private StyledTextArea getFocusedText() {
         if (mainTextArea.isFocused()) {
             return mainTextArea;
@@ -300,7 +315,7 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     private void alignmentLeftButtonClicked() {
         int startParagraphInSelection = mainTextArea.offsetToPosition(mainTextArea.getSelection().getStart(), TwoDimensional.Bias.Forward).getMajor();
         int lastParagraphInSelection = mainTextArea.offsetToPosition(mainTextArea.getSelection().getEnd(), TwoDimensional.Bias.Backward).getMajor();
-        changeParagraphs(startParagraphInSelection,lastParagraphInSelection,alignmentLeftButton,"alignmentLeft");
+        changeParagraphs(startParagraphInSelection, lastParagraphInSelection, alignmentLeftButton, "alignmentLeft");
     }
 
     @FXML
@@ -309,32 +324,33 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
         int lastParagraphInSelection = mainTextArea.offsetToPosition(mainTextArea.getSelection().getEnd(), TwoDimensional.Bias.Backward).getMajor();
         changeParagraphs(startParagraphInSelection, lastParagraphInSelection, alignmentCenterButton, "alignmentCenter");
     }
+
     @FXML
     private void alignmentRightButtonClicked() {
-            int startParagraphInSelection = mainTextArea.offsetToPosition(mainTextArea.getSelection().getStart(), TwoDimensional.Bias.Forward).getMajor();
-            int lastParagraphInSelection = mainTextArea.offsetToPosition(mainTextArea.getSelection().getEnd(), TwoDimensional.Bias.Backward).getMajor();
-            changeParagraphs(startParagraphInSelection, lastParagraphInSelection, alignmentRightButton, "alignmentRight");
+        int startParagraphInSelection = mainTextArea.offsetToPosition(mainTextArea.getSelection().getStart(), TwoDimensional.Bias.Forward).getMajor();
+        int lastParagraphInSelection = mainTextArea.offsetToPosition(mainTextArea.getSelection().getEnd(), TwoDimensional.Bias.Backward).getMajor();
+        changeParagraphs(startParagraphInSelection, lastParagraphInSelection, alignmentRightButton, "alignmentRight");
     }
+
     @FXML
     private void alignmentAdjustButtonClicked() {
         int startParagraphInSelection = mainTextArea.offsetToPosition(mainTextArea.getSelection().getStart(), TwoDimensional.Bias.Forward).getMajor();
         int lastParagraphInSelection = mainTextArea.offsetToPosition(mainTextArea.getSelection().getEnd(), TwoDimensional.Bias.Backward).getMajor();
-        changeParagraphs(startParagraphInSelection,lastParagraphInSelection,alignmentAdjustButton,"alignmentJustify");
+        changeParagraphs(startParagraphInSelection, lastParagraphInSelection, alignmentAdjustButton, "alignmentJustify");
 
     }
-    private void changeParagraphs(int firstParagraph, int lastParagraph,ToggleButton toggleButton,String style) {
-        if(toggleButton.isSelected())
-        {
+
+    private void changeParagraphs(int firstParagraph, int lastParagraph, ToggleButton toggleButton, String style) {
+        if (toggleButton.isSelected()) {
             for (int paragraph = firstParagraph; paragraph < lastParagraph + 1; paragraph++)
                 mainTextArea.setParagraphStyle(paragraph, Collections.singleton(style));
-        }
-        else
-        {
+        } else {
             for (int paragraph = firstParagraph; paragraph < lastParagraph + 1; paragraph++)
                 mainTextArea.setParagraphStyle(paragraph, Collections.singleton("alignmentLeft"));
         }
 
     }
+
     @FXML
     private void searchButtonClicked() {
 
@@ -348,5 +364,17 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     @FXML
     private void previousSearchButtonClicked() {
 
+    }
+
+    public class EditorControllerObserver implements Serializable, RemoteObserver {
+        @Override
+        public void update(RemoteObservable observable) throws RemoteException {
+            System.out.println("\tEditorControllerObserver::update");
+            String text = editorModel.getTextString();
+
+            System.out.println("\t\tEditorControllerObserver::update::getTextString=" + text);
+            mainTextArea.replaceText(text);
+            System.out.println("\t\tEditorControllerObserver::update::replaceText");
+        }
     }
 }
