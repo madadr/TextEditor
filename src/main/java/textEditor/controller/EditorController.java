@@ -55,19 +55,19 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     private ChangeListener<? super String> fontSizeListener = new ChangeListener<String>() {
         @Override
         public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-            fontSizeChange(newValue);
+            fontChange("fontsize", newValue);
         }
     };
     private ChangeListener<? super String> fontFamilyListener = new ChangeListener<String>() {
         @Override
         public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-            fontFamilyChange(newValue);
+            fontChange("fontFamily", newValue);
         }
     };
     private ChangeListener<? super String> fontColorListener = new ChangeListener<String>() {
         @Override
         public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-            fontColorChange(newValue);
+            fontChange("color", newValue);
         }
     };
 
@@ -132,7 +132,7 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
         fontColor.getSelectionModel().selectedItemProperty().addListener(fontColorListener);
     }
 
-    private void fontSizeChange(String newValue) {
+    private void fontChange(String prefix, String newValue) {
         String selectedText = mainTextArea.getSelectedText();
         IndexRange range = mainTextArea.getSelection();
 
@@ -140,42 +140,8 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
 
         StyleSpans<Collection<String>> newSpans = spans.mapStyles(currentStyle -> {
             List<String> styles = new ArrayList<>(currentStyle);
-            styles.removeIf(s -> s.matches("fontsize.*"));
-            styles.add("fontsize" + newValue);
-            return styles;
-        });
-
-        mainTextArea.setStyleSpans(range.getStart(), newSpans);
-        mainTextArea.requestFocus();
-    }
-
-    private void fontColorChange(String newValue) {
-        String selectedText = mainTextArea.getSelectedText();
-        IndexRange range = mainTextArea.getSelection();
-
-        StyleSpans<Collection<String>> spans = mainTextArea.getStyleSpans(range);
-
-        StyleSpans<Collection<String>> newSpans = spans.mapStyles(currentStyle -> {
-            List<String> styles = new ArrayList<>(currentStyle);
-            styles.removeIf(s -> s.matches("color.*"));
-            styles.add("color" + newValue);
-            return styles;
-        });
-
-        mainTextArea.setStyleSpans(range.getStart(), newSpans);
-        mainTextArea.requestFocus();
-    }
-
-    private void fontFamilyChange(String newValue) {
-        String selectedText = mainTextArea.getSelectedText();
-        IndexRange range = mainTextArea.getSelection();
-
-        StyleSpans<Collection<String>> spans = mainTextArea.getStyleSpans(range);
-
-        StyleSpans<Collection<String>> newSpans = spans.mapStyles(currentStyle -> {
-            List<String> styles = new ArrayList<>(currentStyle);
-            styles.removeIf(s -> s.matches("fontFamily.*"));
-            styles.add("fontFamily" + newValue);
+            styles.removeIf(s -> s.matches(prefix + ".*"));
+            styles.add(prefix + newValue);
             return styles;
         });
 
@@ -214,7 +180,6 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
                 }
             }
 
-
             //FontSize handling
             //TODO: Extract in method replaceText from Patterns
             fontBoxStyle(fontSize, fontSizeListener, fontSizePattern, "12px", "fontsize");
@@ -227,8 +192,6 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
 
             //check if paragraph styles
             paragraphStyleButtons();
-
-
         });
 
     }
