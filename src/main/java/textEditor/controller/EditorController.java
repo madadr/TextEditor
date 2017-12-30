@@ -94,7 +94,6 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
 
     private void initObserver() {
         try {
-            System.out.println("init observer");
             observer = new RemoteObserverImpl(new EditorControllerObserver());
 
             editorModel.addObserver(observer);
@@ -129,7 +128,6 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
             IndexRange range = mainTextArea.getSelection();
 
             for (int i = range.getStart(); i < range.getEnd(); ++i) {
-//                System.out.println("i=" + i + ", " + mainTextArea.getStyleOfChar(i));
                 Collection<String> list = new ArrayList<>(mainTextArea.getStyleOfChar(i));
                 if (isWholeBold && !list.contains("boldWeight")) {
                     isWholeBold = false;
@@ -300,13 +298,9 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
             style.remove(oldStyle);
             return style;
         });
-        System.out.println("Before " + area.getStyleSpans(0, area.getText().length()));
         area.setStyleSpans(range.getStart(), newSpans);
-        System.out.println("After " + area.getStyleSpans(0, area.getText().length()));
         try {
-            System.out.println("setting setTextStyle");
             editorModel.setTextStyle(new StyleSpansWrapper(0, area.getStyleSpans(0, area.getText().length())), observer);
-            System.out.println("sett setTextStyle");
         } catch (RemoteException e) {
             e.printStackTrace();
         }
@@ -395,7 +389,6 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
             @Override
             public void run() {
                 isTextUpdatedByObserverEvent.set(true);
-                System.out.println("RUNNING UPDATE ONLY TEXT");
                 int oldCaretPosition = mainTextArea.getCaretPosition();
                 String oldText = mainTextArea.getText();
                 try {
@@ -420,7 +413,6 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
 
             @Override
             public void run() {
-                System.out.println("RUNNING UPDATE ONLY STYLE");
                 try {
                     StyleSpansWrapper newStyle = ((EditorModel) observable).getTextStyle();
                     if (newStyle != null && newStyle.getStyleSpans() != null) {
