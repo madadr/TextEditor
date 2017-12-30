@@ -122,7 +122,7 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
             IndexRange range = mainTextArea.getSelection();
 
             for (int i = range.getStart(); i < range.getEnd(); ++i) {
-                Collection<String> list = new ArrayList<String>(mainTextArea.getStyleOfChar(i));
+                Collection<String> list = new ArrayList<>(mainTextArea.getStyleOfChar(i));
                 if (isWholeBold && !list.contains("boldWeight")) {
                     isWholeBold = false;
                 }
@@ -276,7 +276,6 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     }
 
     private void transformTextStyle(StyleClassedTextArea area, ToggleButton triggeringButton, String transformedStyle, String normalStyle) {
-        String selectedText = area.getSelectedText();
         IndexRange range = area.getSelection();
 
         boolean replaceNormalStyle = triggeringButton.isSelected();
@@ -293,11 +292,13 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
             return style;
         });
         area.setStyleSpans(range.getStart(), newSpans);
-//        try {
-//            editorModel.setTextStyle(range.getStart(), new EditorModel.StyleSpansWrapper("a"));
-//        } catch (RemoteException e) {
-//            e.printStackTrace();
-//        }
+        try {
+            System.out.println("setting setTextStyle");
+            editorModel.setTextStyle(range.getStart(), new StyleSpansWrapper(newSpans));
+            System.out.println("sett setTextStyle");
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
 
         area.requestFocus();
     }
@@ -373,9 +374,17 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     }
 
     public class EditorControllerObserver implements Serializable, RemoteObserver {
-        @Override
-        public synchronized void update(RemoteObservable observable) throws RemoteException {
-            Platform.runLater(() -> {
+        private class UpdateTextWrapper implements Runnable {
+            private RemoteObservable observable;
+
+            public UpdateTextWrapper(RemoteObservable observable) {
+                this.observable = observable;
+            }
+
+            @Override
+            public void run() {
+                System.out.println("RUNNING UPDATE ONLY TEXT!");
+
                 int oldCaretPosition = mainTextArea.getCaretPosition();
                 String oldText = mainTextArea.getText();
                 try {
@@ -383,18 +392,51 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
                     mainTextArea.replaceText(newText);
                     int newCaretPosition = calculateNewCaretPosition(oldCaretPosition, oldText, newText);
                     mainTextArea.moveTo(newCaretPosition);
-                } catch (RemoteException ignored) {
+                } catch (RemoteException e) {
+                    e.printStackTrace();
                 }
+            }
+        }
 
-                try {
-                    StyleSpansWrapper newStyle = ((EditorModel) observable).getTextStyle();
-                    if(newStyle != null && newStyle.getStyleSpans() != null) {
-                        System.out.println("mainTextArea.setStyleSpans(0, newStyle.getStyleSpans());");
+        private class UpdateStyleWrapper implements Runnable {
+            private RemoteObservable observable;
+
+            public UpdateStyleWrapper(RemoteObservable observable) {
+                this.observable = observable;
+            }
+
+            @Override
+            public void run() {
+                System.out.println("RUNNING UPDATE ONLY STYLE!");
+//                try {
+//                    StyleSpansWrapper newStyle = ((EditorModel) observable).getTextStyle();
+//                    if(newStyle != null && newStyle.getStyleSpans() != null) {
+//                        System.out.println("mainTextArea.setStyleSpans(0, newStyle.getStyleSpans());");
 //                        mainTextArea.setStyleSpans(0, newStyle.getStyleSpans());
-                    }
-                } catch (RemoteException ignored) {
-                }
-            });
+//                    } else {
+//                        System.out.println("something was null");
+//                    }
+//                } catch (RemoteException e) {
+//                    e.printStackTrace();
+//                }
+            }
+        }
+
+        @Override
+        public void update(RemoteObservable observable) throws RemoteException {
+            Platform.runLater(new UpdateTextWrapper(observable));
+            Platform.runLater(new UpdateStyleWrapper(observable));
+        }
+
+        @Override
+        public synchronized void update(RemoteObservable observable, RemoteObservable.UpdateTarget target) throws RemoteException {
+            if(target == RemoteObservable.UpdateTarget.ONLY_TEXT) {
+                Platform.runLater(new UpdateTextWrapper(observable));
+            }
+
+            if(target == RemoteObservable.UpdateTarget.ONLY_STYLE) {
+                Platform.runLater(new UpdateStyleWrapper(observable));
+            }
         }
 
         // issues when using redo/undo actions as clients can undo another client operations

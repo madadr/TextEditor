@@ -10,10 +10,6 @@ public class EditorModelImpl implements EditorModel, RemoteObservable {
 
     private ArrayList<RemoteObserver> observers;
 
-    public enum UPDATED {
-        ONLY_TEXT_UPDATED, ONLY_STYLE_UPDATED
-    }
-
     public EditorModelImpl() throws RemoteException {
         System.out.println("EditorModelImpl::ctor");
         this.observers = new ArrayList<>();
@@ -25,7 +21,7 @@ public class EditorModelImpl implements EditorModel, RemoteObservable {
             System.out.println("Updating text to:");
             System.out.println("\t" + text);
             this.text = text;
-            notifyObservers();
+            notifyObservers(UpdateTarget.ONLY_TEXT);
         }
     }
 
@@ -40,7 +36,7 @@ public class EditorModelImpl implements EditorModel, RemoteObservable {
             System.out.println("Updating style to:");
             System.out.println("\t" + styleSpans);
             this.styleSpans = styleSpans;
-            notifyObservers();
+            notifyObservers(UpdateTarget.ONLY_STYLE);
         }
     }
 
@@ -85,12 +81,12 @@ public class EditorModelImpl implements EditorModel, RemoteObservable {
     }
 
     @Override
-    public synchronized void notifyObservers() throws RemoteException {
+    public synchronized void notifyObservers(UpdateTarget target) throws RemoteException {
         List<RemoteObserver> invalidObservers = new ArrayList<>();
         for (RemoteObserver observer : observers) {
             System.out.println("observer update: " + observer);
             try {
-                observer.update(this);
+                observer.update(this, target);
             } catch (RemoteException e) {
                 System.out.println("\tError. Invalid observer, it will be removed!");
                 invalidObservers.add(observer);
