@@ -1,6 +1,8 @@
 package textEditor.controller;
 
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -22,12 +24,13 @@ import java.io.File;
 import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.*;
+import java.util.regex.Pattern;
 
 public class EditorController implements Initializable, ClientInjectionTarget, WindowSwitcherInjectionTarget {
     @FXML
     private Menu fileMenu, editMenu, helpMenu;
     @FXML
-    private ChoiceBox fontType, fontSize;
+    private ChoiceBox<String> fontSize, fontType, fontColor;
     @FXML
     private HBox searchBox;
     @FXML
@@ -46,6 +49,12 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     private ObserverModel observerModel;
     private RMIClient rmiClient;
     private WindowSwitcher switcher;
+    private Pattern fontSizePattern, fontFamilyPattern, fontColorPattern;
+
+    //FontStyle Listeners
+    private ChangeListener<? super String> fontSizeListener = (ChangeListener<String>) (observable, oldValue, newValue) -> fontChange("fontsize", newValue);
+    private ChangeListener<? super String> fontFamilyListener = (ChangeListener<String>) (observable, oldValue, newValue) -> fontChange("fontFamily", newValue);
+    private ChangeListener<? super String> fontColorListener = (ChangeListener<String>) (observable, oldValue, newValue) -> fontChange("color", newValue);
 
     public EditorController() {
     }
@@ -65,6 +74,8 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
         clipboard = Clipboard.getSystemClipboard();
         editorModel = (EditorModel) rmiClient.getModel("EditorModel");
 
+        initialTextSettings();
+
         mainTextArea.textProperty().addListener((observable, oldValue, newValue) -> {
             try {
                 editorModel.setTextAreaString(newValue);
@@ -82,31 +93,68 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
         mainTextArea.getStylesheets().add(EditorController.class.getResource("styles.css").toExternalForm());
     }
 
+    private void initialTextSettings() {
+        //Patterns
+        String matchFontSize = "fontsize\\d{1,2}px";
+        String matchFontFamily = "fontFamily\\w{1,}";
+        String matchFontColor = "color\\w{1,}";
+        fontSizePattern = Pattern.compile(matchFontSize);
+        fontFamilyPattern = Pattern.compile(matchFontFamily);
+        fontColorPattern = Pattern.compile(matchFontColor);
+
+        //Font Size
+
+        fontSize.getItems().addAll(" ", "10px", "12px", "14px", "16px", "18px", "20px", "22px", "32px", "48px", "70px");
+        fontSize.setValue("12px");
+        fontSize.getSelectionModel().selectedItemProperty().addListener(fontSizeListener);
+        //Font Type
+        fontType.getItems().addAll(" ", "Broadway", "Arial", "Calibri", "CourierNew");
+        fontType.setValue("CourierNew");
+        fontType.getSelectionModel().selectedItemProperty().addListener(fontFamilyListener);
+        //Font Color
+        fontColor.getItems().addAll(" ", "Red", "Blue", "Green", "Yellow", "Purple", "White", "Black");
+        fontColor.setValue("Black");
+        fontColor.getSelectionModel().selectedItemProperty().addListener(fontColorListener);
+    }
+
+    private void fontChange(String prefix, String newValue) {
+        String selectedText = mainTextArea.getSelectedText();
+        IndexRange range = mainTextArea.getSelection();
+
+        StyleSpans<Collection<String>> spans = mainTextArea.getStyleSpans(range);
+
+        StyleSpans<Collection<String>> newSpans = spans.mapStyles(currentStyle -> {
+            List<String> styles = new ArrayList<>(currentStyle);
+            styles.removeIf(s -> s.matches(prefix + ".*"));
+            styles.add(prefix + newValue);
+            return styles;
+        });
+
+        mainTextArea.setStyleSpans(range.getStart(), newSpans);
+        mainTextArea.requestFocus();
+    }
+
     private void initTextSelection() {
-        // TODO: create another scalable solution
-        //SOLUTION: Meybe we should create enum ? to make this easier ?
-        // HIGHLY dependent on boldButtonClicked() and italicButtonClicked() methods
         mainTextArea.selectedTextProperty().addListener((observable, oldValue, newValue) -> {
-            // make both buttons unselected, when user didn't select any text
+            //FontWeight handling
+            // make buttons unselected, when user didn't select any text
             if (newValue.equals("")) {
                 boldButton.setSelected(false);
                 italicButton.setSelected(false);
                 underscoreButton.setSelected(false);
                 return;
             }
-
-            // check if whole selected text is bold or whole selected text is italic
+            // check if whole selected text is bold or whole selected text is italic or underscore
             boolean isWholeBold = true;
             boolean isWholeItalic = true;
             boolean isWholeUnderscore = true;
-            IndexRange range = mainTextArea.getSelection();
 
+            IndexRange range = mainTextArea.getSelection();
             for (int i = range.getStart(); i < range.getEnd(); ++i) {
-                Collection<String> list = new ArrayList<String>(mainTextArea.getStyleOfChar(i));
+                ArrayList<String> list = new ArrayList<String>(mainTextArea.getStyleOfChar(i));
                 if (isWholeBold && !list.contains("boldWeight")) {
                     isWholeBold = false;
                 }
-
                 if (isWholeItalic && !list.contains("italicStyle")) {
                     isWholeItalic = false;
                 }
@@ -114,40 +162,65 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
                     isWholeUnderscore = false;
                 }
             }
-
             boldButton.setSelected(isWholeBold);
             italicButton.setSelected(isWholeItalic);
             underscoreButton.setSelected(isWholeUnderscore);
 
-            //check if paragraph styles
-            paragraphStyleButtons();
+            //FontChange handling
+            fontBoxStyle(fontSize, fontSizeListener, fontSizePattern, "12px", "fontsize");
+            fontBoxStyle(fontType, fontFamilyListener, fontFamilyPattern, "CourierNew", "fontFamily");
+            fontBoxStyle(fontColor, fontColorListener, fontColorPattern, "Black", "color");
 
+            //ParagraphStyles Handling
+            paragraphStyleButtons();
         });
 
     }
-    private void paragraphStyleButtons()
-    {
+
+    private void paragraphStyleButtons() {
         int startParagraphInSelection = mainTextArea.offsetToPosition(mainTextArea.getSelection().getStart(), TwoDimensional.Bias.Forward).getMajor();
         int lastParagraphInSelection = mainTextArea.offsetToPosition(mainTextArea.getSelection().getEnd(), TwoDimensional.Bias.Backward).getMajor();
-        for (int paragraph = startParagraphInSelection;paragraph<=lastParagraphInSelection;paragraph++)
-        {
-            Collection style = mainTextArea.getParagraph(paragraph).getParagraphStyle();
-            if(style.equals(Collections.singleton("alignmentRight")))
-            {
+
+        for (int paragraph = startParagraphInSelection; paragraph <= lastParagraphInSelection; paragraph++) {
+            Collection<String> style = mainTextArea.getParagraph(paragraph).getParagraphStyle();
+            if (style.equals(Collections.singleton("alignmentRight"))) {
                 alignmentRightButton.setSelected(true);
-            }
-            else if(style.equals(Collections.singleton("alignmentCenter"))){
+            } else if (style.equals(Collections.singleton("alignmentCenter"))) {
                 alignmentCenterButton.setSelected(true);
-            }
-            else if(style.equals(Collections.singleton("alignmentJustify"))){
+            } else if (style.equals(Collections.singleton("alignmentJustify"))) {
                 alignmentAdjustButton.setSelected(true);
-            }
-            else
-            {
+            } else {
                 alignmentLeftButton.setSelected(true);
             }
         }
     }
+
+    private void fontBoxStyle(ChoiceBox<String> box, ChangeListener<? super String> listener, Pattern pattern, String defaultValue, String replaceText) {
+        IndexRange range = mainTextArea.getSelection();
+        //Ceasing listener handling
+        box.getSelectionModel().selectedItemProperty().removeListener(listener);
+
+        StyleSpans<Collection<String>> styleSpans = mainTextArea.getStyleSpans(range);
+
+        ArrayList<String> currentStyles = new ArrayList<>(styleSpans.getStyleSpan(0).getStyle());
+
+        currentStyles.removeIf(s -> !(pattern.matcher(s).matches()));
+
+        if (styleSpans.getSpanCount() == 1) {
+            if (currentStyles.isEmpty()) {
+                box.setValue(defaultValue);
+            } else {
+                String actualSizes = currentStyles.get(0);
+                actualSizes = actualSizes.replace(replaceText, "");
+                box.setValue(actualSizes);
+            }
+        } else {
+            box.setValue(" ");
+        }
+        //listener handling is now raised
+        box.getSelectionModel().selectedItemProperty().addListener(listener);
+    }
+
     private StyledTextArea getFocusedText() {
         if (mainTextArea.isFocused()) {
             return mainTextArea;
@@ -171,6 +244,7 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     @FXML
     private void editCopyClicked() {
         ClipboardContent clipboardContent = new ClipboardContent();
+
         // getting text from focused area
         StyledTextArea textInput = getFocusedText();
         if (textInput != null) {
@@ -262,6 +336,7 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     }
 
     private void transformTextStyle(StyleClassedTextArea area, ToggleButton triggeringButton, String transformedStyle, String normalStyle) {
+        //TODO: Should we make one method for textStyle paragraphStyle and also for TextSize ?
         String selectedText = area.getSelectedText();
         IndexRange range = area.getSelection();
 
@@ -289,12 +364,17 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     }
 
     @FXML
-    private void fontSizePlusButtonClicked() {
+    private void replaceButtonClicked() {
 
     }
 
     @FXML
-    private void fontSizeMinusButtonClicked() {
+    private void replaceAllButtonClicked() {
+
+    }
+
+    @FXML
+    private void closeReplaceBoxClicked() {
 
     }
 
@@ -302,7 +382,7 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     private void alignmentLeftButtonClicked() {
         int startParagraphInSelection = mainTextArea.offsetToPosition(mainTextArea.getSelection().getStart(), TwoDimensional.Bias.Forward).getMajor();
         int lastParagraphInSelection = mainTextArea.offsetToPosition(mainTextArea.getSelection().getEnd(), TwoDimensional.Bias.Backward).getMajor();
-        changeParagraphs(startParagraphInSelection,lastParagraphInSelection,alignmentLeftButton,"alignmentLeft");
+        changeParagraphs(startParagraphInSelection, lastParagraphInSelection, alignmentLeftButton, "alignmentLeft");
     }
 
     @FXML
@@ -311,32 +391,33 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
         int lastParagraphInSelection = mainTextArea.offsetToPosition(mainTextArea.getSelection().getEnd(), TwoDimensional.Bias.Backward).getMajor();
         changeParagraphs(startParagraphInSelection, lastParagraphInSelection, alignmentCenterButton, "alignmentCenter");
     }
+
     @FXML
     private void alignmentRightButtonClicked() {
-            int startParagraphInSelection = mainTextArea.offsetToPosition(mainTextArea.getSelection().getStart(), TwoDimensional.Bias.Forward).getMajor();
-            int lastParagraphInSelection = mainTextArea.offsetToPosition(mainTextArea.getSelection().getEnd(), TwoDimensional.Bias.Backward).getMajor();
-            changeParagraphs(startParagraphInSelection, lastParagraphInSelection, alignmentRightButton, "alignmentRight");
+        int startParagraphInSelection = mainTextArea.offsetToPosition(mainTextArea.getSelection().getStart(), TwoDimensional.Bias.Forward).getMajor();
+        int lastParagraphInSelection = mainTextArea.offsetToPosition(mainTextArea.getSelection().getEnd(), TwoDimensional.Bias.Backward).getMajor();
+        changeParagraphs(startParagraphInSelection, lastParagraphInSelection, alignmentRightButton, "alignmentRight");
     }
+
     @FXML
     private void alignmentAdjustButtonClicked() {
         int startParagraphInSelection = mainTextArea.offsetToPosition(mainTextArea.getSelection().getStart(), TwoDimensional.Bias.Forward).getMajor();
         int lastParagraphInSelection = mainTextArea.offsetToPosition(mainTextArea.getSelection().getEnd(), TwoDimensional.Bias.Backward).getMajor();
-        changeParagraphs(startParagraphInSelection,lastParagraphInSelection,alignmentAdjustButton,"alignmentJustify");
-
+        changeParagraphs(startParagraphInSelection, lastParagraphInSelection, alignmentAdjustButton, "alignmentJustify");
     }
-    private void changeParagraphs(int firstParagraph, int lastParagraph,ToggleButton toggleButton,String style) {
-        if(toggleButton.isSelected())
-        {
+
+    private void changeParagraphs(int firstParagraph, int lastParagraph, ToggleButton toggleButton, String style) {
+        //TODO: Should we make one method for textStyle paragraphStyle and also for TextSize ?
+        if (toggleButton.isSelected()) {
             for (int paragraph = firstParagraph; paragraph < lastParagraph + 1; paragraph++)
                 mainTextArea.setParagraphStyle(paragraph, Collections.singleton(style));
-        }
-        else
-        {
+        } else {
             for (int paragraph = firstParagraph; paragraph < lastParagraph + 1; paragraph++)
                 mainTextArea.setParagraphStyle(paragraph, Collections.singleton("alignmentLeft"));
         }
 
     }
+
     @FXML
     private void searchButtonClicked() {
 
