@@ -388,8 +388,33 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
         }
 
         private int calculateNewCaretPosition(int oldCaretPosition, String oldText, String newText) {
-            // TODO: fix
-            return oldCaretPosition;
+            if (newText.length() == 0) {
+                return 0;
+            }
+
+            int indexOfTextBeforeCaret = newText.indexOf(oldText.substring(0, oldCaretPosition));
+            if (indexOfTextBeforeCaret != -1) {
+                return oldCaretPosition;
+            }
+
+            int indexOfTextAfterCaret = newText.indexOf(oldText.substring(oldCaretPosition, oldText.length()));
+            if (indexOfTextAfterCaret != -1) {
+                return indexOfTextAfterCaret;
+            }
+
+            return findFirstDifferenceIndex(oldText, newText);
+        }
+
+        private int findFirstDifferenceIndex(String oldText, String newText) {
+            int longestLength = oldText.length() > newText.length() ? oldText.length() : newText.length();
+
+            for(int i = 0; i < longestLength; ++i) {
+                if(oldText.charAt(i) != newText.charAt(i)) {
+                    return i;
+                }
+            }
+
+            return 0;
         }
     }
 }
