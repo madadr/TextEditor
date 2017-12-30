@@ -6,7 +6,7 @@
 <?import javafx.scene.text.*?>
 <?import org.fxmisc.richtext.InlineCssTextArea?>
 <?import org.fxmisc.richtext.StyleClassedTextArea?>
-<AnchorPane minHeight="776.0" minWidth="1328.0" prefHeight="776.0" prefWidth="1328.0" xmlns="http://javafx.com/javafx/8"
+<AnchorPane minHeight="-Infinity" prefHeight="500.0" xmlns="http://javafx.com/javafx/8"
             xmlns:fx="http://javafx.com/fxml/1" fx:controller="textEditor.controller.EditorController">
     <children>
         <MenuBar>
@@ -39,14 +39,13 @@
                 </Menu>
             </menus>
         </MenuBar>
-        <SplitPane dividerPositions="0.08678237650200267" orientation="VERTICAL" prefHeight="776.0" prefWidth="1328.0"
-                   AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
-                   AnchorPane.topAnchor="25.0">
+        <SplitPane dividerPositions="0.0" orientation="VERTICAL" AnchorPane.bottomAnchor="0.0"
+                   AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="25.0">
             <items>
-                <AnchorPane maxHeight="62.0" maxWidth="1326.0" minHeight="62.0" minWidth="1326.0" prefHeight="62.0"
-                            prefWidth="1326.0">
+                <AnchorPane maxHeight="62.0" maxWidth="-Infinity" minHeight="62.0" minWidth="-Infinity"
+                            prefHeight="62.0">
                     <children>
-                        <HBox alignment="CENTER" prefHeight="39.0" prefWidth="528.0" spacing="10.0">
+                        <HBox alignment="CENTER" focusTraversable="true" prefHeight="39.0" spacing="1.0">
                             <children>
                                 <ToggleButton fx:id="boldButton" mnemonicParsing="false" onAction="#boldButtonClicked"
                                               text="Bold"/>
@@ -62,19 +61,19 @@
                                         onAction="#fontSizeMinusButtonClicked" text="-"/>
                             </children>
                         </HBox>
-                        <HBox alignment="TOP_CENTER" layoutY="39.0" prefHeight="31.0" prefWidth="528.0">
+                        <HBox alignment="TOP_CENTER" layoutX="160.0" layoutY="35.0" prefHeight="31.0">
                             <children>
-                                <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="19.0" prefWidth="104.0"
-                                       text="Font settings">
+                                <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="19.0" text="Font settings"
+                                       textAlignment="CENTER">
                                     <font>
                                         <Font size="13.0"/>
                                     </font>
                                 </Label>
                             </children>
                         </HBox>
-                        <HBox alignment="TOP_CENTER" layoutX="609.0" layoutY="39.0" prefHeight="31.0" prefWidth="297.0">
+                        <HBox alignment="TOP_CENTER" layoutX="473.0" layoutY="35.0" prefHeight="31.0">
                             <children>
-                                <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="19.0" prefWidth="104.0"
+                                <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="19.0"
                                        text="Text alignment">
                                     <font>
                                         <Font size="13.0"/>
@@ -82,8 +81,8 @@
                                 </Label>
                             </children>
                         </HBox>
-                        <HBox alignment="CENTER" layoutX="528.0" layoutY="-1.0" prefHeight="39.0" prefWidth="459.0"
-                              spacing="10.0">
+                        <HBox alignment="CENTER" focusTraversable="true" layoutX="420.0" prefHeight="39.0"
+                              spacing="1.0">
                             <children>
                                 <ToggleButton fx:id="alignmentLeftButton" mnemonicParsing="false"
                                               onAction="#alignmentLeftButtonClicked" text="Left">
@@ -110,7 +109,7 @@
                                               AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
                                               AnchorPane.topAnchor="0.0"/>
                         <HBox fx:id="searchBox" alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="1326.0"
-                              spacing="10.0" visible="false">
+                              spacing="1.0" visible="false">
                             <children>
                                 <InlineCssTextArea fx:id="searchArea" minHeight="23.0" minWidth="154.0"
                                                    prefHeight="23.0" prefWidth="154.0">
