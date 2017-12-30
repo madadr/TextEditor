@@ -146,7 +146,6 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
             paragraphStyleButtons();
 
         });
-
     }
 
     private void paragraphStyleButtons() {
@@ -373,9 +372,9 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
 
     public class EditorControllerObserver implements Serializable, RemoteObserver {
         @Override
-        public void update(RemoteObservable observable) throws RemoteException {
+        public synchronized void update(RemoteObservable observable) throws RemoteException {
             Platform.runLater(() -> {
-                int caretPosition = mainTextArea.getCaretPosition();
+                int oldCaretPosition = mainTextArea.getCaretPosition();
                 String oldText = mainTextArea.getText();
                 String newText = null;
                 try {
@@ -383,12 +382,14 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
                 } catch (RemoteException ignored) {
                 }
                 mainTextArea.replaceText(newText);
-
-                Thread.currentThread().interrupt();
-
-//                mainTextArea.getCaretBounds();
-//                mainTextArea.displaceCaret(caretPosition);
+                int newCaretPosition = calculateNewCaretPosition(oldCaretPosition, oldText, newText);
+                mainTextArea.moveTo(newCaretPosition);
             });
+        }
+
+        private int calculateNewCaretPosition(int oldCaretPosition, String oldText, String newText) {
+            // TODO: fix
+            return oldCaretPosition;
         }
     }
 }
