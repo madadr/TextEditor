@@ -14,10 +14,7 @@ import org.fxmisc.richtext.StyledTextArea;
 import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.TwoDimensional;
 import textEditor.RMIClient;
-import textEditor.model.EditorModel;
-import textEditor.model.RemoteObservable;
-import textEditor.model.RemoteObserver;
-import textEditor.model.RemoteObserverImpl;
+import textEditor.model.*;
 import textEditor.view.WindowSwitcher;
 
 import java.io.File;
@@ -290,12 +287,17 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
         StyleSpans<Collection<String>> spans = area.getStyleSpans(range);
 
         StyleSpans<Collection<String>> newSpans = spans.mapStyles(currentStyle -> {
-            List<String> style = new ArrayList<String>(Arrays.asList(newStyle));
+            List<String> style = new ArrayList<>(Arrays.asList(newStyle));
             style.addAll(currentStyle);
             style.remove(oldStyle);
             return style;
         });
         area.setStyleSpans(range.getStart(), newSpans);
+//        try {
+//            editorModel.setTextStyle(range.getStart(), new EditorModel.StyleSpansWrapper("a"));
+//        } catch (RemoteException e) {
+//            e.printStackTrace();
+//        }
 
         area.requestFocus();
     }
@@ -376,17 +378,26 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
             Platform.runLater(() -> {
                 int oldCaretPosition = mainTextArea.getCaretPosition();
                 String oldText = mainTextArea.getText();
-                String newText = null;
                 try {
-                    newText = editorModel.getTextString();
+                    String newText = ((EditorModel) observable).getTextString();
+                    mainTextArea.replaceText(newText);
+                    int newCaretPosition = calculateNewCaretPosition(oldCaretPosition, oldText, newText);
+                    mainTextArea.moveTo(newCaretPosition);
                 } catch (RemoteException ignored) {
                 }
-                mainTextArea.replaceText(newText);
-                int newCaretPosition = calculateNewCaretPosition(oldCaretPosition, oldText, newText);
-                mainTextArea.moveTo(newCaretPosition);
+
+                try {
+                    StyleSpansWrapper newStyle = ((EditorModel) observable).getTextStyle();
+                    if(newStyle != null && newStyle.getStyleSpans() != null) {
+                        System.out.println("mainTextArea.setStyleSpans(0, newStyle.getStyleSpans());");
+//                        mainTextArea.setStyleSpans(0, newStyle.getStyleSpans());
+                    }
+                } catch (RemoteException ignored) {
+                }
             });
         }
 
+        // issues when using redo/undo actions as clients can undo another client operations
         private int calculateNewCaretPosition(int oldCaretPosition, String oldText, String newText) {
             if (newText.length() == 0) {
                 return 0;

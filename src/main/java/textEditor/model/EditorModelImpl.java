@@ -1,15 +1,18 @@
 package textEditor.model;
 
-import org.fxmisc.richtext.model.StyleSpans;
-
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.List;
 
 public class EditorModelImpl implements EditorModel, RemoteObservable {
     private String text = "";
-    private StyleSpans<String> styleSpans;
+    private StyleSpansWrapper styleSpans;
 
     private ArrayList<RemoteObserver> observers;
+
+    public enum UPDATED {
+        ONLY_TEXT_UPDATED, ONLY_STYLE_UPDATED
+    }
 
     public EditorModelImpl() throws RemoteException {
         System.out.println("EditorModelImpl::ctor");
@@ -32,9 +35,9 @@ public class EditorModelImpl implements EditorModel, RemoteObservable {
     }
 
     @Override
-    public synchronized void setTextStyle(int from, StyleSpans<String> styleSpans) throws RemoteException {
+    public synchronized void setTextStyle(int from, StyleSpansWrapper styleSpans) throws RemoteException {
         if (styleSpans != null) {
-            System.out.println("Updating style to to:");
+            System.out.println("Updating style to:");
             System.out.println("\t" + styleSpans);
             this.styleSpans = styleSpans;
             notifyObservers();
@@ -42,7 +45,7 @@ public class EditorModelImpl implements EditorModel, RemoteObservable {
     }
 
     @Override
-    public synchronized StyleSpans<String> getTextStyle() throws RemoteException {
+    public synchronized StyleSpansWrapper getTextStyle() throws RemoteException {
         return this.styleSpans;
     }
 
@@ -83,16 +86,23 @@ public class EditorModelImpl implements EditorModel, RemoteObservable {
 
     @Override
     public synchronized void notifyObservers() throws RemoteException {
-        System.out.println("notifyObservers");
-        System.out.println("observers: " + observers);
+        List<RemoteObserver> invalidObservers = new ArrayList<>();
         for (RemoteObserver observer : observers) {
             System.out.println("observer update: " + observer);
             try {
                 observer.update(this);
             } catch (RemoteException e) {
-                System.out.println("\tError, removing observer");
-                deleteObserver(observer);
+                System.out.println("\tError. Invalid observer, it will be removed!");
+                invalidObservers.add(observer);
             }
         }
+
+        invalidObservers.forEach(obs -> {
+            try {
+                deleteObserver(obs);
+            } catch (RemoteException ignored) {
+                // cannot remove observer but nothing to do here?
+            }
+        });
     }
 }

@@ -7,6 +7,7 @@ public interface RemoteObservable {
 
     void deleteObserver(RemoteObserver observer) throws RemoteException;
 
+    // TODO: add overloaded deleteObservers with List<RemoteObserver> argument
     void deleteObservers() throws RemoteException;
 
     // TODO: add to notifyObservers argument with enum to determine if text was updated or text style
