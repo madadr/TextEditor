@@ -22,6 +22,7 @@ import java.io.Serializable;
 import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class EditorController implements Initializable, ClientInjectionTarget, WindowSwitcherInjectionTarget {
     @FXML
@@ -46,6 +47,9 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     private RMIClient rmiClient;
     private WindowSwitcher switcher;
     private RemoteObserver observer;
+
+    // flag for avoiding cycling dependencies during updates after observer event
+    private AtomicBoolean isTextUpdatedByObserverEvent = new AtomicBoolean(false);
 
     public EditorController() {
     }
@@ -77,7 +81,10 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
 
         mainTextArea.textProperty().addListener((observable, oldValue, newValue) -> {
             try {
-                editorModel.setTextString(newValue);
+                if (!isTextUpdatedByObserverEvent.get()) {
+                    editorModel.setTextString(newValue, observer);
+                    editorModel.setTextStyle(new StyleSpansWrapper(0, mainTextArea.getStyleSpans(0, mainTextArea.getText().length())));
+                }
             } catch (RemoteException e) {
                 System.out.println(e.getMessage());
                 e.printStackTrace();
@@ -87,6 +94,7 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
 
     private void initObserver() {
         try {
+            System.out.println("init observer");
             observer = new RemoteObserverImpl(new EditorControllerObserver());
 
             editorModel.addObserver(observer);
@@ -121,6 +129,7 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
             IndexRange range = mainTextArea.getSelection();
 
             for (int i = range.getStart(); i < range.getEnd(); ++i) {
+//                System.out.println("i=" + i + ", " + mainTextArea.getStyleOfChar(i));
                 Collection<String> list = new ArrayList<>(mainTextArea.getStyleOfChar(i));
                 if (isWholeBold && !list.contains("boldWeight")) {
                     isWholeBold = false;
@@ -129,6 +138,7 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
                 if (isWholeItalic && !list.contains("italicStyle")) {
                     isWholeItalic = false;
                 }
+
                 if (isWholeUnderscore && !list.contains("underscoreDecoration")) {
                     isWholeUnderscore = false;
                 }
@@ -290,10 +300,12 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
             style.remove(oldStyle);
             return style;
         });
+        System.out.println("Before " + area.getStyleSpans(0, area.getText().length()));
         area.setStyleSpans(range.getStart(), newSpans);
+        System.out.println("After " + area.getStyleSpans(0, area.getText().length()));
         try {
             System.out.println("setting setTextStyle");
-            editorModel.setTextStyle(new StyleSpansWrapper(range.getStart(), newSpans));
+            editorModel.setTextStyle(new StyleSpansWrapper(0, area.getStyleSpans(0, area.getText().length())), observer);
             System.out.println("sett setTextStyle");
         } catch (RemoteException e) {
             e.printStackTrace();
@@ -382,6 +394,8 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
 
             @Override
             public void run() {
+                isTextUpdatedByObserverEvent.set(true);
+                System.out.println("RUNNING UPDATE ONLY TEXT");
                 int oldCaretPosition = mainTextArea.getCaretPosition();
                 String oldText = mainTextArea.getText();
                 try {
@@ -391,6 +405,8 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
                     mainTextArea.moveTo(newCaretPosition);
                 } catch (RemoteException e) {
                     e.printStackTrace();
+                } finally {
+                    isTextUpdatedByObserverEvent.set(false);
                 }
             }
         }
@@ -404,9 +420,10 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
 
             @Override
             public void run() {
+                System.out.println("RUNNING UPDATE ONLY STYLE");
                 try {
                     StyleSpansWrapper newStyle = ((EditorModel) observable).getTextStyle();
-                    if(newStyle != null && newStyle.getStyleSpans() != null) {
+                    if (newStyle != null && newStyle.getStyleSpans() != null) {
                         mainTextArea.setStyleSpans(newStyle.getStylesStart(), newStyle.getStyleSpans());
                     }
                 } catch (RemoteException e) {

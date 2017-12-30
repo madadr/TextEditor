@@ -26,6 +26,21 @@ public class EditorModelImpl implements EditorModel, RemoteObservable {
     }
 
     @Override
+    public synchronized void setTextString(String text, RemoteObserver source) throws RemoteException {
+        if (text != null) {
+            RemoteObserver skippedObserver = source;
+            this.deleteObserver(skippedObserver);
+
+            System.out.println("Updating text to:");
+            System.out.println("\t" + text);
+            this.text = text;
+            notifyObservers(UpdateTarget.ONLY_TEXT);
+
+            this.addObserver(skippedObserver);
+        }
+    }
+
+    @Override
     public String getTextString() throws RemoteException {
         return this.text;
     }
@@ -37,6 +52,21 @@ public class EditorModelImpl implements EditorModel, RemoteObservable {
             System.out.println("\t" + styleSpans);
             this.styleSpans = styleSpans;
             notifyObservers(UpdateTarget.ONLY_STYLE);
+        }
+    }
+
+    @Override
+    public synchronized void setTextStyle(StyleSpansWrapper styleSpans, RemoteObserver source) throws RemoteException {
+        if (styleSpans != null) {
+            RemoteObserver skippedObserver = source;
+            this.deleteObserver(skippedObserver);
+
+            System.out.println("Updating style to:");
+            System.out.println("\t" + styleSpans);
+            this.styleSpans = styleSpans;
+            notifyObservers(UpdateTarget.ONLY_STYLE);
+
+            this.addObserver(skippedObserver);
         }
     }
 

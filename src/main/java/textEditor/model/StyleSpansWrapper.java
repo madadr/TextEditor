@@ -31,7 +31,7 @@ public class StyleSpansWrapper implements Serializable {
     public StyleSpans<Collection<String>> getStyleSpans() {
         StyleSpansBuilder<Collection<String>> builder = new StyleSpansBuilder<>(pairsOfLengthAndStyle.size());
 
-        for(Pair<Integer, ArrayList<String>> pair : pairsOfLengthAndStyle) {
+        for (Pair<Integer, ArrayList<String>> pair : pairsOfLengthAndStyle) {
             builder.add(pair.getValue(), pair.getKey());
         }
 
