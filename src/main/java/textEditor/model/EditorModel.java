@@ -8,7 +8,7 @@ public interface EditorModel extends Remote, RemoteObservable {
 
     String getTextString() throws RemoteException;
 
-    void setTextStyle(int from, StyleSpansWrapper styleSpans) throws RemoteException;
+    void setTextStyle(StyleSpansWrapper styleSpans) throws RemoteException;
 
     StyleSpansWrapper getTextStyle() throws RemoteException;
 }

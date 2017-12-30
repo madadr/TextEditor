@@ -83,7 +83,6 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
                 e.printStackTrace();
             }
         });
-
     }
 
     private void initObserver() {
@@ -294,7 +293,7 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
         area.setStyleSpans(range.getStart(), newSpans);
         try {
             System.out.println("setting setTextStyle");
-            editorModel.setTextStyle(range.getStart(), new StyleSpansWrapper(newSpans));
+            editorModel.setTextStyle(new StyleSpansWrapper(range.getStart(), newSpans));
             System.out.println("sett setTextStyle");
         } catch (RemoteException e) {
             e.printStackTrace();
@@ -383,8 +382,6 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
 
             @Override
             public void run() {
-                System.out.println("RUNNING UPDATE ONLY TEXT!");
-
                 int oldCaretPosition = mainTextArea.getCaretPosition();
                 String oldText = mainTextArea.getText();
                 try {
@@ -407,18 +404,14 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
 
             @Override
             public void run() {
-                System.out.println("RUNNING UPDATE ONLY STYLE!");
-//                try {
-//                    StyleSpansWrapper newStyle = ((EditorModel) observable).getTextStyle();
-//                    if(newStyle != null && newStyle.getStyleSpans() != null) {
-//                        System.out.println("mainTextArea.setStyleSpans(0, newStyle.getStyleSpans());");
-//                        mainTextArea.setStyleSpans(0, newStyle.getStyleSpans());
-//                    } else {
-//                        System.out.println("something was null");
-//                    }
-//                } catch (RemoteException e) {
-//                    e.printStackTrace();
-//                }
+                try {
+                    StyleSpansWrapper newStyle = ((EditorModel) observable).getTextStyle();
+                    if(newStyle != null && newStyle.getStyleSpans() != null) {
+                        mainTextArea.setStyleSpans(newStyle.getStylesStart(), newStyle.getStyleSpans());
+                    }
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
             }
         }
 
@@ -430,11 +423,11 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
 
         @Override
         public synchronized void update(RemoteObservable observable, RemoteObservable.UpdateTarget target) throws RemoteException {
-            if(target == RemoteObservable.UpdateTarget.ONLY_TEXT) {
+            if (target == RemoteObservable.UpdateTarget.ONLY_TEXT) {
                 Platform.runLater(new UpdateTextWrapper(observable));
             }
 
-            if(target == RemoteObservable.UpdateTarget.ONLY_STYLE) {
+            if (target == RemoteObservable.UpdateTarget.ONLY_STYLE) {
                 Platform.runLater(new UpdateStyleWrapper(observable));
             }
         }
@@ -461,8 +454,8 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
         private int findFirstDifferenceIndex(String oldText, String newText) {
             int longestLength = oldText.length() > newText.length() ? oldText.length() : newText.length();
 
-            for(int i = 0; i < longestLength; ++i) {
-                if(oldText.charAt(i) != newText.charAt(i)) {
+            for (int i = 0; i < longestLength; ++i) {
+                if (oldText.charAt(i) != newText.charAt(i)) {
                     return i;
                 }
             }

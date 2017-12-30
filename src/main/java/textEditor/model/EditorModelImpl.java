@@ -31,7 +31,7 @@ public class EditorModelImpl implements EditorModel, RemoteObservable {
     }
 
     @Override
-    public synchronized void setTextStyle(int from, StyleSpansWrapper styleSpans) throws RemoteException {
+    public synchronized void setTextStyle(StyleSpansWrapper styleSpans) throws RemoteException {
         if (styleSpans != null) {
             System.out.println("Updating style to:");
             System.out.println("\t" + styleSpans);
