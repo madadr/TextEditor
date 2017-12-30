@@ -52,24 +52,9 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     private Pattern fontSizePattern, fontFamilyPattern, fontColorPattern;
 
     //FontStyle Listeners
-    private ChangeListener<? super String> fontSizeListener = new ChangeListener<String>() {
-        @Override
-        public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-            fontChange("fontsize", newValue);
-        }
-    };
-    private ChangeListener<? super String> fontFamilyListener = new ChangeListener<String>() {
-        @Override
-        public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-            fontChange("fontFamily", newValue);
-        }
-    };
-    private ChangeListener<? super String> fontColorListener = new ChangeListener<String>() {
-        @Override
-        public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-            fontChange("color", newValue);
-        }
-    };
+    private ChangeListener<? super String> fontSizeListener = (ChangeListener<String>) (observable, oldValue, newValue) -> fontChange("fontsize", newValue);
+    private ChangeListener<? super String> fontFamilyListener = (ChangeListener<String>) (observable, oldValue, newValue) -> fontChange("fontFamily", newValue);
+    private ChangeListener<? super String> fontColorListener = (ChangeListener<String>) (observable, oldValue, newValue) -> fontChange("color", newValue);
 
     public EditorController() {
     }
@@ -150,23 +135,21 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     }
 
     private void initTextSelection() {
-        // TODO: create another scalable solution
-        //SOLUTION: Meybe we should create enum ? to make this easier ?
-        // HIGHLY dependent on boldButtonClicked() and italicButtonClicked() methods
         mainTextArea.selectedTextProperty().addListener((observable, oldValue, newValue) -> {
-            // make both buttons unselected, when user didn't select any text
+            //FontWeight handling
+            // make buttons unselected, when user didn't select any text
             if (newValue.equals("")) {
                 boldButton.setSelected(false);
                 italicButton.setSelected(false);
                 underscoreButton.setSelected(false);
                 return;
             }
-            // check if whole selected text is bold or whole selected text is italic
+            // check if whole selected text is bold or whole selected text is italic or underscore
             boolean isWholeBold = true;
             boolean isWholeItalic = true;
             boolean isWholeUnderscore = true;
-            IndexRange range = mainTextArea.getSelection();
 
+            IndexRange range = mainTextArea.getSelection();
             for (int i = range.getStart(); i < range.getEnd(); ++i) {
                 ArrayList<String> list = new ArrayList<String>(mainTextArea.getStyleOfChar(i));
                 if (isWholeBold && !list.contains("boldWeight")) {
@@ -179,18 +162,16 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
                     isWholeUnderscore = false;
                 }
             }
-
-            //FontSize handling
-            //TODO: Extract in method replaceText from Patterns
-            fontBoxStyle(fontSize, fontSizeListener, fontSizePattern, "12px", "fontsize");
-            fontBoxStyle(fontType, fontFamilyListener, fontFamilyPattern, "CourierNew", "fontFamily");
-            fontBoxStyle(fontColor, fontColorListener, fontColorPattern, "Black", "color");
-
             boldButton.setSelected(isWholeBold);
             italicButton.setSelected(isWholeItalic);
             underscoreButton.setSelected(isWholeUnderscore);
 
-            //check if paragraph styles
+            //FontChange handling
+            fontBoxStyle(fontSize, fontSizeListener, fontSizePattern, "12px", "fontsize");
+            fontBoxStyle(fontType, fontFamilyListener, fontFamilyPattern, "CourierNew", "fontFamily");
+            fontBoxStyle(fontColor, fontColorListener, fontColorPattern, "Black", "color");
+
+            //ParagraphStyles Handling
             paragraphStyleButtons();
         });
 
@@ -263,6 +244,7 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     @FXML
     private void editCopyClicked() {
         ClipboardContent clipboardContent = new ClipboardContent();
+
         // getting text from focused area
         StyledTextArea textInput = getFocusedText();
         if (textInput != null) {
