@@ -78,17 +78,8 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
         editorModel = (EditorModel) rmiClient.getModel("EditorModel");
 
         initialTextSettings();
+
         initTextArea();
-
-
-        loadCssStyleSheet();
-
-        initTextSelection();
-    }
-
-    private void initTextArea() {
-        initObserver();
-
 
         loadCssStyleSheet();
 
@@ -100,7 +91,6 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
 
         mainTextArea.textProperty().addListener((observable, oldValue, newValue) -> {
             try {
-                editorModel.setTextString(newValue);
                 if (!isTextUpdatedByObserverEvent.get()) {
                     editorModel.setTextString(newValue, observer);
                     editorModel.setTextStyle(new StyleSpansWrapper(0, mainTextArea.getStyleSpans(0, mainTextArea.getText().length())));
@@ -118,10 +108,6 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
 
             editorModel.addObserver(observer);
 
-            observer.update(editorModel);
-        } catch (RemoteException e) {
-            System.out.println(e.getMessage());
-        }
             observer.update(editorModel);
         } catch (RemoteException e) {
             System.out.println(e.getMessage());
@@ -157,7 +143,6 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     }
 
     private void fontChange(String prefix, String newValue) {
-        String selectedText = mainTextArea.getSelectedText();
         IndexRange range = mainTextArea.getSelection();
 
         StyleSpans<Collection<String>> spans = mainTextArea.getStyleSpans(range);
@@ -170,6 +155,12 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
         });
 
         mainTextArea.setStyleSpans(range.getStart(), newSpans);
+        try {
+            editorModel.setTextStyle(new StyleSpansWrapper(0, mainTextArea.getStyleSpans(0, mainTextArea.getText().length())), observer);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+
         mainTextArea.requestFocus();
     }
 
@@ -499,11 +490,13 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
                 }
             }
         }
+
         private class UpdateStyleWrapper implements Runnable {
             private RemoteObservable observable;
+
             public UpdateStyleWrapper(RemoteObservable observable) {
                 this.observable = observable;
-        }
+            }
 
             @Override
             public void run() {
@@ -511,18 +504,12 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
                     StyleSpansWrapper newStyle = ((EditorModel) observable).getTextStyle();
                     if (newStyle != null && newStyle.getStyleSpans() != null) {
                         mainTextArea.setStyleSpans(newStyle.getStylesStart(), newStyle.getStyleSpans());
-
-            @Override
-            public void run() {
-                System.out.println("RUNNING UPDATE ONLY STYLE!");
-//                try {
-//                    StyleSpansWrapper newStyle = ((EditorModel) observable).getTextStyle();
-//                    if(newStyle != null && newStyle.getStyleSpans() != null) {
-//                        System.out.println("mainTextArea.setStyleSpans(0, newStyle.getStyleSpans());");
-//                        mainTextArea.setStyleSpans(0, newStyle.getStyleSpans());
-//                    } else {
-//                        System.out.println("something was null");
-//                    }
+                    }
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                } catch (IndexOutOfBoundsException e) {
+                    System.out.println("CRASH");
+                }
             }
         }
 

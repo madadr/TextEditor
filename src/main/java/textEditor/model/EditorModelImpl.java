@@ -15,13 +15,6 @@ public class EditorModelImpl implements EditorModel, RemoteObservable {
         this.observers = new ArrayList<>();
     }
 
-    private ArrayList<RemoteObserver> observers;
-
-    public EditorModelImpl() throws RemoteException {
-        System.out.println("EditorModelImpl::ctor");
-        this.observers = new ArrayList<>();
-    }
-
     @Override
     public synchronized void setTextString(String text) throws RemoteException {
         if (text != null) {
@@ -59,20 +52,6 @@ public class EditorModelImpl implements EditorModel, RemoteObservable {
             System.out.println("\t" + styleSpans);
             this.styleSpans = styleSpans;
             notifyObservers(UpdateTarget.ONLY_STYLE);
-        }
-    }
-    @Override
-    public synchronized void setTextStyle(StyleSpansWrapper styleSpans, RemoteObserver source) throws RemoteException {
-        if (styleSpans != null) {
-            RemoteObserver skippedObserver = source;
-            this.deleteObserver(skippedObserver);
-
-            System.out.println("Updating style to:");
-            System.out.println("\t" + styleSpans);
-            this.styleSpans = styleSpans;
-            notifyObservers(UpdateTarget.ONLY_STYLE);
-
-            this.addObserver(skippedObserver);
         }
     }
 
@@ -134,35 +113,6 @@ public class EditorModelImpl implements EditorModel, RemoteObservable {
     @Override
     public synchronized void notifyObservers(UpdateTarget target) throws RemoteException {
         List<RemoteObserver> invalidObservers = new ArrayList<>();
-        for (RemoteObserver observer : observers) {
-            System.out.println("observer update: " + observer);
-                observer.update(this, target);
-                System.out.println("\tError. Invalid observer, it will be removed!");
-                invalidObservers.add(observer);
-    }
-
-    @Override
-    public synchronized void deleteObserver(RemoteObserver observer) throws RemoteException {
-        if (observer == null) {
-            System.out.println("deleteObserver: arg observer is null");
-            return;
-        }
-
-        if (!observers.contains(observer)) {
-            System.out.println("deleteObserver: cannot delete observer; it isn't in the list");
-        }
-
-        observers.remove(observer);
-        System.out.println("deleteObserver: observer deleted");
-    }
-
-        invalidObservers.forEach(obs -> {
-            try {
-                deleteObserver(obs);
-            } catch (RemoteException ignored) {
-                // cannot remove observer but nothing to do here?
-            }
-        });
         for (RemoteObserver observer : observers) {
             System.out.println("observer update: " + observer);
             try {

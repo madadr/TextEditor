@@ -15,5 +15,4 @@ public interface RemoteObservable {
     void deleteObservers() throws RemoteException;
 
     void notifyObservers(UpdateTarget target) throws RemoteException;
-    void notifyObservers(UpdateTarget target) throws RemoteException;
 }
