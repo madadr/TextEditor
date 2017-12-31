@@ -44,7 +44,6 @@ public class WindowSwitcher {
         stage.setTitle("Editor");
         stage.setResizable(true);
         stage.setScene(new Scene((Parent) loader.load()));
-        stage.setMaximized(true);
 
         if (!isStageDisplayed()) {
             stage.show();

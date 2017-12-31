@@ -1,43 +1,134 @@
 package textEditor.model;
 
-import java.io.Serializable;
 import java.rmi.RemoteException;
-import java.util.Observable;
-import java.util.Observer;
+import java.util.ArrayList;
+import java.util.List;
 
-public class EditorModelImpl extends Observable implements EditorModel, ObserverModel {
-    private String textAreaString = "";
+public class EditorModelImpl implements EditorModel, RemoteObservable {
+    private String text = "";
+    private StyleSpansWrapper styleSpans;
+
+    private ArrayList<RemoteObserver> observers;
+
+    public EditorModelImpl() throws RemoteException {
+        System.out.println("EditorModelImpl::ctor");
+        this.observers = new ArrayList<>();
+    }
 
     @Override
-    public void setTextAreaString(String value) throws RemoteException {
-        textAreaString = value;
-        if (!value.isEmpty()) {
-            System.out.print(textAreaString.charAt(textAreaString.length() - 1));
-            notifyObservers();
+    public synchronized void setTextString(String text) throws RemoteException {
+        if (text != null) {
+            System.out.println("Updating text to:");
+            System.out.println("\t" + text);
+            this.text = text;
+            notifyObservers(UpdateTarget.ONLY_TEXT);
         }
     }
 
     @Override
-    public void addObserver(EditorModel editorModel) throws RemoteException {
-        WrappedObserver wrappedObserver = new WrappedObserver(editorModel);
-        addObserver(wrappedObserver);
-        System.out.println("Obserwator został dodany milordzie! :)");
+    public synchronized void setTextString(String text, RemoteObserver source) throws RemoteException {
+        if (text != null) {
+            RemoteObserver skippedObserver = source;
+            this.deleteObserver(skippedObserver);
+
+            System.out.println("Updating text to:");
+            System.out.println("\t" + text);
+            this.text = text;
+            notifyObservers(UpdateTarget.ONLY_TEXT);
+
+            this.addObserver(skippedObserver);
+        }
     }
 
-    private class WrappedObserver implements Observer, Serializable {
-        public WrappedObserver(EditorModel editorModel) {
-            this.editorModel = editorModel;
+    @Override
+    public String getTextString() throws RemoteException {
+        return this.text;
+    }
+
+    @Override
+    public synchronized void setTextStyle(StyleSpansWrapper styleSpans) throws RemoteException {
+        if (styleSpans != null) {
+            System.out.println("Updating style to:");
+            System.out.println("\t" + styleSpans);
+            this.styleSpans = styleSpans;
+            notifyObservers(UpdateTarget.ONLY_STYLE);
+        }
+    }
+
+    @Override
+    public synchronized void setTextStyle(StyleSpansWrapper styleSpans, RemoteObserver source) throws RemoteException {
+        if (styleSpans != null) {
+            RemoteObserver skippedObserver = source;
+            this.deleteObserver(skippedObserver);
+
+            System.out.println("Updating style to:");
+            System.out.println("\t" + styleSpans);
+            this.styleSpans = styleSpans;
+            notifyObservers(UpdateTarget.ONLY_STYLE);
+
+            this.addObserver(skippedObserver);
+        }
+    }
+
+    @Override
+    public synchronized StyleSpansWrapper getTextStyle() throws RemoteException {
+        return this.styleSpans;
+    }
+
+    @Override
+    public synchronized void addObserver(RemoteObserver observer) throws RemoteException {
+        if (observer == null) {
+            System.out.println("addObserver: arg observer is null");
+            return;
         }
 
-        private EditorModel editorModel;
+        if (observers.contains(observer)) {
+            System.out.println("addObserver: observer already added");
+        }
 
-        @Override
-        public void update(Observable o, Object arg) {
+        observers.add(observer);
+        System.out.println("addObserver: observer added");
+    }
+
+    @Override
+    public synchronized void deleteObserver(RemoteObserver observer) throws RemoteException {
+        if (observer == null) {
+            System.out.println("deleteObserver: arg observer is null");
+            return;
+        }
+
+        if (!observers.contains(observer)) {
+            System.out.println("deleteObserver: cannot delete observer; it isn't in the list");
+        }
+
+        observers.remove(observer);
+        System.out.println("deleteObserver: observer deleted");
+    }
+
+    @Override
+    public void deleteObservers() throws RemoteException {
+        observers.clear();
+    }
+
+    @Override
+    public synchronized void notifyObservers(UpdateTarget target) throws RemoteException {
+        List<RemoteObserver> invalidObservers = new ArrayList<>();
+        for (RemoteObserver observer : observers) {
+            System.out.println("observer update: " + observer);
             try {
-                editorModel.setTextAreaString(o.toString() + " " + arg);
+                observer.update(this, target);
             } catch (RemoteException e) {
-                e.printStackTrace();
+                System.out.println("\tError. Invalid observer, it will be removed!");
+                invalidObservers.add(observer);
             }
         }
+
+        invalidObservers.forEach(obs -> {
+            try {
+                deleteObserver(obs);
+            } catch (RemoteException ignored) {
+                // cannot remove observer but nothing to do here?
+            }
+        });
     }
 }
