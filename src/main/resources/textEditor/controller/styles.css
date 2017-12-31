@@ -22,6 +22,7 @@
 .normalDecoration {
     -fx-underline: false;
 }
+
 /**************Text Alignments*****************/
 .alignmentLeft {
     -fx-text-alignment: left;
@@ -38,71 +39,113 @@
 .alignmentJustify {
     -fx-text-alignment: justify;
 }
+
 /**************Font Sizes*****************/
 .fontsize10px {
     -fx-font-size: 10px;
 }
+
 .fontsize12px {
     -fx-font-size: 12px;
 }
+
 .fontsize14px {
     -fx-font-size: 14px;
 }
+
 .fontsize16px {
     -fx-font-size: 16px;
 }
+
 .fontsize18px {
     -fx-font-size: 18px;
 }
+
 .fontsize20px {
     -fx-font-size: 20px;
 }
+
 .fontsize22px {
     -fx-font-size: 22px;
 }
+
 .fontsize32px {
     -fx-font-size: 32px;
 }
+
 .fontsize48px {
     -fx-font-size: 48px;
 }
+
 .fontsize70px {
     -fx-font-size: 70px;
 }
+
 /**************Font Family*****************/
-.fontFamilyBroadway{
+.fontFamilyBroadway {
     -fx-font-family: Broadway;
 }
-.fontFamilyArial{
+
+.fontFamilyArial {
     -fx-font-family: Arial;
 }
-.fontFamilyCalibri
-{
+
+.fontFamilyCalibri {
     -fx-font-family: Calibri;
 }
-.fontFamilyCourierNew{
+
+.fontFamilyCourierNew {
     -fx-font-family: Courier New;
 }
+
 /**************Text Color*****************/
-.colorRed{
+.colorRed {
     -fx-fill: red;
 }
-.colorBlue{
+
+.colorBlue {
     -fx-fill: blue;
 }
-.colorGreen{
+
+.colorGreen {
     -fx-fill: green;
 }
-.colorYellow{
+
+.colorYellow {
     -fx-fill: yellow;
 }
 
-.colorPurple{
+.colorPurple {
     -fx-fill: purple;
 }
-.colorWhite{
+
+.colorWhite {
     -fx-fill: white;
 }
-.colorBlack{
+
+.colorBlack {
     -fx-fill: black;
+}
+
+/**************Text Headings*****************/
+.headingNone {
+
+}
+
+.headingHeader1 {
+    -fx-fill: #42b0f4;
+    -fx-font-family: Calibri;
+    -fx-font-size: 18px;
+}
+
+.headingHeader2 {
+    -fx-fill: #42b0f4;
+    -fx-font-family: Calibri;
+    -fx-font-size: 16px;
+}
+
+.headingHeader3 {
+    -fx-fill: #42b0f4;
+    -fx-font-family: Calibri;
+    -fx-font-size: 14px;
 }
