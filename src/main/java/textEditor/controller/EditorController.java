@@ -238,7 +238,7 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
             fontBoxStyle(fontSize, fontSizeListener, fontSizePattern, "12px", "fontsize");
             fontBoxStyle(fontType, fontFamilyListener, fontFamilyPattern, "CourierNew", "fontFamily");
             fontBoxStyle(fontColor, fontColorListener, fontColorPattern, "Black", "color");
-
+            fontBoxStyle(paragraphHeading, paragraphHeadingListener, paragraphHeadingPattern, " ", "heading");
             //ParagraphStyles Handling
             paragraphStyleButtons();
         });
