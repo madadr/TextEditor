@@ -12,6 +12,8 @@ import javafx.stage.FileChooser;
 import org.fxmisc.richtext.InlineCssTextArea;
 import org.fxmisc.richtext.StyleClassedTextArea;
 import org.fxmisc.richtext.StyledTextArea;
+import org.fxmisc.richtext.model.Paragraph;
+import org.fxmisc.richtext.model.StyleSpan;
 import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.TwoDimensional;
 import textEditor.RMIClient;
@@ -30,7 +32,7 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     @FXML
     private Menu fileMenu, editMenu, helpMenu;
     @FXML
-    private ChoiceBox<String> fontSize, fontType, fontColor;
+    private ChoiceBox<String> fontSize, fontType, fontColor,paragraphHeading;
     @FXML
     private HBox searchBox;
     @FXML
@@ -48,7 +50,7 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     private EditorModel editorModel;
     private RMIClient rmiClient;
     private WindowSwitcher switcher;
-    private Pattern fontSizePattern, fontFamilyPattern, fontColorPattern;
+    private Pattern fontSizePattern, fontFamilyPattern, fontColorPattern, paragraphHeadingPattern;
     private RemoteObserver observer;
 
     // flag for avoiding cycling dependencies during updates after observer event
@@ -58,6 +60,7 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     private ChangeListener<? super String> fontSizeListener = (ChangeListener<String>) (observable, oldValue, newValue) -> fontChange("fontsize", newValue);
     private ChangeListener<? super String> fontFamilyListener = (ChangeListener<String>) (observable, oldValue, newValue) -> fontChange("fontFamily", newValue);
     private ChangeListener<? super String> fontColorListener = (ChangeListener<String>) (observable, oldValue, newValue) -> fontChange("color", newValue);
+    private ChangeListener<? super String> paragraphHeadingListener = (ChangeListener<String>) (observable, oldValue, newValue) -> paragraphChange("heading", newValue);
 
     public EditorController() {
     }
@@ -123,12 +126,14 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
         String matchFontSize = "fontsize\\d{1,2}px";
         String matchFontFamily = "fontFamily\\w{1,}";
         String matchFontColor = "color\\w{1,}";
+        String matchParagraphHeading = "heading\\w{1,}";
+
         fontSizePattern = Pattern.compile(matchFontSize);
         fontFamilyPattern = Pattern.compile(matchFontFamily);
         fontColorPattern = Pattern.compile(matchFontColor);
+        paragraphHeadingPattern = Pattern.compile(matchParagraphHeading);
 
         //Font Size
-
         fontSize.getItems().addAll(" ", "10px", "12px", "14px", "16px", "18px", "20px", "22px", "32px", "48px", "70px");
         fontSize.setValue("12px");
         fontSize.getSelectionModel().selectedItemProperty().addListener(fontSizeListener);
@@ -140,6 +145,10 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
         fontColor.getItems().addAll(" ", "Red", "Blue", "Green", "Yellow", "Purple", "White", "Black");
         fontColor.setValue("Black");
         fontColor.getSelectionModel().selectedItemProperty().addListener(fontColorListener);
+        //Paragraph Heading
+        paragraphHeading.getItems().addAll(" ","None","Header1", "Header2", "Header3");
+        paragraphHeading.setValue(" ");
+        paragraphHeading.getSelectionModel().selectedItemProperty().addListener(paragraphHeadingListener);
     }
 
     private void fontChange(String prefix, String newValue) {
@@ -163,7 +172,34 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
 
         mainTextArea.requestFocus();
     }
+    private void paragraphChange(String prefix, String newValue)
+    {
+        int startParagraphInSelection = mainTextArea.offsetToPosition(mainTextArea.getSelection().getStart(), TwoDimensional.Bias.Forward).getMajor();
+        int lastParagraphInSelection = mainTextArea.offsetToPosition(mainTextArea.getSelection().getEnd(), TwoDimensional.Bias.Backward).getMajor();
+        IndexRange range = mainTextArea.getSelection();
 
+        int currentParagraphIndex =startParagraphInSelection;
+        while (currentParagraphIndex<=lastParagraphInSelection) {
+            Paragraph<Collection<String>, String, Collection<String>> currentParagraph = mainTextArea.getParagraph(currentParagraphIndex);
+            StyleSpans<Collection<String>> actualStyles = currentParagraph.getStyleSpans();
+            StyleSpans<Collection<String>> newStyles = actualStyles.mapStyles(currentStyle -> {
+                List<String> styles = new ArrayList<>(currentStyle);
+                styles.removeIf(s -> s.matches(prefix + ".*"));
+                styles.add(prefix + newValue);
+                System.out.println("New Style" + styles);
+                return styles;
+            });
+            mainTextArea.setStyleSpans(currentParagraphIndex,0,newStyles);
+            currentParagraphIndex++;
+        }
+        try {
+            editorModel.setTextStyle(new StyleSpansWrapper(0, mainTextArea.getStyleSpans(0, mainTextArea.getText().length())), observer);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+
+        mainTextArea.requestFocus();
+    }
     private void initTextSelection() {
         mainTextArea.selectedTextProperty().addListener((observable, oldValue, newValue) -> {
             //FontWeight handling

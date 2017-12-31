@@ -106,3 +106,25 @@
 .colorBlack{
     -fx-fill: black;
 }
+/**************Text Headings*****************/
+.headingNone{
+    -fx-fill: black;
+    -fx-font-family: Calibri;
+    -fx-font-size: 12px;
+
+}
+.headingHeader1{
+    -fx-fill: #42b0f4;
+    -fx-font-family: Calibri;
+    -fx-font-size: 18px;
+}
+.headingHeader2{
+    -fx-fill: #42b0f4;
+    -fx-font-family: Calibri;
+    -fx-font-size: 16px;
+}
+.headingHeader3{
+    -fx-fill: #42b0f4;
+    -fx-font-family: Calibri;
+    -fx-font-size: 14px;
+}
