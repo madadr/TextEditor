@@ -13,7 +13,6 @@ import org.fxmisc.richtext.InlineCssTextArea;
 import org.fxmisc.richtext.StyleClassedTextArea;
 import org.fxmisc.richtext.StyledTextArea;
 import org.fxmisc.richtext.model.Paragraph;
-import org.fxmisc.richtext.model.StyleSpan;
 import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.TwoDimensional;
 import textEditor.RMIClient;
@@ -32,7 +31,7 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     @FXML
     private Menu fileMenu, editMenu, helpMenu;
     @FXML
-    private ChoiceBox<String> fontSize, fontType, fontColor,paragraphHeading;
+    private ChoiceBox<String> fontSize, fontType, fontColor, paragraphHeading;
     @FXML
     private HBox searchBox;
     @FXML
@@ -60,7 +59,7 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     private ChangeListener<? super String> fontSizeListener = (ChangeListener<String>) (observable, oldValue, newValue) -> fontChange("fontsize", newValue);
     private ChangeListener<? super String> fontFamilyListener = (ChangeListener<String>) (observable, oldValue, newValue) -> fontChange("fontFamily", newValue);
     private ChangeListener<? super String> fontColorListener = (ChangeListener<String>) (observable, oldValue, newValue) -> fontChange("color", newValue);
-    private ChangeListener<? super String> paragraphHeadingListener = (ChangeListener<String>) (observable, oldValue, newValue) -> paragraphChange("heading", newValue);
+    private ChangeListener<? super String> paragraphHeadingListener = (ChangeListener<String>) (observable, oldValue, newValue) -> headingChange("heading", newValue);
 
     public EditorController() {
     }
@@ -146,7 +145,7 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
         fontColor.setValue("Black");
         fontColor.getSelectionModel().selectedItemProperty().addListener(fontColorListener);
         //Paragraph Heading
-        paragraphHeading.getItems().addAll(" ","None","Header1", "Header2", "Header3");
+        paragraphHeading.getItems().addAll(" ", "None", "Header1", "Header2", "Header3");
         paragraphHeading.setValue(" ");
         paragraphHeading.getSelectionModel().selectedItemProperty().addListener(paragraphHeadingListener);
     }
@@ -172,24 +171,25 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
 
         mainTextArea.requestFocus();
     }
-    private void paragraphChange(String prefix, String newValue)
-    {
+
+    private void headingChange(String prefix, String newValue) {
         int startParagraphInSelection = mainTextArea.offsetToPosition(mainTextArea.getSelection().getStart(), TwoDimensional.Bias.Forward).getMajor();
         int lastParagraphInSelection = mainTextArea.offsetToPosition(mainTextArea.getSelection().getEnd(), TwoDimensional.Bias.Backward).getMajor();
         IndexRange range = mainTextArea.getSelection();
-
-        int currentParagraphIndex =startParagraphInSelection;
-        while (currentParagraphIndex<=lastParagraphInSelection) {
+        int currentParagraphIndex = startParagraphInSelection;
+        while (currentParagraphIndex <= lastParagraphInSelection) {
             Paragraph<Collection<String>, String, Collection<String>> currentParagraph = mainTextArea.getParagraph(currentParagraphIndex);
             StyleSpans<Collection<String>> actualStyles = currentParagraph.getStyleSpans();
             StyleSpans<Collection<String>> newStyles = actualStyles.mapStyles(currentStyle -> {
                 List<String> styles = new ArrayList<>(currentStyle);
-                styles.removeIf(s -> s.matches(prefix + ".*"));
+                //Remove all coresponding styles from paragraph
+                styles.removeIf(s -> paragraphHeadingPattern.matcher(s).matches() || fontSizePattern.matcher(s).matches()
+                        || fontFamilyPattern.matcher(s).matches() || fontColorPattern.matcher(s).matches());
                 styles.add(prefix + newValue);
                 System.out.println("New Style" + styles);
                 return styles;
             });
-            mainTextArea.setStyleSpans(currentParagraphIndex,0,newStyles);
+            mainTextArea.setStyleSpans(currentParagraphIndex, 0, newStyles);
             currentParagraphIndex++;
         }
         try {
@@ -200,6 +200,7 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
 
         mainTextArea.requestFocus();
     }
+
     private void initTextSelection() {
         mainTextArea.selectedTextProperty().addListener((observable, oldValue, newValue) -> {
             //FontWeight handling
