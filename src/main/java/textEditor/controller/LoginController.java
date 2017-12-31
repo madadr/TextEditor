@@ -83,7 +83,7 @@ public class LoginController implements Initializable, ClientInjectionTarget, Wi
             resultOfAuthorization.setTextFill(Color.web("#2eb82e"));
             resultOfAuthorization.setVisible(true);
 
-            switcher.loadEditorWindow();
+            switcher.loadWindow(WindowSwitcher.Window.EDITOR);
         } else {
             System.out.println("Authorization failed");
             resultOfAuthorization.setText("Authorization failed");

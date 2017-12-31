@@ -9,7 +9,7 @@ public class Client extends Application {
     public void start(Stage primaryStage) throws Exception {
         WindowSwitcher switcher = new WindowSwitcher(primaryStage);
 
-        switcher.loadLoginWindow();
+        switcher.loadWindow(WindowSwitcher.Window.LOGIN);
     }
 
     public static void main(String[] args) {
