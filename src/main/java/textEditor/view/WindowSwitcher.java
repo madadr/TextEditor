@@ -1,5 +1,6 @@
 package textEditor.view;
 
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -14,6 +15,10 @@ public class WindowSwitcher {
     private FXMLLoader loader;
     private final ControllerFactory controllerFactory;
 
+    public enum Window {
+        LOGIN, EDITOR
+    }
+
     public WindowSwitcher(Stage stage) {
         this.stage = stage;
 
@@ -22,8 +27,28 @@ public class WindowSwitcher {
         controllerFactory = new ControllerFactory(rmiClient, this);
     }
 
-    public void loadLoginWindow() throws IOException {
-        loadWindow("Login.fxml");
+    public final Stage getStage() {
+        return this.stage;
+    }
+
+    public void loadWindow(Window window) throws IOException {
+        switch (window) {
+            case LOGIN:
+                loadLoginWindow();
+                break;
+            case EDITOR:
+                loadEditorWindow();
+                break;
+            default:
+                System.err.println("Invalid window!");
+                Platform.exit();
+                System.exit(1);
+        }
+        reinitializeCloseHandler();
+    }
+
+    private void loadLoginWindow() throws IOException {
+        loadResource("Login.fxml");
 
         stage.setTitle("Editor - login");
         stage.setResizable(false);
@@ -34,12 +59,8 @@ public class WindowSwitcher {
         }
     }
 
-    public final Stage getStage() {
-        return this.stage;
-    }
-
-    public void loadEditorWindow() throws IOException {
-        loadWindow("Editor.fxml");
+    private void loadEditorWindow() throws IOException {
+        loadResource("Editor.fxml");
 
         stage.setTitle("Editor");
         stage.setResizable(true);
@@ -51,9 +72,16 @@ public class WindowSwitcher {
         }
     }
 
-    private void loadWindow(String resource) {
+    private void loadResource(String resource) {
         loader = new FXMLLoader(getClass().getResource(resource));
         loader.setControllerFactory(controllerFactory);
+    }
+
+    private void reinitializeCloseHandler() {
+        this.stage.setOnCloseRequest(event -> {
+            Platform.exit();
+            System.exit(0);
+        });
     }
 
     private boolean isStageDisplayed() {
