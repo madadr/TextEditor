@@ -186,6 +186,7 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
                 styles.removeIf(s -> paragraphHeadingPattern.matcher(s).matches() || fontSizePattern.matcher(s).matches()
                         || fontFamilyPattern.matcher(s).matches() || fontColorPattern.matcher(s).matches());
                 styles.add(prefix + newValue);
+                styles.add("listType");
                 System.out.println("New Style" + styles);
                 return styles;
             });
@@ -342,7 +343,24 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
             textInput.appendText(textInput.getText(0, textInput.getCaretPosition()) + clipboard.getString() + textInput.getText(textInput.getCaretPosition(), textInput.getLength()));
         }
     }
-
+    @FXML
+    private void bulletListClicked()
+    {
+        int startParagraphInSelection = mainTextArea.offsetToPosition(mainTextArea.getSelection().getStart(), TwoDimensional.Bias.Forward).getMajor();
+        int lastParagraphInSelection = mainTextArea.offsetToPosition(mainTextArea.getSelection().getEnd(), TwoDimensional.Bias.Backward).getMajor();
+        int currentParagraph = startParagraphInSelection;
+        while(startParagraphInSelection<= lastParagraphInSelection)
+        {
+            Paragraph<Collection<String>, String, Collection<String>> paragraph = mainTextArea.getParagraph(currentParagraph);
+            paragraph.length();
+            String bulletListElement = "-"+" "+mainTextArea.getText(currentParagraph);
+            System.out.println(bulletListElement);
+            IndexRange paragraphRange = mainTextArea.getParagraphSelection(currentParagraph);
+            System.out.println(paragraphRange.getStart()+ "   " + paragraphRange.getEnd() + "  " + paragraph.length());
+            mainTextArea.replaceText(paragraphRange,bulletListElement);
+            ++currentParagraph;
+        }
+    }
     @FXML
     private void helpHelpClicked() {
         //TODO:  implement javafx stage appear with help content
