@@ -483,16 +483,18 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
             boolean canIPrint = false;
             canIPrint = printerJob.showPrintDialog(switcher.getStage());
 
-            PageLayout pageLayout = printerJob.getPrinter().createPageLayout(Paper.A4, PageOrientation.PORTRAIT, Printer.MarginType.HARDWARE_MINIMUM);
-            PrinterAttributes attributes = printerJob.getPrinter().getPrinterAttributes();
-            double scaleX = pageLayout.getPrintableWidth() / mainTextArea.getBoundsInParent().getWidth();
-            double scaleY = pageLayout.getPrintableHeight() / mainTextArea.getBoundsInParent().getHeight();
-            Scale scale = new Scale(scaleX, scaleY);
-            mainTextArea.getTransforms().add(scale);
-            if (printerJob.printPage(mainTextArea)) {
-                printerJob.endJob();
+            if(canIPrint) {
+                PageLayout pageLayout = printerJob.getPrinter().createPageLayout(Paper.A4, PageOrientation.PORTRAIT, Printer.MarginType.HARDWARE_MINIMUM);
+                PrinterAttributes attributes = printerJob.getPrinter().getPrinterAttributes();
+                double scaleX = pageLayout.getPrintableWidth() / mainTextArea.getBoundsInParent().getWidth();
+                double scaleY = pageLayout.getPrintableHeight() / mainTextArea.getBoundsInParent().getHeight();
+                Scale scale = new Scale(scaleX, scaleY);
+                mainTextArea.getTransforms().add(scale);
+                if (printerJob.printPage(mainTextArea)) {
+                    printerJob.endJob();
+                }
+                mainTextArea.getTransforms().remove(scale);
             }
-            mainTextArea.getTransforms().remove(scale);
         }
     }
 
