@@ -63,12 +63,16 @@ public class WindowSwitcher {
         loadResource("Editor.fxml");
 
         stage.setTitle("Editor");
-        stage.setResizable(true);
+        initEditorLayout();
         stage.setScene(new Scene((Parent) loader.load()));
 
         if (!isStageDisplayed()) {
             stage.show();
         }
+    }
+
+    private void initEditorLayout() {
+        stage.setResizable(true);
     }
 
     private void loadResource(String resource) {

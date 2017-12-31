@@ -4,10 +4,12 @@ import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.print.*;
 import javafx.scene.control.*;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.layout.HBox;
+import javafx.scene.transform.Scale;
 import javafx.stage.FileChooser;
 import org.fxmisc.richtext.InlineCssTextArea;
 import org.fxmisc.richtext.StyleClassedTextArea;
@@ -55,9 +57,9 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     private AtomicBoolean isTextUpdatedByObserverEvent = new AtomicBoolean(false);
 
     //FontStyle Listeners
-    private ChangeListener<? super String> fontSizeListener = (ChangeListener<String>) (observable, oldValue, newValue) -> fontChange("fontsize", newValue);
-    private ChangeListener<? super String> fontFamilyListener = (ChangeListener<String>) (observable, oldValue, newValue) -> fontChange("fontFamily", newValue);
-    private ChangeListener<? super String> fontColorListener = (ChangeListener<String>) (observable, oldValue, newValue) -> fontChange("color", newValue);
+    private ChangeListener<String> fontSizeListener = (ChangeListener<String>) (observable, oldValue, newValue) -> fontChange("fontsize", newValue);
+    private ChangeListener<String> fontFamilyListener = (ChangeListener<String>) (observable, oldValue, newValue) -> fontChange("fontFamily", newValue);
+    private ChangeListener<String> fontColorListener = (ChangeListener<String>) (observable, oldValue, newValue) -> fontChange("color", newValue);
 
     public EditorController() {
     }
@@ -87,6 +89,8 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     }
 
     private void initTextArea() {
+        initLayout();
+
         initObserver();
 
         mainTextArea.textProperty().addListener((observable, oldValue, newValue) -> {
@@ -100,6 +104,13 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
                 e.printStackTrace();
             }
         });
+    }
+
+    private void initLayout() {
+        mainTextArea.setPrefWidth(Paper.A4.getWidth());
+        mainTextArea.setMinWidth(Paper.A4.getWidth());
+        mainTextArea.setMaxWidth(Paper.A4.getWidth());
+        mainTextArea.setWrapText(true);
     }
 
     private void initObserver() {
@@ -463,6 +474,26 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     @FXML
     private void previousSearchButtonClicked() {
 
+    }
+
+    @FXML
+    public void filePrintClicked() {
+        PrinterJob printerJob = PrinterJob.createPrinterJob();
+        if (printerJob != null) {
+            boolean canIPrint = false;
+            canIPrint = printerJob.showPrintDialog(switcher.getStage());
+
+            PageLayout pageLayout = printerJob.getPrinter().createPageLayout(Paper.A4, PageOrientation.PORTRAIT, Printer.MarginType.HARDWARE_MINIMUM);
+            PrinterAttributes attributes = printerJob.getPrinter().getPrinterAttributes();
+            double scaleX = pageLayout.getPrintableWidth() / mainTextArea.getBoundsInParent().getWidth();
+            double scaleY = pageLayout.getPrintableHeight() / mainTextArea.getBoundsInParent().getHeight();
+            Scale scale = new Scale(scaleX, scaleY);
+            mainTextArea.getTransforms().add(scale);
+            if (printerJob.printPage(mainTextArea)) {
+                printerJob.endJob();
+            }
+            mainTextArea.getTransforms().remove(scale);
+        }
     }
 
     public class EditorControllerObserver implements Serializable, RemoteObserver {

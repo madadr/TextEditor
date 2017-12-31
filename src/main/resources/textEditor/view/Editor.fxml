@@ -16,6 +16,7 @@
                         <MenuItem mnemonicParsing="false" onAction="#fileNewClicked" text="New"/>
                         <MenuItem mnemonicParsing="false" onAction="#fileOpenClicked" text="Open"/>
                         <MenuItem mnemonicParsing="false" onAction="#fileSaveClicked" text="Save"/>
+                        <MenuItem mnemonicParsing="false" onAction="#filePrintClicked" text="Print"/>
                         <MenuItem mnemonicParsing="false" onAction="#fileCloseClicked" text="Close"/>
                     </items>
                 </Menu>
