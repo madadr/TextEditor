@@ -12,10 +12,7 @@ import javafx.stage.FileChooser;
 import org.fxmisc.richtext.InlineCssTextArea;
 import org.fxmisc.richtext.StyleClassedTextArea;
 import org.fxmisc.richtext.StyledTextArea;
-import org.fxmisc.richtext.model.Paragraph;
-import org.fxmisc.richtext.model.StyleSpans;
-import org.fxmisc.richtext.model.StyledDocument;
-import org.fxmisc.richtext.model.TwoDimensional;
+import org.fxmisc.richtext.model.*;
 import textEditor.RMIClient;
 import textEditor.model.*;
 import textEditor.view.WindowSwitcher;
@@ -362,11 +359,15 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
                 continue;
             }
             String bulletListElement = "-"+" "+nonListedElement;
-            System.out.println(bulletListElement);
             IndexRange paragraphRange = mainTextArea.getParagraphSelection(currentParagraph);
             System.out.println(paragraphRange.getStart()+ "   " + paragraphRange.getEnd() + "  " + paragraph.length());
             //REMEBER ABOUT RESTYLE FOR ALIGMENT
+            StyleSpans<Collection<String>> currentParagraphStyles = mainTextArea.getStyleSpans(currentParagraph);
             mainTextArea.replaceText(currentParagraph,0,currentParagraph,paragraph.length(),bulletListElement);
+            System.out.println("STYLE AFTER" + currentParagraphStyles);
+            
+            mainTextArea.setStyleSpans(currentParagraph,2,currentParagraphStyles);
+            System.out.println("STYLE IN MAIN AFTER " + mainTextArea.getStyleSpans(currentParagraph));
             ++currentParagraph;
         }
     }

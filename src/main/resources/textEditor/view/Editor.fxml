@@ -99,7 +99,7 @@
                                 <ChoiceBox fx:id="paragraphHeading" prefWidth="85"/>
                                 <Button fx:id="bulletList" minHeight="23.0" minWidth="44.0"
                                         mnemonicParsing="false" onAction="#bulletListClicked"
-                                        prefHeight="23.0" prefWidth="53.0" text="Previous" textAlignment="CENTER">
+                                        prefHeight="23.0" prefWidth="53.0" text="BulletList" textAlignment="CENTER">
                                     <font>
                                         <Font size="10.0"/>
                                     </font>
