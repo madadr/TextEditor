@@ -3,4 +3,3 @@ sudo: false
 script: 
   - mvn clean verify
   - mvn clean jfx:jar
-  - mvn clean jfx:native
