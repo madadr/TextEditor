@@ -14,6 +14,7 @@ import org.fxmisc.richtext.StyleClassedTextArea;
 import org.fxmisc.richtext.StyledTextArea;
 import org.fxmisc.richtext.model.Paragraph;
 import org.fxmisc.richtext.model.StyleSpans;
+import org.fxmisc.richtext.model.StyledDocument;
 import org.fxmisc.richtext.model.TwoDimensional;
 import textEditor.RMIClient;
 import textEditor.model.*;
@@ -348,16 +349,24 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     {
         int startParagraphInSelection = mainTextArea.offsetToPosition(mainTextArea.getSelection().getStart(), TwoDimensional.Bias.Forward).getMajor();
         int lastParagraphInSelection = mainTextArea.offsetToPosition(mainTextArea.getSelection().getEnd(), TwoDimensional.Bias.Backward).getMajor();
+        System.out.println("Start " + startParagraphInSelection + "end " + lastParagraphInSelection);
         int currentParagraph = startParagraphInSelection;
-        while(startParagraphInSelection<= lastParagraphInSelection)
+        while(currentParagraph<= lastParagraphInSelection)
         {
+            System.out.println("Current " + currentParagraph);
             Paragraph<Collection<String>, String, Collection<String>> paragraph = mainTextArea.getParagraph(currentParagraph);
-            paragraph.length();
-            String bulletListElement = "-"+" "+mainTextArea.getText(currentParagraph);
+            String nonListedElement = mainTextArea.getText(currentParagraph);
+            if(nonListedElement.matches("-.{1,}")) {
+                //element has list prefix skipping
+                ++currentParagraph;
+                continue;
+            }
+            String bulletListElement = "-"+" "+nonListedElement;
             System.out.println(bulletListElement);
             IndexRange paragraphRange = mainTextArea.getParagraphSelection(currentParagraph);
             System.out.println(paragraphRange.getStart()+ "   " + paragraphRange.getEnd() + "  " + paragraph.length());
-            mainTextArea.replaceText(paragraphRange,bulletListElement);
+            //REMEBER ABOUT RESTYLE FOR ALIGMENT
+            mainTextArea.replaceText(currentParagraph,0,currentParagraph,paragraph.length(),bulletListElement);
             ++currentParagraph;
         }
     }
