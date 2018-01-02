@@ -1,4 +1,7 @@
 # TextEditor
+<a href="https://travis-ci.com/mdjdrn1/TextEditor">
+  <img src="https://travis-ci.com/mdjdrn1/TextEditor.svg?token=GqtWzqzpJpVhHaFt6x7P&branch=master">
+</a>
 
 ## Create executable
 ### Jar executable
