@@ -373,16 +373,8 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
                 mainTextArea.replaceText(currentParagraph, 0, currentParagraph, paragraph.length(), bulletListElement);
                 // get font size of first char in paragraph and add it to bullet char style
                 currentParagraphStyles = currentParagraphStyles.prepend(new StyleSpan<>(new ArrayList<String>(Arrays.asList("")), 2));
-
+                System.out.println("ADDINT" + currentParagraphStyles);
                 mainTextArea.setStyleSpans(currentParagraph, 0, currentParagraphStyles);
-
-                try {
-                    // REQUIRED FOR UPDATE OF STYLE IN OTHER CLIENTS!
-                    editorModel.setTextStyle(new StyleSpansWrapper(0, mainTextArea.getStyleSpans(0, mainTextArea.getText().length())), observer);
-                } catch (RemoteException e) {
-                    e.printStackTrace();
-                }
-                // TODO: add method for updating text style in both model and textarea
 
                 ++currentParagraph;
             }
@@ -396,25 +388,33 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
                 if (element.matches("-.{1,}")) {
                     //element has list prefix skipping
                     //delete it
-                    element = element.replaceFirst("- ","");
-                }
-                StyleSpans<Collection<String>> currentParagraphStyles = mainTextArea.getStyleSpans(currentParagraph);
-                mainTextArea.replaceText(currentParagraph, 0, currentParagraph, paragraph.length(), element);
-                // get font size of first char in paragraph and add it to bullet char style
-                // currentParagraphStyles = currentParagraphStyles.(new StyleSpan<>(new ArrayList<String>(Arrays.asList("")), 2));
-                mainTextArea.setStyleSpans(currentParagraph, 0, currentParagraphStyles);
+                    element = element.replaceFirst("- ", "");
+                    StyleSpans<Collection<String>> currentParagraphStyles = mainTextArea.getStyleSpans(currentParagraph);
+                    mainTextArea.replaceText(currentParagraph, 0, currentParagraph, paragraph.length(), element);
+                    // get font size of first char in paragraph and add it to bullet char style
+                    System.out.println("Del " + currentParagraphStyles);
+                    currentParagraphStyles = currentParagraphStyles.subView(2,paragraph.length());
+                    mainTextArea.setStyleSpans(currentParagraph, 0, currentParagraphStyles);
+                    System.out.println("Del " + currentParagraphStyles);
+                    try {
+                        // REQUIRED FOR UPDATE OF STYLE IN OTHER CLIENTS!
+                        editorModel.setTextStyle(new StyleSpansWrapper(0, mainTextArea.getStyleSpans(0, mainTextArea.getText().length())), observer);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                    // TODO: add method for updating text style in both model and textarea
 
-                try {
-                    // REQUIRED FOR UPDATE OF STYLE IN OTHER CLIENTS!
-                    editorModel.setTextStyle(new StyleSpansWrapper(0, mainTextArea.getStyleSpans(0, mainTextArea.getText().length())), observer);
-                } catch (RemoteException e) {
-                    e.printStackTrace();
+                    ++currentParagraph;
                 }
-                // TODO: add method for updating text style in both model and textarea
-
-                ++currentParagraph;
             }
         }
+        try {
+            // REQUIRED FOR UPDATE OF STYLE IN OTHER CLIENTS!
+            editorModel.setTextStyle(new StyleSpansWrapper(0, mainTextArea.getStyleSpans(0, mainTextArea.getText().length())), observer);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        // TODO: add method for updating text style in both model and textarea
 
     }
 
