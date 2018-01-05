@@ -32,7 +32,7 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     @FXML
     private Menu fileMenu, editMenu, helpMenu;
     @FXML
-    private ChoiceBox<String> fontSize, fontType, fontColor, paragraphHeading;
+    private ChoiceBox<String> fontSize, fontType, fontColor, paragraphHeading,bulletList;
     @FXML
     private HBox searchBox;
     @FXML
@@ -61,6 +61,7 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     private ChangeListener<? super String> fontFamilyListener = (ChangeListener<String>) (observable, oldValue, newValue) -> fontChange("fontFamily", newValue);
     private ChangeListener<? super String> fontColorListener = (ChangeListener<String>) (observable, oldValue, newValue) -> fontChange("color", newValue);
     private ChangeListener<? super String> paragraphHeadingListener = (ChangeListener<String>) (observable, oldValue, newValue) -> headingChange("heading", newValue);
+    private ChangeListener<? super String> bulletListListener = (ChangeListener<String>) (observable, oldValue, newValue) -> bulletListChange(newValue);
 
     public EditorController() {
     }
@@ -149,6 +150,11 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
         paragraphHeading.getItems().addAll(" ", "None", "Header1", "Header2", "Header3");
         paragraphHeading.setValue(" ");
         paragraphHeading.getSelectionModel().selectedItemProperty().addListener(paragraphHeadingListener);
+        //Bullet List
+        bulletList.getItems().addAll(" ", "Unlist", "BulletList");
+        bulletList.setValue(" ");
+        bulletList.getSelectionModel().selectedItemProperty().addListener(bulletListListener);
+
     }
 
     private void fontChange(String prefix, String newValue) {
@@ -347,38 +353,69 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     }
 
     @FXML
-    private void bulletListClicked() {
+    private void bulletListChange(String newValue) {
         int startParagraphInSelection = mainTextArea.offsetToPosition(mainTextArea.getSelection().getStart(), TwoDimensional.Bias.Forward).getMajor();
         int lastParagraphInSelection = mainTextArea.offsetToPosition(mainTextArea.getSelection().getEnd(), TwoDimensional.Bias.Backward).getMajor();
-        System.out.println("Start " + startParagraphInSelection + "end " + lastParagraphInSelection);
-        int currentParagraph = startParagraphInSelection;
-        while (currentParagraph <= lastParagraphInSelection) {
-            Paragraph<Collection<String>, String, Collection<String>> paragraph = mainTextArea.getParagraph(currentParagraph);
-            String nonListedElement = mainTextArea.getText(currentParagraph);
-            if (nonListedElement.matches("-.{1,}")) {
-                //element has list prefix skipping
+        if(newValue.equals("BulletList"))
+        {
+            int currentParagraph = startParagraphInSelection;
+            while (currentParagraph <= lastParagraphInSelection) {
+                Paragraph<Collection<String>, String, Collection<String>> paragraph = mainTextArea.getParagraph(currentParagraph);
+                String nonListedElement = mainTextArea.getText(currentParagraph);
+                if (nonListedElement.matches("-.{1,}")) {
+                    //element has list prefix skipping
+                    ++currentParagraph;
+                    continue;
+                }
+                String bulletListElement = "- " + nonListedElement;
+                //REMEBER ABOUT RESTYLE FOR ALIGMENT
+                StyleSpans<Collection<String>> currentParagraphStyles = mainTextArea.getStyleSpans(currentParagraph);
+                mainTextArea.replaceText(currentParagraph, 0, currentParagraph, paragraph.length(), bulletListElement);
+                // get font size of first char in paragraph and add it to bullet char style
+                currentParagraphStyles = currentParagraphStyles.prepend(new StyleSpan<>(new ArrayList<String>(Arrays.asList("")), 2));
+
+                mainTextArea.setStyleSpans(currentParagraph, 0, currentParagraphStyles);
+
+                try {
+                    // REQUIRED FOR UPDATE OF STYLE IN OTHER CLIENTS!
+                    editorModel.setTextStyle(new StyleSpansWrapper(0, mainTextArea.getStyleSpans(0, mainTextArea.getText().length())), observer);
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+                // TODO: add method for updating text style in both model and textarea
+
                 ++currentParagraph;
-                continue;
             }
-            String bulletListElement = "- " + nonListedElement;
-            //REMEBER ABOUT RESTYLE FOR ALIGMENT
-            StyleSpans<Collection<String>> currentParagraphStyles = mainTextArea.getStyleSpans(currentParagraph);
-            mainTextArea.replaceText(currentParagraph, 0, currentParagraph, paragraph.length(), bulletListElement);
-            // get font size of first char in paragraph and add it to bullet char style
-            currentParagraphStyles = currentParagraphStyles.prepend(new StyleSpan<>(new ArrayList<String>(Arrays.asList("")), 2));
-
-            mainTextArea.setStyleSpans(currentParagraph, 0, currentParagraphStyles);
-
-            try {
-                // REQUIRED FOR UPDATE OF STYLE IN OTHER CLIENTS!
-                editorModel.setTextStyle(new StyleSpansWrapper(0, mainTextArea.getStyleSpans(0, mainTextArea.getText().length())), observer);
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
-            // TODO: add method for updating text style in both model and textarea
-
-            ++currentParagraph;
         }
+        else if(newValue.equals("Unlist"))
+        {
+            int currentParagraph = startParagraphInSelection;
+            while (currentParagraph <= lastParagraphInSelection) {
+                Paragraph<Collection<String>, String, Collection<String>> paragraph = mainTextArea.getParagraph(currentParagraph);
+                String element = mainTextArea.getText(currentParagraph);
+                if (element.matches("-.{1,}")) {
+                    //element has list prefix skipping
+                    //delete it
+                    element = element.replaceFirst("- ","");
+                }
+                StyleSpans<Collection<String>> currentParagraphStyles = mainTextArea.getStyleSpans(currentParagraph);
+                mainTextArea.replaceText(currentParagraph, 0, currentParagraph, paragraph.length(), element);
+                // get font size of first char in paragraph and add it to bullet char style
+                // currentParagraphStyles = currentParagraphStyles.(new StyleSpan<>(new ArrayList<String>(Arrays.asList("")), 2));
+                mainTextArea.setStyleSpans(currentParagraph, 0, currentParagraphStyles);
+
+                try {
+                    // REQUIRED FOR UPDATE OF STYLE IN OTHER CLIENTS!
+                    editorModel.setTextStyle(new StyleSpansWrapper(0, mainTextArea.getStyleSpans(0, mainTextArea.getText().length())), observer);
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+                // TODO: add method for updating text style in both model and textarea
+
+                ++currentParagraph;
+            }
+        }
+
     }
 
     @FXML
