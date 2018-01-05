@@ -349,28 +349,12 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
 
     @FXML
     private void editCopyClicked() {
-        ClipboardContent clipboardContent = new ClipboardContent();
-
-        // getting text from focused area
-        StyledTextArea textInput = getFocusedText();
-        if (textInput != null) {
-            clipboardContent.putString(textInput.getSelectedText());
-            clipboard.setContent(clipboardContent);
-        }
+        mainTextArea.copy();
     }
 
     @FXML
     private void editCutClicked() {
-        ClipboardContent clipboardContent = new ClipboardContent();
-        StyledTextArea textInput = getFocusedText();
-        if (textInput != null) {
-            clipboardContent.putString(textInput.getSelectedText());
-            // clearing coresponding area from cuted text
-            IndexRange indexRange = textInput.getSelection();
-            textInput.replaceText(indexRange, "");
-
-            clipboard.setContent(clipboardContent);
-        }
+        mainTextArea.cut();
     }
 
     @FXML
