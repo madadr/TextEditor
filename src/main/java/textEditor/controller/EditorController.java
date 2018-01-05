@@ -352,7 +352,6 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
         }
     }
 
-    @FXML
     private void bulletListChange(String newValue) {
         int startParagraphInSelection = mainTextArea.offsetToPosition(mainTextArea.getSelection().getStart(), TwoDimensional.Bias.Forward).getMajor();
         int lastParagraphInSelection = mainTextArea.offsetToPosition(mainTextArea.getSelection().getEnd(), TwoDimensional.Bias.Backward).getMajor();
@@ -368,14 +367,25 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
                     continue;
                 }
                 String bulletListElement = "- " + nonListedElement;
-                //REMEBER ABOUT RESTYLE FOR ALIGMENT
                 StyleSpans<Collection<String>> currentParagraphStyles = mainTextArea.getStyleSpans(currentParagraph);
                 mainTextArea.replaceText(currentParagraph, 0, currentParagraph, paragraph.length(), bulletListElement);
                 // get font size of first char in paragraph and add it to bullet char style
-                currentParagraphStyles = currentParagraphStyles.prepend(new StyleSpan<>(new ArrayList<String>(Arrays.asList("")), 2));
-                System.out.println("ADDINT" + currentParagraphStyles);
-                mainTextArea.setStyleSpans(currentParagraph, 0, currentParagraphStyles);
 
+                ArrayList<String> firstStyle = (ArrayList<String>) currentParagraphStyles.getStyleSpan(0).getStyle();
+                if(fontSizePattern.matcher(firstStyle.toString()).find())
+                {
+                    for(String style: firstStyle)
+                    {
+                        if(style.matches(fontSizePattern.pattern())){
+                            currentParagraphStyles = currentParagraphStyles.prepend(new StyleSpan<>(new ArrayList<String>(Arrays.asList(style)), 2));
+                        }
+                    }
+                }
+                else
+                {
+                    currentParagraphStyles = currentParagraphStyles.prepend(new StyleSpan<>(new ArrayList<String>(Arrays.asList("")), 2));
+                }
+                mainTextArea.setStyleSpans(currentParagraph, 0, currentParagraphStyles);
                 ++currentParagraph;
             }
         }
@@ -392,17 +402,8 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
                     StyleSpans<Collection<String>> currentParagraphStyles = mainTextArea.getStyleSpans(currentParagraph);
                     mainTextArea.replaceText(currentParagraph, 0, currentParagraph, paragraph.length(), element);
                     // get font size of first char in paragraph and add it to bullet char style
-                    System.out.println("Del " + currentParagraphStyles);
                     currentParagraphStyles = currentParagraphStyles.subView(2,paragraph.length());
                     mainTextArea.setStyleSpans(currentParagraph, 0, currentParagraphStyles);
-                    System.out.println("Del " + currentParagraphStyles);
-                    try {
-                        // REQUIRED FOR UPDATE OF STYLE IN OTHER CLIENTS!
-                        editorModel.setTextStyle(new StyleSpansWrapper(0, mainTextArea.getStyleSpans(0, mainTextArea.getText().length())), observer);
-                    } catch (RemoteException e) {
-                        e.printStackTrace();
-                    }
-                    // TODO: add method for updating text style in both model and textarea
 
                     ++currentParagraph;
                 }
