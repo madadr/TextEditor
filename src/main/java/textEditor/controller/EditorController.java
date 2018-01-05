@@ -6,7 +6,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.input.Clipboard;
-import javafx.scene.input.ClipboardContent;
 import javafx.scene.layout.HBox;
 import javafx.stage.FileChooser;
 import org.fxmisc.richtext.InlineCssTextArea;
@@ -21,11 +20,9 @@ import textEditor.model.*;
 import textEditor.view.WindowSwitcher;
 
 import java.io.File;
-import java.io.Serializable;
 import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Pattern;
 
 public class EditorController implements Initializable, ClientInjectionTarget, WindowSwitcherInjectionTarget {
@@ -53,9 +50,6 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     private WindowSwitcher switcher;
     private Pattern fontSizePattern, fontFamilyPattern, fontColorPattern, paragraphHeadingPattern;
     private RemoteObserver observer;
-
-    // flag for avoiding cycling dependencies during updates after observer event
-    private AtomicBoolean isTextUpdatedByObserverEvent = new AtomicBoolean(false);
 
     //FontStyle Listeners
     private ChangeListener<? super String> fontSizeListener = (ChangeListener<String>) (observable, oldValue, newValue) -> fontChange("fontsize", newValue);
@@ -97,10 +91,10 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
 
         mainTextArea.textProperty().addListener((observable, oldValue, newValue) -> {
             try {
-                if (!isTextUpdatedByObserverEvent.get()) {
+//                if (!isTextUpdatedByObserverEvent.get()) {
                     editorModel.setTextString(newValue, observer);
                     editorModel.setTextStyle(new StyleSpansWrapper(0, mainTextArea.getStyleSpans(0, mainTextArea.getText().length())), observer);
-                }
+//                }
             } catch (RemoteException e) {
                 System.out.println(e.getMessage());
                 e.printStackTrace();
@@ -110,7 +104,7 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
 
     private void initObserver() {
         try {
-            observer = new RemoteObserverImpl(new EditorControllerObserver());
+            observer = new RemoteObserverImpl(new EditorControllerObserver(mainTextArea));
 
             editorModel.addObserver(observer);
 
@@ -574,102 +568,5 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     @FXML
     private void previousSearchButtonClicked() {
 
-    }
-
-    public class EditorControllerObserver implements Serializable, RemoteObserver {
-        private class UpdateTextWrapper implements Runnable {
-            private RemoteObservable observable;
-
-            public UpdateTextWrapper(RemoteObservable observable) {
-                this.observable = observable;
-            }
-
-            @Override
-            public void run() {
-                isTextUpdatedByObserverEvent.set(true);
-                int oldCaretPosition = mainTextArea.getCaretPosition();
-                String oldText = mainTextArea.getText();
-                try {
-                    String newText = ((EditorModel) observable).getTextString();
-                    mainTextArea.replaceText(newText);
-                    int newCaretPosition = calculateNewCaretPosition(oldCaretPosition, oldText, newText);
-                    mainTextArea.moveTo(newCaretPosition);
-                } catch (RemoteException e) {
-                    e.printStackTrace();
-                } finally {
-                    isTextUpdatedByObserverEvent.set(false);
-                }
-            }
-        }
-
-        private class UpdateStyleWrapper implements Runnable {
-            private RemoteObservable observable;
-
-            public UpdateStyleWrapper(RemoteObservable observable) {
-                this.observable = observable;
-            }
-
-            @Override
-            public void run() {
-                try {
-                    StyleSpansWrapper newStyle = ((EditorModel) observable).getTextStyle();
-                    if (newStyle != null && newStyle.getStyleSpans() != null) {
-                        mainTextArea.setStyleSpans(newStyle.getStylesStart(), newStyle.getStyleSpans());
-                    }
-                } catch (RemoteException e) {
-                    e.printStackTrace();
-                } catch (IndexOutOfBoundsException e) {
-                    System.out.println("CRASH");
-                }
-            }
-        }
-
-        @Override
-        public void update(RemoteObservable observable) throws RemoteException {
-            Platform.runLater(new UpdateTextWrapper(observable));
-            Platform.runLater(new UpdateStyleWrapper(observable));
-        }
-
-        @Override
-        public synchronized void update(RemoteObservable observable, RemoteObservable.UpdateTarget target) throws RemoteException {
-            if (target == RemoteObservable.UpdateTarget.ONLY_TEXT) {
-                Platform.runLater(new UpdateTextWrapper(observable));
-            }
-
-            if (target == RemoteObservable.UpdateTarget.ONLY_STYLE) {
-                Platform.runLater(new UpdateStyleWrapper(observable));
-            }
-        }
-
-        // issues when using redo/undo actions as clients can undo another client operations
-        private int calculateNewCaretPosition(int oldCaretPosition, String oldText, String newText) {
-            if (newText.length() == 0) {
-                return 0;
-            }
-
-            int indexOfTextBeforeCaret = newText.indexOf(oldText.substring(0, oldCaretPosition));
-            if (indexOfTextBeforeCaret != -1) {
-                return oldCaretPosition;
-            }
-
-            int indexOfTextAfterCaret = newText.indexOf(oldText.substring(oldCaretPosition, oldText.length()));
-            if (indexOfTextAfterCaret != -1) {
-                return indexOfTextAfterCaret;
-            }
-
-            return findFirstDifferenceIndex(oldText, newText);
-        }
-
-        private int findFirstDifferenceIndex(String oldText, String newText) {
-            int longestLength = oldText.length() > newText.length() ? oldText.length() : newText.length();
-
-            for (int i = 0; i < longestLength; ++i) {
-                if (oldText.charAt(i) != newText.charAt(i)) {
-                    return i;
-                }
-            }
-
-            return 0;
-        }
     }
 }
