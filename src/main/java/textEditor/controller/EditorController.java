@@ -32,7 +32,7 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     @FXML
     private Menu fileMenu, editMenu, helpMenu;
     @FXML
-    private ChoiceBox<String> fontSize, fontType, fontColor, paragraphHeading, bulletList;
+    private ChoiceBox<String> fontSize, fontType, fontColor, paragraphHeading,bulletList;
     @FXML
     private HBox searchBox;
     @FXML
@@ -409,12 +409,16 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
             StyleSpans<Collection<String>> currentParagraphStyles = mainTextArea.getStyleSpans(currentParagraph);
 
             paragraphText = listPrefix(!paragraphText.matches("-.+"), paragraphText, newValue.equals("BulletList"));
-            mainTextArea.replaceText(currentParagraph, 0, currentParagraph, paragraph.length(), paragraphText);
-            if (newValue.equals("BulletList") && !paragraphText.matches("-.+")) {
+            if (newValue.equals("BulletList") && paragraphText.matches("-.+")) {
+
+                mainTextArea.replaceText(currentParagraph, 0, currentParagraph, paragraph.length(), paragraphText);
+
                 ArrayList<String> stylesInFirstSpan = (ArrayList<String>) currentParagraphStyles.getStyleSpan(0).getStyle();
                 String bulletListStyle = findStyleElement(fontSizePattern, stylesInFirstSpan);
+
                 currentParagraphStyles = currentParagraphStyles.prepend(new StyleSpan<>(new ArrayList<>(Arrays.asList(bulletListStyle)), 2));
             } else {
+                mainTextArea.replaceText(currentParagraph, 0, currentParagraph, paragraph.length(), paragraphText);
                 currentParagraphStyles = currentParagraphStyles.subView(2, paragraph.length());
             }
             mainTextArea.setStyleSpans(currentParagraph, 0, currentParagraphStyles);
