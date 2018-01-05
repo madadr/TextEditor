@@ -7,6 +7,7 @@ import textEditor.model.EditorModel;
 import textEditor.model.RemoteObservable;
 import textEditor.model.RemoteObserver;
 import textEditor.model.StyleSpansWrapper;
+import textEditor.utils.ReadOnlyBoolean;
 
 import java.io.Serializable;
 import java.rmi.RemoteException;

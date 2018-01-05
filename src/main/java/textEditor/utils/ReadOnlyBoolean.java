@@ -1,4 +1,4 @@
-package textEditor.controller;
+package textEditor.utils;
 
 
 import java.util.concurrent.atomic.AtomicBoolean;

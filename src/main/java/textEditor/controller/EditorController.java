@@ -17,6 +17,7 @@ import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.TwoDimensional;
 import textEditor.RMIClient;
 import textEditor.model.*;
+import textEditor.utils.ReadOnlyBoolean;
 import textEditor.view.WindowSwitcher;
 
 import java.io.File;
