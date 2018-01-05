@@ -15,9 +15,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class EditorControllerObserver implements Serializable, RemoteObserver {
     private transient StyleClassedTextArea textArea;
 
-    // flag for avoiding cycling dependencies during updates after observer event
-    //
-    private AtomicBoolean isTextUpdatedByObserverEvent = new AtomicBoolean(false);
+    // Flag for avoiding cycling dependencies during updates after observer event.
+    // Helps to determine if update event was initialized by this client/observer.
+    private AtomicBoolean isUpdating = new AtomicBoolean(false);
 
     public EditorControllerObserver(StyleClassedTextArea textArea) {
         this.textArea = textArea;
@@ -69,16 +69,16 @@ public class EditorControllerObserver implements Serializable, RemoteObserver {
 
     @Override
     public void update(RemoteObservable observable) throws RemoteException {
-        isTextUpdatedByObserverEvent.set(true);
+        isUpdating.set(true);
         Platform.runLater(new UpdateTextWrapper(observable));
         Platform.runLater(new UpdateStyleWrapper(observable));
-        isTextUpdatedByObserverEvent.set(false);
+        isUpdating.set(false);
     }
 
     @Override
     public synchronized void update(RemoteObservable observable, RemoteObservable.UpdateTarget target) throws RemoteException {
-        isTextUpdatedByObserverEvent.set(true);
-        
+        isUpdating.set(true);
+
         if (target == RemoteObservable.UpdateTarget.ONLY_TEXT) {
             Platform.runLater(new UpdateTextWrapper(observable));
         }
@@ -87,7 +87,7 @@ public class EditorControllerObserver implements Serializable, RemoteObserver {
             Platform.runLater(new UpdateStyleWrapper(observable));
         }
 
-        isTextUpdatedByObserverEvent.set(false);
+        isUpdating.set(false);
     }
 
     // issues when using redo/undo actions as clients can undo another client operations
@@ -121,11 +121,7 @@ public class EditorControllerObserver implements Serializable, RemoteObserver {
         return 0;
     }
 
-    public boolean isUpdating() {
-        return isTextUpdatedByObserverEvent.get();
-    }
-
-    public ReadOnlyBoolean wasTextUpdateInitializedByThisObserverEvent() {
-        return new ReadOnlyBoolean(isTextUpdatedByObserverEvent);
+    public ReadOnlyBoolean getIsUpdating() {
+        return new ReadOnlyBoolean(isUpdating);
     }
 }

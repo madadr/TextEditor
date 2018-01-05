@@ -50,7 +50,7 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     private WindowSwitcher switcher;
     private Pattern fontSizePattern, fontFamilyPattern, fontColorPattern, paragraphHeadingPattern;
     private RemoteObserver observer;
-    private ReadOnlyBoolean wasTextUpdateInitializedByThisObserverEvent;
+    private ReadOnlyBoolean isThisClientUpdatingText;
 
     //FontStyle Listeners
     private ChangeListener<? super String> fontSizeListener = (ChangeListener<String>) (observable, oldValue, newValue) -> fontChange("fontsize", newValue);
@@ -92,7 +92,7 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
 
         mainTextArea.textProperty().addListener((observable, oldValue, newValue) -> {
             try {
-                if (!wasTextUpdateInitializedByThisObserverEvent.getValue()) {
+                if (!isThisClientUpdatingText.getValue()) {
                     editorModel.setTextString(newValue, observer);
                     editorModel.setTextStyle(new StyleSpansWrapper(0, mainTextArea.getStyleSpans(0, mainTextArea.getText().length())), observer);
                 }
@@ -106,7 +106,7 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     private void initObserver() {
         try {
             EditorControllerObserver ecObserver = new EditorControllerObserver(mainTextArea);
-            wasTextUpdateInitializedByThisObserverEvent = ecObserver.wasTextUpdateInitializedByThisObserverEvent();
+            isThisClientUpdatingText = ecObserver.getIsUpdating();
 
             observer = new RemoteObserverImpl(ecObserver);
 
