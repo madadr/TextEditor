@@ -46,6 +46,7 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     private Clipboard clipboard;
 
     private EditorModel editorModel;
+    private DatabaseModel databaseModel;
     private RMIClient rmiClient;
     private WindowSwitcher switcher;
     private Pattern fontSizePattern, fontFamilyPattern, fontColorPattern;
@@ -76,6 +77,7 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     public void initialize(URL location, ResourceBundle resources) {
         clipboard = Clipboard.getSystemClipboard();
         editorModel = (EditorModel) rmiClient.getModel("EditorModel");
+        databaseModel = (DatabaseModel) rmiClient.getModel("DatabaseModel");
 
         initialTextSettings();
 
