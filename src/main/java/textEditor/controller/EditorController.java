@@ -378,7 +378,7 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
             paragraphText = listPrefix(!paragraphText.matches("-.+"),paragraphText,newValue.equals("BulletList"));
             mainTextArea.replaceText(currentParagraph, 0, currentParagraph, paragraph.length(), paragraphText);
 
-            if(newValue.equals("BulletList")) {
+            if(newValue.equals("BulletList") && !paragraphText.matches("-.+")) {
                 ArrayList<String> stylesInFirstSpan = (ArrayList<String>) currentParagraphStyles.getStyleSpan(0).getStyle();
                 String bulletListStyle = findStyleElement(fontSizePattern, stylesInFirstSpan);
                 currentParagraphStyles = currentParagraphStyles.prepend(new StyleSpan<>(new ArrayList<String>(Arrays.asList(bulletListStyle)), 2));
