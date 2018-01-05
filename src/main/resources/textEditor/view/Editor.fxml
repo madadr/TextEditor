@@ -45,7 +45,7 @@
                 <AnchorPane maxHeight="62.0" maxWidth="-Infinity" minHeight="62.0" minWidth="-Infinity"
                             prefHeight="62.0">
                     <children>
-                        <HBox alignment="CENTER" focusTraversable="true" prefHeight="39.0" spacing="1.0">
+                        <HBox alignment="CENTER" focusTraversable="true" prefHeight="39.0" spacing="2.0">
                             <children>
                                 <ToggleButton fx:id="boldButton" mnemonicParsing="false" onAction="#boldButtonClicked"
                                               text="Bold"/>
@@ -96,6 +96,8 @@
                                 <ToggleButton fx:id="alignmentAdjustButton" mnemonicParsing="false"
                                               onAction="#alignmentAdjustButtonClicked" text="Adjust"
                                               toggleGroup="$alignment"/>
+                                <ChoiceBox fx:id="paragraphHeading" prefWidth="85"/>
+                                <ChoiceBox fx:id="bulletList" prefWidth="53.0"/>
                             </children>
                         </HBox>
                     </children>
