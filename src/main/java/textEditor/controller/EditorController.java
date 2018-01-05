@@ -32,7 +32,7 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     @FXML
     private Menu fileMenu, editMenu, helpMenu;
     @FXML
-    private ChoiceBox<String> fontSize, fontType, fontColor, paragraphHeading,bulletList;
+    private ChoiceBox<String> fontSize, fontType, fontColor, paragraphHeading, bulletList;
     @FXML
     private HBox searchBox;
     @FXML
@@ -236,20 +236,19 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
             underscoreButton.setSelected(isWholeUnderscore);
 
             //FontChange handling
-            fontBoxStyle(fontSize, fontSizeListener, fontSizePattern, "12px", "fontsize");
-            fontBoxStyle(fontType, fontFamilyListener, fontFamilyPattern, "CourierNew", "fontFamily");
-            fontBoxStyle(fontColor, fontColorListener, fontColorPattern, "Black", "color");
-            fontBoxStyle(paragraphHeading, paragraphHeadingListener, paragraphHeadingPattern, " ", "heading");
+            styleSpanBoxFollower(fontSize, fontSizeListener, fontSizePattern, "12px", "fontsize");
+            styleSpanBoxFollower(fontType, fontFamilyListener, fontFamilyPattern, "CourierNew", "fontFamily");
+            styleSpanBoxFollower(fontColor, fontColorListener, fontColorPattern, "Black", "color");
+            styleSpanBoxFollower(paragraphHeading, paragraphHeadingListener, paragraphHeadingPattern, " ", "heading");
+            paragraphBoxFollower(bulletList, bulletListListener, "");
             //ParagraphStyles Handling
             paragraphStyleButtons();
         });
     }
 
     private void paragraphStyleButtons() {
-        int startParagraphInSelection = mainTextArea.offsetToPosition(mainTextArea.getSelection().getStart(), TwoDimensional.Bias.Forward).getMajor();
-        int lastParagraphInSelection = mainTextArea.offsetToPosition(mainTextArea.getSelection().getEnd(), TwoDimensional.Bias.Backward).getMajor();
-
-        for (int paragraph = startParagraphInSelection; paragraph <= lastParagraphInSelection; paragraph++) {
+        IndexRange range = getParagraphRange();
+        for (int paragraph = range.getStart(); paragraph <= range.getEnd(); paragraph++) {
             Collection<String> style = mainTextArea.getParagraph(paragraph).getParagraphStyle();
             if (style.equals(Collections.singleton("alignmentRight"))) {
                 alignmentRightButton.setSelected(true);
@@ -263,7 +262,7 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
         }
     }
 
-    private void fontBoxStyle(ChoiceBox<String> box, ChangeListener<? super String> listener, Pattern pattern, String defaultValue, String replaceText) {
+    private void styleSpanBoxFollower(ChoiceBox<String> box, ChangeListener<? super String> listener, Pattern pattern, String defaultValue, String replaceText) {
         IndexRange range = mainTextArea.getSelection();
         //Ceasing listener handling
         box.getSelectionModel().selectedItemProperty().removeListener(listener);
@@ -287,6 +286,43 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
         }
         //listener handling is now raised
         box.getSelectionModel().selectedItemProperty().addListener(listener);
+    }
+
+    private void paragraphBoxFollower(ChoiceBox<String> box, ChangeListener<? super String> listener, String defaultValue) {
+
+        IndexRange range = getParagraphRange();
+        int currentParagraph = range.getStart() + 1;
+        box.getSelectionModel().selectedItemProperty().removeListener(listener);
+        String firstParagraphText = mainTextArea.getText(range.getStart());
+
+        boolean isBulleted = false, isCombined = false;
+        box.setValue("Unlist");
+        if (firstParagraphText.matches("-.+")) {
+            isBulleted = true;
+            box.setValue("BulletList");
+        }
+        while (currentParagraph <= range.getEnd()) {
+            String paragraphText = mainTextArea.getText(currentParagraph);
+            if (!isBulleted && paragraphText.matches("-.+")) {
+                isCombined = true;
+                break;
+            } else if (isBulleted && !paragraphText.matches("-.+")) {
+                isCombined = true;
+                break;
+            }
+            currentParagraph++;
+        }
+        if (isCombined) {
+            box.setValue(" ");
+        }
+        //listener handling is now raised
+        box.getSelectionModel().selectedItemProperty().addListener(listener);
+    }
+
+    private IndexRange getParagraphRange() {
+        int start = mainTextArea.offsetToPosition(mainTextArea.getSelection().getStart(), TwoDimensional.Bias.Forward).getMajor();
+        int end = mainTextArea.offsetToPosition(mainTextArea.getSelection().getEnd(), TwoDimensional.Bias.Backward).getMajor();
+        return new IndexRange(start, end);
     }
 
     private StyledTextArea getFocusedText() {
@@ -343,48 +379,43 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
             textInput.appendText(textInput.getText(0, textInput.getCaretPosition()) + clipboard.getString() + textInput.getText(textInput.getCaretPosition(), textInput.getLength()));
         }
     }
-    private String findStyleElement(Pattern pattern,ArrayList<String> styles)
-    {
-        for(String style: styles)
-        {
-            if(style.matches(pattern.pattern())){
+
+    private String findStyleElement(Pattern pattern, ArrayList<String> styles) {
+        for (String style : styles) {
+            if (style.matches(pattern.pattern())) {
                 return style;
             }
         }
         return "";
     }
-    private String listPrefix(boolean addPrefix,String text,boolean styling)
-    {
-        if(styling)
-        {
+
+    private String listPrefix(boolean addPrefix, String text, boolean styling) {
+        if (styling) {
             return (addPrefix) ? "- " + text : text;
         }
         return (addPrefix) ? text : text.replaceFirst("- ", "");
 
     }
+
     private void bulletListChange(String newValue) {
-        if(newValue.equals(" ")) {
+        if (newValue.equals(" ")) {
             return;
         }
-        int startParagraphInSelection = mainTextArea.offsetToPosition(mainTextArea.getSelection().getStart(), TwoDimensional.Bias.Forward).getMajor();
-        int lastParagraphInSelection = mainTextArea.offsetToPosition(mainTextArea.getSelection().getEnd(), TwoDimensional.Bias.Backward).getMajor();
-
-        int currentParagraph = startParagraphInSelection;
-        while (currentParagraph <= lastParagraphInSelection) {
+        IndexRange range = getParagraphRange();
+        int currentParagraph = range.getStart();
+        while (currentParagraph <= range.getEnd()) {
             Paragraph<Collection<String>, String, Collection<String>> paragraph = mainTextArea.getParagraph(currentParagraph);
             String paragraphText = mainTextArea.getText(currentParagraph);
             StyleSpans<Collection<String>> currentParagraphStyles = mainTextArea.getStyleSpans(currentParagraph);
 
-            paragraphText = listPrefix(!paragraphText.matches("-.+"),paragraphText,newValue.equals("BulletList"));
+            paragraphText = listPrefix(!paragraphText.matches("-.+"), paragraphText, newValue.equals("BulletList"));
             mainTextArea.replaceText(currentParagraph, 0, currentParagraph, paragraph.length(), paragraphText);
-
-            if(newValue.equals("BulletList") && !paragraphText.matches("-.+")) {
+            if (newValue.equals("BulletList") && !paragraphText.matches("-.+")) {
                 ArrayList<String> stylesInFirstSpan = (ArrayList<String>) currentParagraphStyles.getStyleSpan(0).getStyle();
                 String bulletListStyle = findStyleElement(fontSizePattern, stylesInFirstSpan);
-                currentParagraphStyles = currentParagraphStyles.prepend(new StyleSpan<>(new ArrayList<String>(Arrays.asList(bulletListStyle)), 2));
-            }
-            else{
-                currentParagraphStyles = currentParagraphStyles.subView(2,paragraph.length());
+                currentParagraphStyles = currentParagraphStyles.prepend(new StyleSpan<>(new ArrayList<>(Arrays.asList(bulletListStyle)), 2));
+            } else {
+                currentParagraphStyles = currentParagraphStyles.subView(2, paragraph.length());
             }
             mainTextArea.setStyleSpans(currentParagraph, 0, currentParagraphStyles);
             ++currentParagraph;
@@ -507,30 +538,26 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
 
     @FXML
     private void alignmentLeftButtonClicked() {
-        int startParagraphInSelection = mainTextArea.offsetToPosition(mainTextArea.getSelection().getStart(), TwoDimensional.Bias.Forward).getMajor();
-        int lastParagraphInSelection = mainTextArea.offsetToPosition(mainTextArea.getSelection().getEnd(), TwoDimensional.Bias.Backward).getMajor();
-        changeParagraphs(startParagraphInSelection, lastParagraphInSelection, alignmentLeftButton, "alignmentLeft");
+        IndexRange range = getParagraphRange();
+        changeParagraphs(range.getStart(), range.getEnd(), alignmentLeftButton, "alignmentLeft");
     }
 
     @FXML
     private void alignmentCenterButtonClicked() {
-        int startParagraphInSelection = mainTextArea.offsetToPosition(mainTextArea.getSelection().getStart(), TwoDimensional.Bias.Forward).getMajor();
-        int lastParagraphInSelection = mainTextArea.offsetToPosition(mainTextArea.getSelection().getEnd(), TwoDimensional.Bias.Backward).getMajor();
-        changeParagraphs(startParagraphInSelection, lastParagraphInSelection, alignmentCenterButton, "alignmentCenter");
+        IndexRange range = getParagraphRange();
+        changeParagraphs(range.getStart(), range.getEnd(), alignmentCenterButton, "alignmentCenter");
     }
 
     @FXML
     private void alignmentRightButtonClicked() {
-        int startParagraphInSelection = mainTextArea.offsetToPosition(mainTextArea.getSelection().getStart(), TwoDimensional.Bias.Forward).getMajor();
-        int lastParagraphInSelection = mainTextArea.offsetToPosition(mainTextArea.getSelection().getEnd(), TwoDimensional.Bias.Backward).getMajor();
-        changeParagraphs(startParagraphInSelection, lastParagraphInSelection, alignmentRightButton, "alignmentRight");
+        IndexRange range = getParagraphRange();
+        changeParagraphs(range.getStart(), range.getEnd(), alignmentRightButton, "alignmentRight");
     }
 
     @FXML
     private void alignmentAdjustButtonClicked() {
-        int startParagraphInSelection = mainTextArea.offsetToPosition(mainTextArea.getSelection().getStart(), TwoDimensional.Bias.Forward).getMajor();
-        int lastParagraphInSelection = mainTextArea.offsetToPosition(mainTextArea.getSelection().getEnd(), TwoDimensional.Bias.Backward).getMajor();
-        changeParagraphs(startParagraphInSelection, lastParagraphInSelection, alignmentAdjustButton, "alignmentJustify");
+        IndexRange range = getParagraphRange();
+        changeParagraphs(range.getStart(), range.getEnd(), alignmentAdjustButton, "alignmentJustify");
     }
 
     private void changeParagraphs(int firstParagraph, int lastParagraph, ToggleButton toggleButton, String style) {
