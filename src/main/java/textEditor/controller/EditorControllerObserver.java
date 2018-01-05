@@ -16,6 +16,7 @@ public class EditorControllerObserver implements Serializable, RemoteObserver {
     private transient StyleClassedTextArea textArea;
 
     // flag for avoiding cycling dependencies during updates after observer event
+    //
     private AtomicBoolean isTextUpdatedByObserverEvent = new AtomicBoolean(false);
 
     public EditorControllerObserver(StyleClassedTextArea textArea) {
@@ -31,7 +32,6 @@ public class EditorControllerObserver implements Serializable, RemoteObserver {
 
         @Override
         public void run() {
-            isTextUpdatedByObserverEvent.set(true);
             int oldCaretPosition = textArea.getCaretPosition();
             String oldText = textArea.getText();
             try {
@@ -41,8 +41,6 @@ public class EditorControllerObserver implements Serializable, RemoteObserver {
                 textArea.moveTo(newCaretPosition);
             } catch (RemoteException e) {
                 e.printStackTrace();
-            } finally {
-                isTextUpdatedByObserverEvent.set(false);
             }
         }
     }
@@ -71,12 +69,16 @@ public class EditorControllerObserver implements Serializable, RemoteObserver {
 
     @Override
     public void update(RemoteObservable observable) throws RemoteException {
+        isTextUpdatedByObserverEvent.set(true);
         Platform.runLater(new UpdateTextWrapper(observable));
         Platform.runLater(new UpdateStyleWrapper(observable));
+        isTextUpdatedByObserverEvent.set(false);
     }
 
     @Override
     public synchronized void update(RemoteObservable observable, RemoteObservable.UpdateTarget target) throws RemoteException {
+        isTextUpdatedByObserverEvent.set(true);
+        
         if (target == RemoteObservable.UpdateTarget.ONLY_TEXT) {
             Platform.runLater(new UpdateTextWrapper(observable));
         }
@@ -84,6 +86,8 @@ public class EditorControllerObserver implements Serializable, RemoteObserver {
         if (target == RemoteObservable.UpdateTarget.ONLY_STYLE) {
             Platform.runLater(new UpdateStyleWrapper(observable));
         }
+
+        isTextUpdatedByObserverEvent.set(false);
     }
 
     // issues when using redo/undo actions as clients can undo another client operations
@@ -119,5 +123,9 @@ public class EditorControllerObserver implements Serializable, RemoteObserver {
 
     public boolean isUpdating() {
         return isTextUpdatedByObserverEvent.get();
+    }
+
+    public ReadOnlyBoolean wasTextUpdateInitializedByThisObserverEvent() {
+        return new ReadOnlyBoolean(isTextUpdatedByObserverEvent);
     }
 }

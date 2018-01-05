@@ -29,7 +29,7 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     @FXML
     private Menu fileMenu, editMenu, helpMenu;
     @FXML
-    private ChoiceBox<String> fontSize, fontType, fontColor, paragraphHeading,bulletList;
+    private ChoiceBox<String> fontSize, fontType, fontColor, paragraphHeading, bulletList;
     @FXML
     private HBox searchBox;
     @FXML
@@ -50,6 +50,7 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     private WindowSwitcher switcher;
     private Pattern fontSizePattern, fontFamilyPattern, fontColorPattern, paragraphHeadingPattern;
     private RemoteObserver observer;
+    private ReadOnlyBoolean wasTextUpdateInitializedByThisObserverEvent;
 
     //FontStyle Listeners
     private ChangeListener<? super String> fontSizeListener = (ChangeListener<String>) (observable, oldValue, newValue) -> fontChange("fontsize", newValue);
@@ -91,10 +92,10 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
 
         mainTextArea.textProperty().addListener((observable, oldValue, newValue) -> {
             try {
-//                if (!isTextUpdatedByObserverEvent.get()) {
+                if (!wasTextUpdateInitializedByThisObserverEvent.getValue()) {
                     editorModel.setTextString(newValue, observer);
                     editorModel.setTextStyle(new StyleSpansWrapper(0, mainTextArea.getStyleSpans(0, mainTextArea.getText().length())), observer);
-//                }
+                }
             } catch (RemoteException e) {
                 System.out.println(e.getMessage());
                 e.printStackTrace();
@@ -104,7 +105,10 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
 
     private void initObserver() {
         try {
-            observer = new RemoteObserverImpl(new EditorControllerObserver(mainTextArea));
+            EditorControllerObserver ecObserver = new EditorControllerObserver(mainTextArea);
+            wasTextUpdateInitializedByThisObserverEvent = ecObserver.wasTextUpdateInitializedByThisObserverEvent();
+
+            observer = new RemoteObserverImpl(ecObserver);
 
             editorModel.addObserver(observer);
 
