@@ -170,11 +170,7 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
         });
 
         mainTextArea.setStyleSpans(range.getStart(), newSpans);
-        try {
-            editorModel.setTextStyle(new StyleSpansWrapper(0, mainTextArea.getStyleSpans(0, mainTextArea.getText().length())), observer);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
+        notifyOthers();
 
         mainTextArea.requestFocus();
     }
@@ -201,11 +197,7 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
             currentParagraphIndex++;
         }
 
-        try {
-            editorModel.setTextStyle(new StyleSpansWrapper(0, mainTextArea.getStyleSpans(0, mainTextArea.getText().length())), observer);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
+        notifyOthers();
 
         mainTextArea.requestFocus();
     }
@@ -360,6 +352,14 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
             }
         }
         return "";
+    }
+    private String listPrefix(boolean addPrefix,String text,boolean styling)
+    {
+        if(styling)
+        {
+            return (addPrefix) ? "- " + text : text;
+        }
+        return (addPrefix) ? text : text.replaceFirst("- ", "");
 
     }
     private void bulletListChange(String newValue) {
@@ -372,31 +372,32 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
         int currentParagraph = startParagraphInSelection;
         while (currentParagraph <= lastParagraphInSelection) {
             Paragraph<Collection<String>, String, Collection<String>> paragraph = mainTextArea.getParagraph(currentParagraph);
-            String element = mainTextArea.getText(currentParagraph);
+            String paragraphText = mainTextArea.getText(currentParagraph);
             StyleSpans<Collection<String>> currentParagraphStyles = mainTextArea.getStyleSpans(currentParagraph);
 
-            if(!element.matches("-.+") && newValue.equals("BulletList")) {
-                element = "- " + element;
-                mainTextArea.replaceText(currentParagraph, 0, currentParagraph, paragraph.length(), element);
+            paragraphText = listPrefix(!paragraphText.matches("-.+"),paragraphText,newValue.equals("BulletList"));
+            mainTextArea.replaceText(currentParagraph, 0, currentParagraph, paragraph.length(), paragraphText);
+
+            if(newValue.equals("BulletList")) {
                 ArrayList<String> stylesInFirstSpan = (ArrayList<String>) currentParagraphStyles.getStyleSpan(0).getStyle();
                 String bulletListStyle = findStyleElement(fontSizePattern, stylesInFirstSpan);
                 currentParagraphStyles = currentParagraphStyles.prepend(new StyleSpan<>(new ArrayList<String>(Arrays.asList(bulletListStyle)), 2));
             }
-            else if (element.matches("-.+") && newValue.equals("Unlist")) {
-                //element has list prefix skipping. Delete it
-                element = element.replaceFirst("- ", "");
-                mainTextArea.replaceText(currentParagraph, 0, currentParagraph, paragraph.length(), element);
+            else{
                 currentParagraphStyles = currentParagraphStyles.subView(2,paragraph.length());
             }
             mainTextArea.setStyleSpans(currentParagraph, 0, currentParagraphStyles);
             ++currentParagraph;
         }
+        notifyOthers();
+    }
+
+    private void notifyOthers() {
         try {
             editorModel.setTextStyle(new StyleSpansWrapper(0, mainTextArea.getStyleSpans(0, mainTextArea.getText().length())), observer);
         } catch (RemoteException e) {
             e.printStackTrace();
         }
-        // TODO: add method for updating text style in both model and textarea
     }
 
     @FXML
