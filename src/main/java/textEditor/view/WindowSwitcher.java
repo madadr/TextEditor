@@ -7,6 +7,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import textEditor.RMIClient;
 import textEditor.controller.ControllerFactory;
+import textEditor.controller.User;
 
 import java.io.IOException;
 
@@ -14,17 +15,18 @@ public class WindowSwitcher {
     private Stage stage;
     private FXMLLoader loader;
     private final ControllerFactory controllerFactory;
+    private User user;
 
     public enum Window {
-        LOGIN, REGISTER, EDITOR
+        LOGIN, REGISTER, PICKPROJECT, EDITOR
     }
 
     public WindowSwitcher(Stage stage) {
-        this.stage = stage;
-
         RMIClient rmiClient = new RMIClient();
+        this.stage = stage;
+        user = new User();
 
-        controllerFactory = new ControllerFactory(rmiClient, this);
+        controllerFactory = new ControllerFactory(rmiClient, this, user);
     }
 
     public final Stage getStage() {

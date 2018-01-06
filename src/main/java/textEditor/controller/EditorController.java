@@ -25,7 +25,7 @@ import java.util.ResourceBundle;
 
 import static textEditor.controller.ConstValues.*;
 
-public class EditorController implements Initializable, ClientInjectionTarget, WindowSwitcherInjectionTarget {
+public class EditorController implements Initializable, ClientInjectionTarget, WindowSwitcherInjectionTarget, UseInjectionTarget {
     @FXML
     private Menu fileMenu, editMenu, helpMenu;
     @FXML
@@ -56,6 +56,7 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     private ChangeListener<String> fontColorListener;
     private ChangeListener<String> paragraphHeadingListener;
     private ChangeListener<String> bulletListListener;
+    private User user;
 
     public EditorController() {
     }
@@ -68,6 +69,12 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     @Override
     public void injectWindowSwitcher(WindowSwitcher switcher) {
         this.switcher = switcher;
+    }
+
+    @Override
+    public void injectUser(User user) {
+        System.out.println("Injecting user=" + user);
+        this.user = user;
     }
 
     @Override

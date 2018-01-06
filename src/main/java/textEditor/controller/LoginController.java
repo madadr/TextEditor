@@ -17,7 +17,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class LoginController implements Initializable, ClientInjectionTarget, WindowSwitcherInjectionTarget {
+public class LoginController implements Initializable, ClientInjectionTarget, WindowSwitcherInjectionTarget, UseInjectionTarget {
     @FXML
     private Button submitLogin, registrationLabel;
     @FXML
@@ -31,6 +31,7 @@ public class LoginController implements Initializable, ClientInjectionTarget, Wi
 
     private WindowSwitcher switcher;
     private DatabaseModel databaseModel;
+    private User user;
 
     public LoginController() {
     }
@@ -38,6 +39,11 @@ public class LoginController implements Initializable, ClientInjectionTarget, Wi
     @Override
     public void injectClient(RMIClient client) {
         this.rmiClient = client;
+    }
+
+    @Override
+    public void injectUser(User user) {
+        this.user = user;
     }
 
     @Override
@@ -93,6 +99,10 @@ public class LoginController implements Initializable, ClientInjectionTarget, Wi
                 resultOfAuthorization.setText("Authorization success");
                 resultOfAuthorization.setTextFill(Color.web("#2eb82e"));
                 resultOfAuthorization.setVisible(true);
+
+                System.out.println("login=" + login);
+                this.user.setUsername(login);
+//                switcher.loadWindow(WindowSwitcher.Window.PICKPROJECT);
                 switcher.loadWindow(WindowSwitcher.Window.EDITOR);
             } else {
                 resultOfAuthorization.setText("Password is incorrect");
@@ -100,7 +110,7 @@ public class LoginController implements Initializable, ClientInjectionTarget, Wi
                 resultOfAuthorization.setVisible(true);
             }
         } else {
-            resultOfAuthorization.setText("User don't exist!");
+            resultOfAuthorization.setText("User doesn't exist!");
             resultOfAuthorization.setTextFill(Color.web("#ff3300"));
             resultOfAuthorization.setVisible(true);
         }

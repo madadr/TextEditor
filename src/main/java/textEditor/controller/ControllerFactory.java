@@ -7,10 +7,12 @@ import textEditor.view.WindowSwitcher;
 public class ControllerFactory implements Callback<Class<?>, Object> {
     private RMIClient rmiClient;
     private WindowSwitcher switcher;
+    private User user;
 
-    public ControllerFactory(RMIClient rmiClient, WindowSwitcher switcher) {
+    public ControllerFactory(RMIClient rmiClient, WindowSwitcher switcher, User user) {
         this.rmiClient = rmiClient;
         this.switcher = switcher;
+        this.user = user;
     }
 
     @Override
@@ -25,6 +27,10 @@ public class ControllerFactory implements Callback<Class<?>, Object> {
 
             if (controller instanceof WindowSwitcherInjectionTarget) {
                 ((WindowSwitcherInjectionTarget) controller).injectWindowSwitcher(switcher);
+            }
+
+            if (controller instanceof UseInjectionTarget) {
+                ((UseInjectionTarget) controller).injectUser(user);
             }
 
             return controller;
