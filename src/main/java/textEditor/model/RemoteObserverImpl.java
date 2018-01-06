@@ -1,6 +1,6 @@
 package textEditor.model;
 
-import textEditor.controller.EditorController;
+import textEditor.controller.EditorControllerObserver;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
@@ -8,7 +8,7 @@ import java.rmi.server.UnicastRemoteObject;
 public class RemoteObserverImpl extends UnicastRemoteObject implements RemoteObserver {
     private RemoteObserver observer;
 
-    public RemoteObserverImpl(EditorController.EditorControllerObserver controller) throws RemoteException {
+    public RemoteObserverImpl(EditorControllerObserver controller) throws RemoteException {
         this.observer = (RemoteObserver) controller;
     }
 
