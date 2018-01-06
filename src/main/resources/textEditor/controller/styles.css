@@ -1,25 +1,25 @@
 /**************Text Decorations*****************/
-.boldWeight {
+.weightBold {
     -fx-font-weight: bold;
 }
 
-.normalWeight {
+.weightNormal {
     -fx-font-weight: normal;
 }
 
-.italicStyle {
+.styleItalic {
     -fx-font-style: italic;
 }
 
-.normalStyle {
+.styleNormal {
     -fx-font-style: normal;
 }
 
-.underscoreDecoration {
+.decorationUnderscore {
     -fx-underline: true;
 }
 
-.normalDecoration {
+.decorationNormal {
     -fx-underline: false;
 }
 
