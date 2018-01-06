@@ -38,11 +38,14 @@ public class WindowSwitcher {
             case LOGIN:
                 loadLoginWindow();
                 break;
-            case EDITOR:
-                loadEditorWindow();
-                break;
             case REGISTER:
                 loadRegisterWindow();
+                break;
+            case PICKPROJECT:
+                loadPickProjectWindow();
+                break;
+            case EDITOR:
+                loadEditorWindow();
                 break;
             default:
                 System.err.println("Invalid window!");
@@ -50,6 +53,18 @@ public class WindowSwitcher {
                 System.exit(1);
         }
         reinitializeCloseHandler();
+    }
+
+    private void loadLoginWindow() throws IOException {
+        loadResource("Login.fxml");
+
+        stage.setTitle("Editor - login");
+        stage.setResizable(false);
+        stage.setScene(new Scene((Parent) loader.load(), 600, 400));
+
+        if (!isStageDisplayed()) {
+            stage.show();
+        }
     }
 
     private void loadRegisterWindow() throws IOException {
@@ -64,10 +79,10 @@ public class WindowSwitcher {
         }
     }
 
-    private void loadLoginWindow() throws IOException {
-        loadResource("Login.fxml");
+    private void loadPickProjectWindow() throws IOException {
+        loadResource("Project.fxml");
 
-        stage.setTitle("Editor - login");
+        stage.setTitle("Editor - project");
         stage.setResizable(false);
         stage.setScene(new Scene((Parent) loader.load(), 600, 400));
 
