@@ -25,7 +25,7 @@ import java.util.ResourceBundle;
 
 import static textEditor.controller.ConstValues.*;
 
-public class EditorController implements Initializable, ClientInjectionTarget, WindowSwitcherInjectionTarget, UseInjectionTarget {
+public class EditorController implements Initializable, ClientInjectionTarget, WindowSwitcherInjectionTarget, UserInjectionTarget {
     @FXML
     private Menu fileMenu, editMenu, helpMenu;
     @FXML

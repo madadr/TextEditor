@@ -29,8 +29,8 @@ public class ControllerFactory implements Callback<Class<?>, Object> {
                 ((WindowSwitcherInjectionTarget) controller).injectWindowSwitcher(switcher);
             }
 
-            if (controller instanceof UseInjectionTarget) {
-                ((UseInjectionTarget) controller).injectUser(user);
+            if (controller instanceof UserInjectionTarget) {
+                ((UserInjectionTarget) controller).injectUser(user);
             }
 
             return controller;
