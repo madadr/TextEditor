@@ -14,7 +14,6 @@ import textEditor.view.WindowSwitcher;
 
 import java.io.IOException;
 import java.net.URL;
-import java.rmi.RemoteException;
 import java.util.ResourceBundle;
 
 public class RegisterController implements Initializable, ClientInjectionTarget, WindowSwitcherInjectionTarget {
@@ -63,37 +62,27 @@ public class RegisterController implements Initializable, ClientInjectionTarget,
         String firstName = firstNameField.getText();
 
         //If we fill required fields
-        if(!login.isEmpty() && !password.isEmpty() && !email.isEmpty())
-        {
-            try
-            {
-                if(!databaseModel.userExist(login))
-                {
-                    if(login.length() < 30 && password.length() < 50 && firstName.length() < 30 && lastName.length() < 40 &&
-                            email.length() < 50 && address.length() < 50 && region.length() < 50 && zipCode.length() < 6)
-                    {
+        if (!login.isEmpty() && !password.isEmpty() && !email.isEmpty()) {
+            try {
+                if (!databaseModel.userExist(login)) {
+                    if (login.length() < 30 && password.length() < 50 && firstName.length() < 30 && lastName.length() < 40 &&
+                            email.length() < 50 && address.length() < 50 && region.length() < 50 && zipCode.length() < 6) {
                         databaseModel.registerUser(login, password, email, zipCode, address, region, lastName, firstName);
                         informationLabel.setTextFill(Color.GREEN);
                         informationLabel.setText("Registration was successful");
                         switcher.loadWindow(WindowSwitcher.Window.LOGIN);
-                    }
-                    else
-                    {
+                    } else {
                         informationLabel.setTextFill(Color.RED);
                         informationLabel.setText("The length of data is to big!");
                     }
-                }
-                else
-                {
+                } else {
                     informationLabel.setTextFill(Color.RED);
                     informationLabel.setText("This username is already used");
                 }
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }
-        else
-        {
+        } else {
             informationLabel.setTextFill(Color.RED);
             informationLabel.setText("Fill all required fields");
         }

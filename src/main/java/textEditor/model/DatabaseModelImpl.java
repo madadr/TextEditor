@@ -63,8 +63,7 @@ public class DatabaseModelImpl implements DatabaseModel {
                 }
             }
 
-        } catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -76,8 +75,7 @@ public class DatabaseModelImpl implements DatabaseModel {
         try {
             stmt = con.createStatement();
             rs = stmt.executeQuery("SELECT * FROM uzytkownicy WHERE login=\"" + username + "\"");
-            while (rs.next())
-            {
+            while (rs.next()) {
                 flag = true;
             }
             rs.close();
@@ -96,10 +94,9 @@ public class DatabaseModelImpl implements DatabaseModel {
         try {
             stmt = con.createStatement();
             rs = stmt.executeQuery("SELECT haslo FROM uzytkownicy WHERE login=\"" + userName + "\"");
-            while (rs.next())
-            {
+            while (rs.next()) {
                 String validPassword = rs.getString("haslo");
-                if(password != null && validPassword.equals(password))
+                if (password != null && validPassword.equals(password))
                     flag = true;
             }
             rs.close();
@@ -114,12 +111,12 @@ public class DatabaseModelImpl implements DatabaseModel {
     public boolean registerUser(String login, String password, String email, String zipCode, String address, String region, String lastName, String firstName) throws RemoteException {
         try {
             stmt = con.createStatement();
-            stmt.executeUpdate("INSERT INTO `uzytkownicy` (`id_uzytkownika`, `login`, `haslo`) VALUES (NULL, '"+ login +"', '"+ password +"')");
+            stmt.executeUpdate("INSERT INTO `uzytkownicy` (`id_uzytkownika`, `login`, `haslo`) VALUES (NULL, '" + login + "', '" + password + "')");
             ResultSet rs = stmt.executeQuery("SELECT id_uzytkownika FROM uzytkownicy WHERE login=\"" + login + "\"");
             rs.next();
             int id = rs.getInt(1);
-            stmt.executeUpdate("INSERT INTO `dane_uzytkownika` (`id_uzytkownika`, `imie`, `nazwisko`, `email`) VALUES ('"+ id +"', '"+ firstName +"', '"+ lastName +"', '"+ email +"');");
-            stmt.executeUpdate("INSERT INTO `adres` (`id_uzytkownika`, `region`, `adres`, `kodPocztowy`) VALUES ('"+ id +"', '" + region + "', '" + address + "', '" + zipCode + "');");
+            stmt.executeUpdate("INSERT INTO `dane_uzytkownika` (`id_uzytkownika`, `imie`, `nazwisko`, `email`) VALUES ('" + id + "', '" + firstName + "', '" + lastName + "', '" + email + "');");
+            stmt.executeUpdate("INSERT INTO `adres` (`id_uzytkownika`, `region`, `adres`, `kodPocztowy`) VALUES ('" + id + "', '" + region + "', '" + address + "', '" + zipCode + "');");
             stmt.close();
         } catch (SQLException e) {
             e.printStackTrace();
