@@ -398,7 +398,7 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
 
                 mainTextArea.replaceText(currentParagraph, 0, currentParagraph, paragraph.length(), paragraphText);
 
-                ArrayList<String> stylesInFirstSpan = (ArrayList<String>) currentParagraphStyles.getStyleSpan(0).getStyle();
+                ArrayList<String> stylesInFirstSpan = new ArrayList<>(currentParagraphStyles.getStyleSpan(0).getStyle());
                 String bulletListStyle = findStyleElement(fontSizePattern, stylesInFirstSpan);
 
                 currentParagraphStyles = currentParagraphStyles.prepend(new StyleSpan<>(new ArrayList<>(Arrays.asList(bulletListStyle)), 2));
