@@ -12,13 +12,13 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="textEditor.controller.RegisterController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="textEditor.controller.RegisterController">
     <children>
         <VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0">
             <children>
                 <GridPane alignment="CENTER_RIGHT" hgap="20.0" vgap="10.0" VBox.vgrow="ALWAYS">
                     <children>
-                  <Label alignment="CENTER_RIGHT" contentDisplay="RIGHT" text="Dane kontaktowe" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER">
+                  <Label alignment="CENTER_RIGHT" contentDisplay="RIGHT" text="Contact details" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER">
                      <font>
                         <Font name="System Bold" size="16.0" />
                      </font>
@@ -68,7 +68,7 @@
                   </TextField>
                   <Label text="Region" GridPane.halignment="RIGHT" GridPane.rowIndex="7" />
                   <Label alignment="CENTER_RIGHT" contentDisplay="RIGHT" prefHeight="100.0" prefWidth="300.0" text="Zip-code" GridPane.rowIndex="8" />
-                  <Label alignment="CENTER_RIGHT" contentDisplay="RIGHT" text="Dane logowania" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.valignment="TOP">
+                  <Label alignment="CENTER_RIGHT" contentDisplay="RIGHT" text="Login data" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.valignment="TOP">
                      <GridPane.margin>
                         <Insets />
                      </GridPane.margin>
