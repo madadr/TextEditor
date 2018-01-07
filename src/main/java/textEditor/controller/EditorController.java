@@ -303,17 +303,7 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     private void closeSearchBoxClicked() {
         searchBox.setVisible(false);
         replaceBox.setVisible(false);
-        if(searchTextIndex > -1)
-        {
-            IndexRange range = new IndexRange(searchTextIndex, searchTextIndex+searchTextField.getText().length());
-            StyleSpans<Collection<String>> newSpans = mainTextArea.getStyleSpans(range).mapStyles(currentStyle -> {
-                List<String> currentStyles = new ArrayList<>(currentStyle);
-                currentStyles.remove("highlight");
-                return currentStyles;
-            });
-            mainTextArea.setStyleSpans(range.getStart(), newSpans);
-
-        }
+        textFormatter.clearHighlight(new IndexRange(searchTextIndex, searchTextIndex + searchTextField.getText().length()));
     }
 
     @FXML
