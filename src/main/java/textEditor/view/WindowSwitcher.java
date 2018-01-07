@@ -80,7 +80,7 @@ public class WindowSwitcher {
     }
 
     private void loadPickProjectWindow() throws IOException {
-        loadResource("Project.fxml");
+        loadResource("ManageProject.fxml");
 
         stage.setTitle("Editor - project");
         stage.setResizable(false);
