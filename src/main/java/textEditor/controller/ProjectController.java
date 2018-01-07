@@ -23,22 +23,31 @@ import java.util.ResourceBundle;
 
 public class ProjectController implements Initializable, UserInjectionTarget, WindowSwitcherInjectionTarget {
     @FXML
-    public Label description;
+    private Label description;
 
     @FXML
-    public Label contributors;
+    private Label contributors;
 
     @FXML
     private ListView<String> projectList;
 
     @FXML
-    public Button editButton;
+    private Button newButton;
+
+    @FXML
+    private Button editButton;
+
+    @FXML
+    private Button removeButton;
 
     @FXML
     private Button openButton;
 
     @FXML
-    private Button newButton;
+    private Button importButton;
+
+    @FXML
+    private Button exportButton;
 
     private User user;
     private WindowSwitcher switcher;
@@ -58,9 +67,12 @@ public class ProjectController implements Initializable, UserInjectionTarget, Wi
         System.out.println("user=" + user);
 
         ObservableList<String> items = FXCollections.observableArrayList(
-                "We", "shall", "not", "pass");
+                "My awesome project 1", "My awesome project 2", "Foo", "Bar");
 
         projectList.setItems(items);
+
+        description.setText("This project is about...");
+        contributors.setText("John, Anna, Mike");
 
         initButtonsActions();
     }
