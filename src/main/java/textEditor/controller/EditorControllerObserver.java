@@ -33,6 +33,7 @@ public class EditorControllerObserver implements Serializable, RemoteObserver {
 
         @Override
         public void run() {
+            isUpdating.set(true);
             int oldCaretPosition = textArea.getCaretPosition();
             String oldText = textArea.getText();
             try {
@@ -42,6 +43,8 @@ public class EditorControllerObserver implements Serializable, RemoteObserver {
                 textArea.moveTo(newCaretPosition);
             } catch (RemoteException e) {
                 e.printStackTrace();
+            } finally {
+                isUpdating.set(false);
             }
         }
     }
@@ -70,16 +73,12 @@ public class EditorControllerObserver implements Serializable, RemoteObserver {
 
     @Override
     public void update(RemoteObservable observable) throws RemoteException {
-        isUpdating.set(true);
         Platform.runLater(new UpdateTextWrapper(observable));
         Platform.runLater(new UpdateStyleWrapper(observable));
-        isUpdating.set(false);
     }
 
     @Override
     public synchronized void update(RemoteObservable observable, RemoteObservable.UpdateTarget target) throws RemoteException {
-        isUpdating.set(true);
-
         if (target == RemoteObservable.UpdateTarget.ONLY_TEXT) {
             Platform.runLater(new UpdateTextWrapper(observable));
         }
@@ -87,8 +86,6 @@ public class EditorControllerObserver implements Serializable, RemoteObserver {
         if (target == RemoteObservable.UpdateTarget.ONLY_STYLE) {
             Platform.runLater(new UpdateStyleWrapper(observable));
         }
-
-        isUpdating.set(false);
     }
 
     // issues when using redo/undo actions as clients can undo another client operations

@@ -15,7 +15,6 @@ import textEditor.view.WindowSwitcher;
 
 import java.io.IOException;
 import java.net.URL;
-import java.rmi.RemoteException;
 import java.util.ResourceBundle;
 
 public class LoginController implements Initializable, ClientInjectionTarget, WindowSwitcherInjectionTarget {
@@ -89,24 +88,18 @@ public class LoginController implements Initializable, ClientInjectionTarget, Wi
         String login = userLoginField.getText();
         String password = userPasswordField.getText();
 
-        if(!login.isEmpty() && !password.isEmpty() && databaseModel.userExist(login))
-        {
-            if(databaseModel.checkPassword(login, password))
-            {
+        if (!login.isEmpty() && !password.isEmpty() && databaseModel.userExist(login)) {
+            if (databaseModel.checkPassword(login, password)) {
                 resultOfAuthorization.setText("Authorization success");
                 resultOfAuthorization.setTextFill(Color.web("#2eb82e"));
                 resultOfAuthorization.setVisible(true);
                 switcher.loadWindow(WindowSwitcher.Window.EDITOR);
-            }
-            else
-            {
+            } else {
                 resultOfAuthorization.setText("Password is incorrect");
                 resultOfAuthorization.setTextFill(Color.web("#ff3300"));
                 resultOfAuthorization.setVisible(true);
             }
-        }
-        else
-        {
+        } else {
             resultOfAuthorization.setText("User don't exist!");
             resultOfAuthorization.setTextFill(Color.web("#ff3300"));
             resultOfAuthorization.setVisible(true);

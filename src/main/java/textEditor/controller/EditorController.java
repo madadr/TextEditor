@@ -5,7 +5,6 @@ import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
-import javafx.scene.input.Clipboard;
 import javafx.scene.layout.HBox;
 import javafx.stage.FileChooser;
 import org.fxmisc.richtext.InlineCssTextArea;
@@ -43,8 +42,6 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     @FXML
     private StyleClassedTextArea mainTextArea;
 
-    private Clipboard clipboard;
-
     private EditorModel editorModel;
     private DatabaseModel databaseModel;
     private RMIClient rmiClient;
@@ -54,11 +51,11 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     private ReadOnlyBoolean isThisClientUpdatingText;
 
     //FontStyle Listeners
-    private ChangeListener<? super String> fontSizeListener;
-    private ChangeListener<? super String> fontFamilyListener;
-    private ChangeListener<? super String> fontColorListener;
-    private ChangeListener<? super String> paragraphHeadingListener;
-    private ChangeListener<? super String> bulletListListener;
+    private ChangeListener<String> fontSizeListener;
+    private ChangeListener<String> fontFamilyListener;
+    private ChangeListener<String> fontColorListener;
+    private ChangeListener<String> paragraphHeadingListener;
+    private ChangeListener<String> bulletListListener;
 
     public EditorController() {
     }
@@ -81,10 +78,12 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
             textFormatter.styleSelectedArea(newValue, FONTSIZE_PATTERN_KEY);
             notifyOthers();
         };
+
         fontFamilyListener = (ChangeListener<String>) (observable, oldValue, newValue) -> {
             textFormatter.styleSelectedArea(newValue, FONTFAMILY_PATTERN_KEY);
             notifyOthers();
         };
+
         fontColorListener = (ChangeListener<String>) (observable, oldValue, newValue) -> {
             textFormatter.styleSelectedArea(newValue, FONTCOLOR_PATTERN_KEY);
             notifyOthers();
@@ -94,12 +93,12 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
             textFormatter.styleSelectedParagraph(getParagraphRange(), newValue, new ArrayList<>(Arrays.asList(HEADING_PATTERN_KEY, FONTSIZE_PATTERN_KEY, FONTCOLOR_PATTERN_KEY, FONTFAMILY_PATTERN_KEY)));
             notifyOthers();
         };
+
         bulletListListener = (ChangeListener<String>) (observable, oldValue, newValue) -> {
             textFormatter.applyBulletList(getParagraphRange(), newValue);
             notifyOthers();
         };
 
-        clipboard = Clipboard.getSystemClipboard();
         editorModel = (EditorModel) rmiClient.getModel("EditorModel");
         databaseModel = (DatabaseModel) rmiClient.getModel("DatabaseModel");
 
@@ -233,11 +232,7 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
 
     @FXML
     private void editPasteClicked() {
-        //TODO: refactor this shit
-        StyledTextArea textInput = getFocusedText();
-        if (textInput != null) {
-            textInput.appendText(textInput.getText(0, textInput.getCaretPosition()) + clipboard.getString() + textInput.getText(textInput.getCaretPosition(), textInput.getLength()));
-        }
+        mainTextArea.paste();
     }
 
     private void notifyOthers() {

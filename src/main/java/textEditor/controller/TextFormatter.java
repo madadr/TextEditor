@@ -65,7 +65,6 @@ public class TextFormatter {
     }
 
     public void styleParagraphs(IndexRange paragraphRange, ToggleButton toggleButton, String style) {
-
         if (toggleButton.isSelected()) {
             for (int paragraph = paragraphRange.getStart(); paragraph < paragraphRange.getEnd() + 1; paragraph++) {
                 textArea.setParagraphStyle(paragraph, Collections.singleton(style));
@@ -84,6 +83,7 @@ public class TextFormatter {
         if (newValue.equals(" ")) {
             return;
         }
+
         int currentParagraph = paragraphRange.getStart();
         while (currentParagraph <= paragraphRange.getEnd()) {
             Paragraph<Collection<String>, String, Collection<String>> paragraph = textArea.getParagraph(currentParagraph);
@@ -92,7 +92,6 @@ public class TextFormatter {
 
             paragraphText = listPrefix(!paragraphText.matches("-.+"), paragraphText, newValue.equals(BULLET_LIST));
             if (newValue.equals(BULLET_LIST) && paragraphText.matches("-.+")) {
-
                 textArea.replaceText(currentParagraph, 0, currentParagraph, paragraph.length(), paragraphText);
 
                 ArrayList<String> stylesInFirstSpan = new ArrayList<>(currentParagraphStyles.getStyleSpan(0).getStyle());
@@ -114,6 +113,7 @@ public class TextFormatter {
             button.setSelected(false);
             return;
         }
+
         boolean isWholeStyled = true;
         Pattern pattern = patternHashMap.get(patternKey);
 
@@ -181,6 +181,7 @@ public class TextFormatter {
             isBulleted = true;
             box.setValue(BULLET_LIST);
         }
+
         while (currentParagraph <= paragraphRange.getEnd()) {
             String paragraphText = textArea.getText(currentParagraph);
             if (!isBulleted && paragraphText.matches("-.+")) {
@@ -192,6 +193,7 @@ public class TextFormatter {
             }
             currentParagraph++;
         }
+
         if (isCombined) {
             box.setValue(" ");
         }
@@ -207,6 +209,7 @@ public class TextFormatter {
                 return style;
             }
         }
+
         return "";
     }
 
@@ -214,6 +217,7 @@ public class TextFormatter {
         if (styling) {
             return (addPrefix) ? "- " + text : text;
         }
+
         return (addPrefix) ? text : text.replaceFirst("- ", "");
 
     }
