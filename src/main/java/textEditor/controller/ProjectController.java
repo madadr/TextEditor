@@ -121,8 +121,48 @@ public class ProjectController implements Initializable, UserInjectionTarget, Wi
             popup.show();
         });
 
+        // TODO: Remove code duplication. Find better solution to avoid another fxml file and another controller.
         editButton.setOnAction(event -> {
-            System.out.println("Edit button");
+            final Stage popup = new Stage();
+            popup.initModality(Modality.APPLICATION_MODAL);
+
+            VBox vbox = new VBox(10);
+            vbox.setPadding(new Insets(10));
+
+            Label newProjectLabel = new Label("Edit project");
+            newProjectLabel.setFont(new Font("System Bold", 20));
+
+            Label projectNameLabel = new Label("Project name");
+            projectNameLabel.setFont(new Font("System Bold", 12));
+            TextField projectNameField = new TextField("");
+
+            Label projectDescriptionLabel = new Label("Project description");
+            projectDescriptionLabel.setFont(new Font("System Bold", 12));
+            TextField projectDescriptionField = new TextField("");
+            projectDescriptionField.setPrefHeight(200);
+            projectDescriptionField.setAlignment(Pos.TOP_LEFT);
+
+            Label contributorsLabel = new Label("Contributors");
+            contributorsLabel.setFont(new Font("System Bold", 12));
+            TextField contributorsField = new TextField("");
+
+            Button addButton = new Button("Add");
+            Button cancelButton = new Button("Cancel");
+
+            HBox buttonBox = new HBox();
+            buttonBox.setSpacing(10);
+            buttonBox.setPadding(new Insets(10));
+            buttonBox.setAlignment(Pos.CENTER);
+            buttonBox.getChildren().addAll(addButton, cancelButton);
+
+            vbox.getChildren().addAll(newProjectLabel, new Separator(Orientation.HORIZONTAL),
+                    projectNameLabel, projectNameField, new Separator(Orientation.HORIZONTAL),
+                    projectDescriptionLabel, projectDescriptionField, new Separator(Orientation.HORIZONTAL),
+                    contributorsLabel, contributorsField,
+                    buttonBox);
+
+            popup.setScene(new Scene(vbox, 400, 500));
+            popup.show();
         });
 
         openButton.setOnAction(event -> {
