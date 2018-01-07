@@ -65,7 +65,6 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     private ChangeListener<? super String> paragraphHeadingListener;
     private ChangeListener<? super String> bulletListListener;
     private int searchTextIndex = -1;
-    private boolean isSearched;
 
     public EditorController() {
     }
