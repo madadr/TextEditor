@@ -30,8 +30,8 @@ public class RegisterController implements Initializable, ClientInjectionTarget,
     @FXML
     public Label informationLabel;
 
-    RMIClient client;
-    WindowSwitcher switcher;
+    private RMIClient client;
+    private WindowSwitcher switcher;
 
     private DatabaseModel databaseModel;
 
