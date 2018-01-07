@@ -18,7 +18,7 @@
             <children>
                 <GridPane alignment="CENTER_RIGHT" hgap="20.0" vgap="10.0" VBox.vgrow="ALWAYS">
                     <children>
-                  <Label alignment="CENTER_RIGHT" contentDisplay="RIGHT" text="Dane kontaktowe" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER">
+                  <Label alignment="CENTER_RIGHT" contentDisplay="RIGHT" text="Contact details" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER">
                      <font>
                         <Font name="System Bold" size="16.0" />
                      </font>
@@ -68,7 +68,7 @@
                   </TextField>
                   <Label text="Region" GridPane.halignment="RIGHT" GridPane.rowIndex="7" />
                   <Label alignment="CENTER_RIGHT" contentDisplay="RIGHT" prefHeight="100.0" prefWidth="300.0" text="Zip-code" GridPane.rowIndex="8" />
-                  <Label alignment="CENTER_RIGHT" contentDisplay="RIGHT" text="Dane logowania" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.valignment="TOP">
+                  <Label alignment="CENTER_RIGHT" contentDisplay="RIGHT" text="Login data" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.valignment="TOP">
                      <GridPane.margin>
                         <Insets />
                      </GridPane.margin>

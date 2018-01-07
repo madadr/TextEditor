@@ -26,6 +26,7 @@
 /**************Text Alignments*****************/
 .alignmentLeft {
     -fx-text-alignment: left;
+
 }
 
 .alignmentRight {
@@ -150,3 +151,7 @@
     -fx-font-size: 14px;
 }
 /**************Text Headings*****************/
+
+.highlight {
+    -rtfx-background-color: D4D9DB;
+}

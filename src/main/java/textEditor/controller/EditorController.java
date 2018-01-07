@@ -11,6 +11,7 @@ import javafx.stage.FileChooser;
 import org.fxmisc.richtext.InlineCssTextArea;
 import org.fxmisc.richtext.StyleClassedTextArea;
 import org.fxmisc.richtext.StyledTextArea;
+import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.TwoDimensional;
 import textEditor.RMIClient;
 import textEditor.model.*;
@@ -20,13 +21,17 @@ import textEditor.view.WindowSwitcher;
 import java.io.File;
 import java.net.URL;
 import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.ResourceBundle;
+import java.util.*;
 
 import static textEditor.controller.ConstValues.*;
 
 public class EditorController implements Initializable, ClientInjectionTarget, WindowSwitcherInjectionTarget {
+    @FXML
+    public TextField searchTextField;
+    @FXML
+    public TextField replaceTextField;;
+    @FXML
+    public HBox replaceBox;
     @FXML
     private Menu fileMenu, editMenu, helpMenu;
     @FXML
@@ -59,6 +64,8 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     private ChangeListener<? super String> fontColorListener;
     private ChangeListener<? super String> paragraphHeadingListener;
     private ChangeListener<? super String> bulletListListener;
+    private int searchTextIndex = -1;
+    private boolean isSearched;
 
     public EditorController() {
     }
@@ -261,6 +268,7 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     @FXML
     private void editSearchClicked() {
         searchBox.setVisible(true);
+        replaceBox.setVisible(true);
         //TODO:  implement search
     }
 
@@ -295,6 +303,18 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     @FXML
     private void closeSearchBoxClicked() {
         searchBox.setVisible(false);
+        replaceBox.setVisible(false);
+        if(searchTextIndex > -1)
+        {
+            IndexRange range = new IndexRange(searchTextIndex, searchTextIndex+searchTextField.getText().length());
+            StyleSpans<Collection<String>> newSpans = mainTextArea.getStyleSpans(range).mapStyles(currentStyle -> {
+                List<String> currentStyles = new ArrayList<>(currentStyle);
+                currentStyles.remove("highlight");
+                return currentStyles;
+            });
+            mainTextArea.setStyleSpans(range.getStart(), newSpans);
+
+        }
     }
 
     @FXML
@@ -330,11 +350,27 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     @FXML
     private void replaceButtonClicked() {
 
+        String search = searchTextField.getText();
+        String replace = replaceTextField.getText();
+
+        if(searchTextIndex > -1)
+        {
+            textFormatter.clearHighlight(new IndexRange(searchTextIndex, searchTextIndex + search.length()));
+            mainTextArea.replaceText(new IndexRange(searchTextIndex, searchTextIndex + search.length()), replace);
+            searchButtonClicked();
+        }
+        else
+            searchButtonClicked();
     }
 
     @FXML
     private void replaceAllButtonClicked() {
-
+        searchTextIndex = -1;
+        searchButtonClicked();
+        while (searchTextIndex > -1)
+        {
+            replaceButtonClicked();
+        }
     }
 
     @FXML
@@ -369,16 +405,31 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
 
     @FXML
     private void searchButtonClicked() {
+        String searchText = searchTextField.getText();
 
+        if(!searchText.isEmpty())
+        {
+            textFormatter.clearHighlight(new IndexRange(searchTextIndex, searchTextIndex + searchText.length()));
+            searchTextIndex = mainTextArea.getText().indexOf(searchText, searchTextIndex + 1);
+            textFormatter.addHighlight(new IndexRange(searchTextIndex, searchTextIndex+searchText.length()));
+        }
     }
 
     @FXML
     private void nextSearchButtonClicked() {
-
+        searchButtonClicked();
     }
 
     @FXML
     private void previousSearchButtonClicked() {
+        String searchText = searchTextField.getText();
 
+        if(!searchText.isEmpty())
+        {
+            textFormatter.clearHighlight(new IndexRange(searchTextIndex, searchTextIndex + searchText.length()));
+            searchTextIndex = mainTextArea.getText().substring(0, searchTextIndex + searchText.length() - 1).lastIndexOf(searchText);
+            textFormatter.addHighlight(new IndexRange(searchTextIndex, searchTextIndex+searchText.length()));
+
+        }
     }
 }
