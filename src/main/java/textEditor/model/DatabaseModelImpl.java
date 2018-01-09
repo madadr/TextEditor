@@ -131,7 +131,7 @@ public class DatabaseModelImpl implements DatabaseModel {
     }
 
     @Override
-    public List<Project> getProjects(User user) {
+    public List<Project> getProjects(User user) throws RemoteException {
         // STUB
         List<Project> projects = new ArrayList<>();
 
@@ -144,7 +144,7 @@ public class DatabaseModelImpl implements DatabaseModel {
     }
 
     @Override
-    public int getUserId(String login) {
+    public int getUserId(String login) throws RemoteException {
         // STUB
         // add getting id from database, when having login
         return 1;

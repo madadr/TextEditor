@@ -16,7 +16,7 @@ public interface DatabaseModel extends Remote {
 
     boolean registerUser(String login, String s, String email, String zipCode, String address, String region, String userName, String password) throws RemoteException;
 
-    List<Project> getProjects(User user);
+    List<Project> getProjects(User user) throws RemoteException;
 
-    int getUserId(String login);
+    int getUserId(String login) throws RemoteException;
 }

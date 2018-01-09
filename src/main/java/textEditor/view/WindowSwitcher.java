@@ -10,6 +10,7 @@ import textEditor.controller.ControllerFactory;
 import textEditor.controller.User;
 
 import java.io.IOException;
+import java.rmi.RemoteException;
 
 public class WindowSwitcher {
     private Stage stage;
@@ -21,7 +22,7 @@ public class WindowSwitcher {
         LOGIN, REGISTER, PICKPROJECT, EDITOR
     }
 
-    public WindowSwitcher(Stage stage) {
+    public WindowSwitcher(Stage stage) throws RemoteException {
         RMIClient rmiClient = new RMIClient();
         this.stage = stage;
         user = new User();
