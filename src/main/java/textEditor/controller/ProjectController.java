@@ -1,6 +1,7 @@
 package textEditor.controller;
 
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -101,8 +102,7 @@ public class ProjectController implements Initializable, UserInjectionTarget, Cl
 
     private void setupProjectsListView() {
         projectListView.setItems(FXCollections.observableArrayList(this.projects));
-
-        projectListView.setOnMouseClicked((e) -> {
+        projectListView.getSelectionModel().getSelectedItems().addListener((ListChangeListener<? super Project>) (e) -> {
             Project selectedProject = projectListView.getSelectionModel().getSelectedItem();
             description.setText(selectedProject.getDescription());
             contributors.setText(selectedProject.getContributors().toString());
