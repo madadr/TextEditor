@@ -32,18 +32,12 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     @FXML
     public HBox replaceBox;
     @FXML
-    private Menu fileMenu, editMenu, helpMenu;
-    @FXML
     private ChoiceBox<String> fontSize, fontType, fontColor, paragraphHeading, bulletList;
     @FXML
     private HBox searchBox;
     @FXML
-    private Button searchButton, nextSearchButton, previousSearchButton, closeSearchBox;
-    @FXML
     private ToggleButton boldButton, italicButton, underscoreButton,
             alignmentLeftButton, alignmentCenterButton, alignmentRightButton, alignmentAdjustButton;
-    @FXML
-    private InlineCssTextArea searchArea;
     @FXML
     private StyleClassedTextArea mainTextArea;
 
@@ -205,16 +199,6 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
         int start = mainTextArea.offsetToPosition(mainTextArea.getSelection().getStart(), TwoDimensional.Bias.Forward).getMajor();
         int end = mainTextArea.offsetToPosition(mainTextArea.getSelection().getEnd(), TwoDimensional.Bias.Backward).getMajor();
         return new IndexRange(start, end);
-    }
-
-    private StyledTextArea getFocusedText() {
-        if (mainTextArea.isFocused()) {
-            return mainTextArea;
-
-        } else if (searchArea.isFocused()) {
-            return searchArea;
-        }
-        return null;
     }
 
     @FXML
