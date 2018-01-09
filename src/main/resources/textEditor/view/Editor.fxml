@@ -33,8 +33,6 @@
                 <Menu fx:id="helpMenu" mnemonicParsing="false" text="Help">
                     <items>
                         <MenuItem mnemonicParsing="false" onAction="#helpHelpClicked" text="Help"/>
-                        <SeparatorMenuItem mnemonicParsing="false"/>
-                        <MenuItem mnemonicParsing="false" onAction="#helpAboutUsClicked" text="About us"/>
                     </items>
                 </Menu>
             </menus>
@@ -107,7 +105,7 @@
                         <StyleClassedTextArea fx:id="mainTextArea" AnchorPane.bottomAnchor="0.0"
                                               AnchorPane.leftAnchor="0.01" AnchorPane.rightAnchor="0.0"
                                               AnchorPane.topAnchor="0.0"/>
-                        <HBox fx:id="searchBox" alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="1326.0"
+                        <HBox fx:id="searchBox" alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="750.0"
                               spacing="1.0" visible="false">
                             <children>
                                 <TextField fx:id="searchTextField" minHeight="23.0" minWidth="149.0" prefHeight="23.0"
@@ -155,7 +153,7 @@
                             </padding>
                         </HBox>
                         <HBox fx:id="replaceBox" alignment="CENTER_RIGHT" layoutY="28.0" prefHeight="25.0"
-                              prefWidth="1326.0" spacing="10.0" visible="false">
+                              prefWidth="750.0" spacing="10.0" visible="false">
                             <children>
                                 <TextField fx:id="replaceTextField" minHeight="23.0" minWidth="149.0" prefHeight="23.0"
                                            prefWidth="153.0" promptText="Type replace string...">
