@@ -142,6 +142,13 @@ public class DatabaseModelImpl implements DatabaseModel {
 
         return null;
     }
+
+    @Override
+    public int getUserId(String login) {
+        // STUB
+        // add getting id from database, when having login
+        return 1;
+    }
 }
 
 

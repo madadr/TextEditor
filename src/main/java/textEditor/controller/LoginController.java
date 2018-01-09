@@ -100,8 +100,12 @@ public class LoginController implements Initializable, ClientInjectionTarget, Wi
                 resultOfAuthorization.setTextFill(Color.web("#2eb82e"));
                 resultOfAuthorization.setVisible(true);
 
+                int userId = databaseModel.getUserId(login);
+
                 System.out.println("login=" + login);
+                System.out.println("id=" + userId);
                 this.user.setUsername(login);
+                this.user.setId(userId);
                 switcher.loadWindow(WindowSwitcher.Window.PICKPROJECT);
             } else {
                 resultOfAuthorization.setText("Password is incorrect");
