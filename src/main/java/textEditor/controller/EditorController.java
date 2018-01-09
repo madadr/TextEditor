@@ -6,63 +6,55 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.print.*;
 import javafx.scene.control.*;
-import javafx.scene.input.Clipboard;
-import javafx.scene.input.ClipboardContent;
 import javafx.scene.layout.HBox;
 import javafx.scene.transform.Scale;
 import javafx.stage.FileChooser;
-import org.fxmisc.richtext.InlineCssTextArea;
 import org.fxmisc.richtext.StyleClassedTextArea;
-import org.fxmisc.richtext.StyledTextArea;
-import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.TwoDimensional;
 import textEditor.RMIClient;
 import textEditor.model.*;
+import textEditor.utils.ReadOnlyBoolean;
 import textEditor.view.WindowSwitcher;
 
 import java.io.File;
-import java.io.Serializable;
 import java.net.URL;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.regex.Pattern;
+
+import static textEditor.controller.ConstValues.*;
 
 public class EditorController implements Initializable, ClientInjectionTarget, WindowSwitcherInjectionTarget {
     @FXML
-    private Menu fileMenu, editMenu, helpMenu;
+    public TextField searchTextField;
     @FXML
-    private ChoiceBox<String> fontSize, fontType, fontColor;
+    public TextField replaceTextField;
+    @FXML
+    public HBox replaceBox;
+    @FXML
+    private ChoiceBox<String> fontSize, fontType, fontColor, paragraphHeading, bulletList;
     @FXML
     private HBox searchBox;
-    @FXML
-    private Button searchButton, nextSearchButton, previousSearchButton, closeSearchBox;
     @FXML
     private ToggleButton boldButton, italicButton, underscoreButton,
             alignmentLeftButton, alignmentCenterButton, alignmentRightButton, alignmentAdjustButton;
     @FXML
-    private InlineCssTextArea searchArea;
-    @FXML
     private StyleClassedTextArea mainTextArea;
 
-    private Clipboard clipboard;
-
     private EditorModel editorModel;
+    private DatabaseModel databaseModel;
     private RMIClient rmiClient;
     private WindowSwitcher switcher;
-    private Pattern fontSizePattern, fontFamilyPattern, fontColorPattern;
     private RemoteObserver observer;
+    private TextFormatter textFormatter;
+    private ReadOnlyBoolean isThisClientUpdatingText;
 
-    // flag for avoiding cycling dependencies during updates after observer event
-    private AtomicBoolean isTextUpdatedByObserverEvent = new AtomicBoolean(false);
-
-    //FontStyle Listeners
-    private ChangeListener<String> fontSizeListener = (ChangeListener<String>) (observable, oldValue, newValue) -> fontChange("fontsize", newValue);
-    private ChangeListener<String> fontFamilyListener = (ChangeListener<String>) (observable, oldValue, newValue) -> fontChange("fontFamily", newValue);
-    private ChangeListener<String> fontColorListener = (ChangeListener<String>) (observable, oldValue, newValue) -> fontChange("color", newValue);
-
-    public EditorController() {
-    }
+    private ChangeListener<? super String> fontSizeListener;
+    private ChangeListener<? super String> fontFamilyListener;
+    private ChangeListener<? super String> fontColorListener;
+    private ChangeListener<? super String> paragraphHeadingListener;
+    private ChangeListener<? super String> bulletListListener;
+    private IndexRange searchTextIndex;
 
     @Override
     public void injectClient(RMIClient client) {
@@ -76,8 +68,40 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        clipboard = Clipboard.getSystemClipboard();
-        editorModel = (EditorModel) rmiClient.getModel("EditorModel");
+        textFormatter = new TextFormatter(mainTextArea);
+        searchTextIndex = new IndexRange(-1, -1);
+
+        fontSizeListener = (ChangeListener<String>) (observable, oldValue, newValue) -> {
+            textFormatter.styleSelectedArea(newValue, FONTSIZE_PATTERN_KEY);
+            notifyOthers();
+        };
+
+        fontFamilyListener = (ChangeListener<String>) (observable, oldValue, newValue) -> {
+            textFormatter.styleSelectedArea(newValue, FONTFAMILY_PATTERN_KEY);
+            notifyOthers();
+        };
+
+        fontColorListener = (ChangeListener<String>) (observable, oldValue, newValue) -> {
+            textFormatter.styleSelectedArea(newValue, FONTCOLOR_PATTERN_KEY);
+            notifyOthers();
+        };
+
+        paragraphHeadingListener = (ChangeListener<String>) (observable, oldValue, newValue) -> {
+            textFormatter.styleSelectedParagraph(getParagraphRange(), newValue, new ArrayList<>(Arrays.asList(HEADING_PATTERN_KEY, FONTSIZE_PATTERN_KEY, FONTCOLOR_PATTERN_KEY, FONTFAMILY_PATTERN_KEY)));
+            notifyOthers();
+        };
+
+        bulletListListener = (ChangeListener<String>) (observable, oldValue, newValue) -> {
+            textFormatter.applyBulletList(getParagraphRange(), newValue);
+            notifyOthers();
+        };
+
+        try {
+            editorModel = (EditorModel) rmiClient.getModel("EditorModel");
+            databaseModel = (DatabaseModel) rmiClient.getModel("DatabaseModel");
+        } catch (RemoteException | NotBoundException e) {
+            e.printStackTrace();
+        }
 
         initialTextSettings();
 
@@ -95,9 +119,9 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
 
         mainTextArea.textProperty().addListener((observable, oldValue, newValue) -> {
             try {
-                if (!isTextUpdatedByObserverEvent.get()) {
+                if (!isThisClientUpdatingText.getValue()) {
                     editorModel.setTextString(newValue, observer);
-                    editorModel.setTextStyle(new StyleSpansWrapper(0, mainTextArea.getStyleSpans(0, mainTextArea.getText().length())));
+                    editorModel.setTextStyle(new StyleSpansWrapper(0, mainTextArea.getStyleSpans(0, mainTextArea.getText().length())), observer);
                 }
             } catch (RemoteException e) {
                 System.out.println(e.getMessage());
@@ -115,7 +139,10 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
 
     private void initObserver() {
         try {
-            observer = new RemoteObserverImpl(new EditorControllerObserver());
+            EditorControllerObserver ecObserver = new EditorControllerObserver(mainTextArea);
+            isThisClientUpdatingText = ecObserver.getIsUpdating();
+
+            observer = new RemoteObserverImpl(ecObserver);
 
             editorModel.addObserver(observer);
 
@@ -130,16 +157,7 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     }
 
     private void initialTextSettings() {
-        //Patterns
-        String matchFontSize = "fontsize\\d{1,2}px";
-        String matchFontFamily = "fontFamily\\w{1,}";
-        String matchFontColor = "color\\w{1,}";
-        fontSizePattern = Pattern.compile(matchFontSize);
-        fontFamilyPattern = Pattern.compile(matchFontFamily);
-        fontColorPattern = Pattern.compile(matchFontColor);
-
         //Font Size
-
         fontSize.getItems().addAll(" ", "10px", "12px", "14px", "16px", "18px", "20px", "22px", "32px", "48px", "70px");
         fontSize.setValue("12px");
         fontSize.getSelectionModel().selectedItemProperty().addListener(fontSizeListener);
@@ -151,125 +169,45 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
         fontColor.getItems().addAll(" ", "Red", "Blue", "Green", "Yellow", "Purple", "White", "Black");
         fontColor.setValue("Black");
         fontColor.getSelectionModel().selectedItemProperty().addListener(fontColorListener);
+        //Paragraph Heading
+        paragraphHeading.getItems().addAll(" ", "None", "Header1", "Header2", "Header3");
+        paragraphHeading.setValue(" ");
+        paragraphHeading.getSelectionModel().selectedItemProperty().addListener(paragraphHeadingListener);
+        //Bullet List
+        bulletList.getItems().addAll(" ", "Unlist", "BulletList");
+        bulletList.setValue(" ");
+        bulletList.getSelectionModel().selectedItemProperty().addListener(bulletListListener);
+
     }
 
-    private void fontChange(String prefix, String newValue) {
-        IndexRange range = mainTextArea.getSelection();
-
-        StyleSpans<Collection<String>> spans = mainTextArea.getStyleSpans(range);
-
-        StyleSpans<Collection<String>> newSpans = spans.mapStyles(currentStyle -> {
-            List<String> styles = new ArrayList<>(currentStyle);
-            styles.removeIf(s -> s.matches(prefix + ".*"));
-            styles.add(prefix + newValue);
-            return styles;
-        });
-
-        mainTextArea.setStyleSpans(range.getStart(), newSpans);
-        try {
-            editorModel.setTextStyle(new StyleSpansWrapper(0, mainTextArea.getStyleSpans(0, mainTextArea.getText().length())), observer);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
-
-        mainTextArea.requestFocus();
-    }
 
     private void initTextSelection() {
         mainTextArea.selectedTextProperty().addListener((observable, oldValue, newValue) -> {
             //FontWeight handling
-            // make buttons unselected, when user didn't select any text
-            if (newValue.equals("")) {
-                boldButton.setSelected(false);
-                italicButton.setSelected(false);
-                underscoreButton.setSelected(false);
-                return;
-            }
-            // check if whole selected text is bold or whole selected text is italic or underscore
-            boolean isWholeBold = true;
-            boolean isWholeItalic = true;
-            boolean isWholeUnderscore = true;
-
-            IndexRange range = mainTextArea.getSelection();
-            for (int i = range.getStart(); i < range.getEnd(); ++i) {
-                ArrayList<String> list = new ArrayList<String>(mainTextArea.getStyleOfChar(i));
-                if (isWholeBold && !list.contains("boldWeight")) {
-                    isWholeBold = false;
-                }
-                if (isWholeItalic && !list.contains("italicStyle")) {
-                    isWholeItalic = false;
-                }
-
-                if (isWholeUnderscore && !list.contains("underscoreDecoration")) {
-                    isWholeUnderscore = false;
-                }
-            }
-            boldButton.setSelected(isWholeBold);
-            italicButton.setSelected(isWholeItalic);
-            underscoreButton.setSelected(isWholeUnderscore);
-
+            textFormatter.styleSpanFollower(boldButton, newValue, BOLD_PATTERN_KEY);
+            textFormatter.styleSpanFollower(italicButton, newValue, ITALIC_PATTERN_KEY);
+            textFormatter.styleSpanFollower(underscoreButton, newValue, UNDERSCORE_PATTERN_KEY);
             //FontChange handling
-            fontBoxStyle(fontSize, fontSizeListener, fontSizePattern, "12px", "fontsize");
-            fontBoxStyle(fontType, fontFamilyListener, fontFamilyPattern, "CourierNew", "fontFamily");
-            fontBoxStyle(fontColor, fontColorListener, fontColorPattern, "Black", "color");
-
-            //ParagraphStyles Handling
-            paragraphStyleButtons();
+            textFormatter.styleSpanFollower(fontSize, fontSizeListener, FONTSIZE_PATTERN_KEY, "12px");
+            textFormatter.styleSpanFollower(fontType, fontFamilyListener, FONTFAMILY_PATTERN_KEY, "CourierNew");
+            textFormatter.styleSpanFollower(fontColor, fontColorListener, FONTCOLOR_PATTERN_KEY, "Black");
+            textFormatter.styleSpanFollower(paragraphHeading, paragraphHeadingListener, HEADING_PATTERN_KEY, "None");
+            //BulletList handling
+            textFormatter.bulletListFollower(bulletList, bulletListListener, getParagraphRange());
+            //Align Handling
+            alignmentLeftButton.setSelected(true);
+            textFormatter.paragraphStyleFollower(alignmentAdjustButton, getParagraphRange(), ALIGN_ADJUST);
+            textFormatter.paragraphStyleFollower(alignmentCenterButton, getParagraphRange(), ALIGN_CENTER);
+            textFormatter.paragraphStyleFollower(alignmentLeftButton, getParagraphRange(), ALIGN_LEFT);
+            textFormatter.paragraphStyleFollower(alignmentRightButton, getParagraphRange(), ALIGN_RIGHT);
         });
     }
 
-    private void paragraphStyleButtons() {
-        int startParagraphInSelection = mainTextArea.offsetToPosition(mainTextArea.getSelection().getStart(), TwoDimensional.Bias.Forward).getMajor();
-        int lastParagraphInSelection = mainTextArea.offsetToPosition(mainTextArea.getSelection().getEnd(), TwoDimensional.Bias.Backward).getMajor();
 
-        for (int paragraph = startParagraphInSelection; paragraph <= lastParagraphInSelection; paragraph++) {
-            Collection<String> style = mainTextArea.getParagraph(paragraph).getParagraphStyle();
-            if (style.equals(Collections.singleton("alignmentRight"))) {
-                alignmentRightButton.setSelected(true);
-            } else if (style.equals(Collections.singleton("alignmentCenter"))) {
-                alignmentCenterButton.setSelected(true);
-            } else if (style.equals(Collections.singleton("alignmentJustify"))) {
-                alignmentAdjustButton.setSelected(true);
-            } else {
-                alignmentLeftButton.setSelected(true);
-            }
-        }
-    }
-
-    private void fontBoxStyle(ChoiceBox<String> box, ChangeListener<? super String> listener, Pattern pattern, String defaultValue, String replaceText) {
-        IndexRange range = mainTextArea.getSelection();
-        //Ceasing listener handling
-        box.getSelectionModel().selectedItemProperty().removeListener(listener);
-
-        StyleSpans<Collection<String>> styleSpans = mainTextArea.getStyleSpans(range);
-
-        ArrayList<String> currentStyles = new ArrayList<>(styleSpans.getStyleSpan(0).getStyle());
-
-        currentStyles.removeIf(s -> !(pattern.matcher(s).matches()));
-
-        if (styleSpans.getSpanCount() == 1) {
-            if (currentStyles.isEmpty()) {
-                box.setValue(defaultValue);
-            } else {
-                String actualSizes = currentStyles.get(0);
-                actualSizes = actualSizes.replace(replaceText, "");
-                box.setValue(actualSizes);
-            }
-        } else {
-            box.setValue(" ");
-        }
-        //listener handling is now raised
-        box.getSelectionModel().selectedItemProperty().addListener(listener);
-    }
-
-    private StyledTextArea getFocusedText() {
-        if (mainTextArea.isFocused()) {
-            return mainTextArea;
-
-        } else if (searchArea.isFocused()) {
-            return searchArea;
-        }
-        return null;
+    private IndexRange getParagraphRange() {
+        int start = mainTextArea.offsetToPosition(mainTextArea.getSelection().getStart(), TwoDimensional.Bias.Forward).getMajor();
+        int end = mainTextArea.offsetToPosition(mainTextArea.getSelection().getEnd(), TwoDimensional.Bias.Backward).getMajor();
+        return new IndexRange(start, end);
     }
 
     @FXML
@@ -284,36 +222,24 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
 
     @FXML
     private void editCopyClicked() {
-        ClipboardContent clipboardContent = new ClipboardContent();
-
-        // getting text from focused area
-        StyledTextArea textInput = getFocusedText();
-        if (textInput != null) {
-            clipboardContent.putString(textInput.getSelectedText());
-            clipboard.setContent(clipboardContent);
-        }
+        mainTextArea.copy();
     }
 
     @FXML
     private void editCutClicked() {
-        ClipboardContent clipboardContent = new ClipboardContent();
-        StyledTextArea textInput = getFocusedText();
-        if (textInput != null) {
-            clipboardContent.putString(textInput.getSelectedText());
-            // clearing coresponding area from cuted text
-            IndexRange indexRange = textInput.getSelection();
-            textInput.replaceText(indexRange, "");
-
-            clipboard.setContent(clipboardContent);
-        }
+        mainTextArea.cut();
     }
 
     @FXML
     private void editPasteClicked() {
-        //TODO: refactor this shit
-        StyledTextArea textInput = getFocusedText();
-        if (textInput != null) {
-            textInput.appendText(textInput.getText(0, textInput.getCaretPosition()) + clipboard.getString() + textInput.getText(textInput.getCaretPosition(), textInput.getLength()));
+        mainTextArea.paste();
+    }
+
+    private void notifyOthers() {
+        try {
+            editorModel.setTextStyle(new StyleSpansWrapper(0, mainTextArea.getStyleSpans(0, mainTextArea.getText().length())), observer);
+        } catch (RemoteException e) {
+            e.printStackTrace();
         }
     }
 
@@ -323,14 +249,9 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     }
 
     @FXML
-    private void helpAboutUsClicked() {
-        //TODO:  implement javafx stage appear with aboutUs content
-    }
-
-    @FXML
     private void editSearchClicked() {
         searchBox.setVisible(true);
-        //TODO:  implement search
+        replaceBox.setVisible(true);
     }
 
     @FXML
@@ -364,117 +285,106 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     @FXML
     private void closeSearchBoxClicked() {
         searchBox.setVisible(false);
+        replaceBox.setVisible(false);
+        textFormatter.clearHighlight(searchTextIndex);
     }
 
     @FXML
     private void boldButtonClicked() {
-        transformTextStyle(mainTextArea, boldButton, "boldWeight", "normalWeight");
+        if (boldButton.isSelected()) {
+            textFormatter.styleSelectedArea(TEXT_BOLD, BOLD_PATTERN_KEY);
+        } else {
+            textFormatter.styleSelectedArea(TEXT_NORMAL, BOLD_PATTERN_KEY);
+        }
+        notifyOthers();
     }
 
     @FXML
     private void italicButtonClicked() {
-        transformTextStyle(mainTextArea, italicButton, "italicStyle", "normalStyle");
-    }
-
-    private void transformTextStyle(StyleClassedTextArea area, ToggleButton triggeringButton, String transformedStyle, String normalStyle) {
-        IndexRange range = area.getSelection();
-
-        boolean replaceNormalStyle = triggeringButton.isSelected();
-
-        String newStyle = replaceNormalStyle ? transformedStyle : normalStyle;
-        String oldStyle = replaceNormalStyle ? normalStyle : transformedStyle;
-
-        StyleSpans<Collection<String>> spans = area.getStyleSpans(range);
-
-        StyleSpans<Collection<String>> newSpans = spans.mapStyles(currentStyle -> {
-            List<String> style = new ArrayList<>(Arrays.asList(newStyle));
-            style.addAll(currentStyle);
-            style.remove(oldStyle);
-            return style;
-        });
-        area.setStyleSpans(range.getStart(), newSpans);
-        try {
-            editorModel.setTextStyle(new StyleSpansWrapper(0, area.getStyleSpans(0, area.getText().length())), observer);
-        } catch (RemoteException e) {
-            e.printStackTrace();
+        if (italicButton.isSelected()) {
+            textFormatter.styleSelectedArea(TEXT_ITALIC, ITALIC_PATTERN_KEY);
+        } else {
+            textFormatter.styleSelectedArea(TEXT_NORMAL, ITALIC_PATTERN_KEY);
         }
-
-        area.requestFocus();
+        notifyOthers();
     }
 
     @FXML
     private void underscoreButtonClicked() {
-        transformTextStyle(mainTextArea, underscoreButton, "underscoreDecoration", "normalDecoration");
+        if (underscoreButton.isSelected()) {
+            textFormatter.styleSelectedArea(TEXT_UNDERSCORE, UNDERSCORE_PATTERN_KEY);
+        } else {
+            textFormatter.styleSelectedArea(TEXT_NORMAL, UNDERSCORE_PATTERN_KEY);
+        }
+        notifyOthers();
     }
 
     @FXML
     private void replaceButtonClicked() {
 
+        String replace = replaceTextField.getText();
+
+        if (searchTextIndex.getStart() > -1) {
+            textFormatter.clearHighlight(searchTextIndex);
+            mainTextArea.replaceText(searchTextIndex, replace);
+        }
+        searchButtonClicked();
     }
 
     @FXML
     private void replaceAllButtonClicked() {
-
-    }
-
-    @FXML
-    private void closeReplaceBoxClicked() {
-
+        searchTextIndex = new IndexRange(-1, -1);
+        searchButtonClicked();
+        while (searchTextIndex.getStart() > -1) {
+            replaceButtonClicked();
+        }
     }
 
     @FXML
     private void alignmentLeftButtonClicked() {
-        int startParagraphInSelection = mainTextArea.offsetToPosition(mainTextArea.getSelection().getStart(), TwoDimensional.Bias.Forward).getMajor();
-        int lastParagraphInSelection = mainTextArea.offsetToPosition(mainTextArea.getSelection().getEnd(), TwoDimensional.Bias.Backward).getMajor();
-        changeParagraphs(startParagraphInSelection, lastParagraphInSelection, alignmentLeftButton, "alignmentLeft");
+        textFormatter.styleParagraphs(getParagraphRange(), alignmentLeftButton, ALIGN_LEFT);
+        notifyOthers();
     }
 
     @FXML
     private void alignmentCenterButtonClicked() {
-        int startParagraphInSelection = mainTextArea.offsetToPosition(mainTextArea.getSelection().getStart(), TwoDimensional.Bias.Forward).getMajor();
-        int lastParagraphInSelection = mainTextArea.offsetToPosition(mainTextArea.getSelection().getEnd(), TwoDimensional.Bias.Backward).getMajor();
-        changeParagraphs(startParagraphInSelection, lastParagraphInSelection, alignmentCenterButton, "alignmentCenter");
+        textFormatter.styleParagraphs(getParagraphRange(), alignmentCenterButton, ALIGN_CENTER);
+        notifyOthers();
     }
 
     @FXML
     private void alignmentRightButtonClicked() {
-        int startParagraphInSelection = mainTextArea.offsetToPosition(mainTextArea.getSelection().getStart(), TwoDimensional.Bias.Forward).getMajor();
-        int lastParagraphInSelection = mainTextArea.offsetToPosition(mainTextArea.getSelection().getEnd(), TwoDimensional.Bias.Backward).getMajor();
-        changeParagraphs(startParagraphInSelection, lastParagraphInSelection, alignmentRightButton, "alignmentRight");
+        textFormatter.styleParagraphs(getParagraphRange(), alignmentRightButton, ALIGN_RIGHT);
+        notifyOthers();
     }
 
     @FXML
     private void alignmentAdjustButtonClicked() {
-        int startParagraphInSelection = mainTextArea.offsetToPosition(mainTextArea.getSelection().getStart(), TwoDimensional.Bias.Forward).getMajor();
-        int lastParagraphInSelection = mainTextArea.offsetToPosition(mainTextArea.getSelection().getEnd(), TwoDimensional.Bias.Backward).getMajor();
-        changeParagraphs(startParagraphInSelection, lastParagraphInSelection, alignmentAdjustButton, "alignmentJustify");
+        textFormatter.styleParagraphs(getParagraphRange(), alignmentAdjustButton, ALIGN_ADJUST);
+        notifyOthers();
     }
 
-    private void changeParagraphs(int firstParagraph, int lastParagraph, ToggleButton toggleButton, String style) {
-        if (toggleButton.isSelected()) {
-            for (int paragraph = firstParagraph; paragraph < lastParagraph + 1; paragraph++)
-                mainTextArea.setParagraphStyle(paragraph, Collections.singleton(style));
-        } else {
-            for (int paragraph = firstParagraph; paragraph < lastParagraph + 1; paragraph++)
-                mainTextArea.setParagraphStyle(paragraph, Collections.singleton("alignmentLeft"));
-        }
-
-    }
 
     @FXML
     private void searchButtonClicked() {
+        String searchText = searchTextField.getText();
 
+        if (!searchText.isEmpty()) {
+            textFormatter.clearHighlight(searchTextIndex);
+            int index = mainTextArea.getText().indexOf(searchText, searchTextIndex.getStart() + 1);
+            searchTextIndex = new IndexRange(index, index + searchText.length());
+            textFormatter.addHighlight(searchTextIndex);
+        }
     }
 
     @FXML
     private void nextSearchButtonClicked() {
-
+        searchButtonClicked();
     }
 
     @FXML
     private void previousSearchButtonClicked() {
-
-    }
+        String searchText = searchTextField.getText();
 
     @FXML
     public void filePrintClicked() {
@@ -495,103 +405,6 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
                 }
                 mainTextArea.getTransforms().remove(scale);
             }
-        }
-    }
-
-    public class EditorControllerObserver implements Serializable, RemoteObserver {
-        private class UpdateTextWrapper implements Runnable {
-            private RemoteObservable observable;
-
-            public UpdateTextWrapper(RemoteObservable observable) {
-                this.observable = observable;
-            }
-
-            @Override
-            public void run() {
-                isTextUpdatedByObserverEvent.set(true);
-                int oldCaretPosition = mainTextArea.getCaretPosition();
-                String oldText = mainTextArea.getText();
-                try {
-                    String newText = ((EditorModel) observable).getTextString();
-                    mainTextArea.replaceText(newText);
-                    int newCaretPosition = calculateNewCaretPosition(oldCaretPosition, oldText, newText);
-                    mainTextArea.moveTo(newCaretPosition);
-                } catch (RemoteException e) {
-                    e.printStackTrace();
-                } finally {
-                    isTextUpdatedByObserverEvent.set(false);
-                }
-            }
-        }
-
-        private class UpdateStyleWrapper implements Runnable {
-            private RemoteObservable observable;
-
-            public UpdateStyleWrapper(RemoteObservable observable) {
-                this.observable = observable;
-            }
-
-            @Override
-            public void run() {
-                try {
-                    StyleSpansWrapper newStyle = ((EditorModel) observable).getTextStyle();
-                    if (newStyle != null && newStyle.getStyleSpans() != null) {
-                        mainTextArea.setStyleSpans(newStyle.getStylesStart(), newStyle.getStyleSpans());
-                    }
-                } catch (RemoteException e) {
-                    e.printStackTrace();
-                } catch (IndexOutOfBoundsException e) {
-                    System.out.println("CRASH");
-                }
-            }
-        }
-
-        @Override
-        public void update(RemoteObservable observable) throws RemoteException {
-            Platform.runLater(new UpdateTextWrapper(observable));
-            Platform.runLater(new UpdateStyleWrapper(observable));
-        }
-
-        @Override
-        public synchronized void update(RemoteObservable observable, RemoteObservable.UpdateTarget target) throws RemoteException {
-            if (target == RemoteObservable.UpdateTarget.ONLY_TEXT) {
-                Platform.runLater(new UpdateTextWrapper(observable));
-            }
-
-            if (target == RemoteObservable.UpdateTarget.ONLY_STYLE) {
-                Platform.runLater(new UpdateStyleWrapper(observable));
-            }
-        }
-
-        // issues when using redo/undo actions as clients can undo another client operations
-        private int calculateNewCaretPosition(int oldCaretPosition, String oldText, String newText) {
-            if (newText.length() == 0) {
-                return 0;
-            }
-
-            int indexOfTextBeforeCaret = newText.indexOf(oldText.substring(0, oldCaretPosition));
-            if (indexOfTextBeforeCaret != -1) {
-                return oldCaretPosition;
-            }
-
-            int indexOfTextAfterCaret = newText.indexOf(oldText.substring(oldCaretPosition, oldText.length()));
-            if (indexOfTextAfterCaret != -1) {
-                return indexOfTextAfterCaret;
-            }
-
-            return findFirstDifferenceIndex(oldText, newText);
-        }
-
-        private int findFirstDifferenceIndex(String oldText, String newText) {
-            int longestLength = oldText.length() > newText.length() ? oldText.length() : newText.length();
-
-            for (int i = 0; i < longestLength; ++i) {
-                if (oldText.charAt(i) != newText.charAt(i)) {
-                    return i;
-                }
-            }
-
-            return 0;
         }
     }
 }

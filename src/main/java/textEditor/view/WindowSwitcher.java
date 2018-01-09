@@ -16,7 +16,7 @@ public class WindowSwitcher {
     private final ControllerFactory controllerFactory;
 
     public enum Window {
-        LOGIN, EDITOR
+        LOGIN, REGISTER, EDITOR
     }
 
     public WindowSwitcher(Stage stage) {
@@ -39,12 +39,27 @@ public class WindowSwitcher {
             case EDITOR:
                 loadEditorWindow();
                 break;
+            case REGISTER:
+                loadRegisterWindow();
+                break;
             default:
                 System.err.println("Invalid window!");
                 Platform.exit();
                 System.exit(1);
         }
         reinitializeCloseHandler();
+    }
+
+    private void loadRegisterWindow() throws IOException {
+        loadResource("Register.fxml");
+
+        stage.setTitle("Editor - register");
+        stage.setResizable(false);
+        stage.setScene(new Scene((Parent) loader.load(), 600, 400));
+
+        if (!isStageDisplayed()) {
+            stage.show();
+        }
     }
 
     private void loadLoginWindow() throws IOException {

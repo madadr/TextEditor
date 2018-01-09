@@ -10,15 +10,18 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import textEditor.RMIClient;
+import textEditor.model.DatabaseModel;
 import textEditor.view.WindowSwitcher;
 
 import java.io.IOException;
 import java.net.URL;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
 import java.util.ResourceBundle;
 
 public class LoginController implements Initializable, ClientInjectionTarget, WindowSwitcherInjectionTarget {
     @FXML
-    private Button submitLogin, registrationLabel;
+    private Button submitLogin, registrationButton;
     @FXML
     private Label resultOfAuthorization;
     @FXML
@@ -29,6 +32,7 @@ public class LoginController implements Initializable, ClientInjectionTarget, Wi
     private RMIClient rmiClient;
 
     private WindowSwitcher switcher;
+    private DatabaseModel databaseModel;
 
     public LoginController() {
     }
@@ -46,13 +50,26 @@ public class LoginController implements Initializable, ClientInjectionTarget, Wi
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         resultOfAuthorization.setVisible(false);
+        try {
+            databaseModel = (DatabaseModel) rmiClient.getModel("DatabaseModel");
+        } catch (RemoteException | NotBoundException e) {
+            setNotConnected();
+        }
+
         runEnableKeyEventHandler();
+    }
+
+    private void setNotConnected() {
+        setResultText("Brak połączenia z bazą danych", false);
+        submitLogin.setDisable(true);
+        registrationButton.setDisable(true);
+        userLoginField.setDisable(true);
+        userPasswordField.setDisable(true);
     }
 
     private void runEnableKeyEventHandler() {
         Platform.runLater(() -> {
             while (this.switcher.getStage().getScene() == null) {
-
             }
             enableKeyEventHandler();
         });
@@ -73,34 +90,39 @@ public class LoginController implements Initializable, ClientInjectionTarget, Wi
 
     @FXML
     private void onClickRegistry() {
-
+        try {
+            switcher.loadWindow(WindowSwitcher.Window.REGISTER);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void onClickSubmit(ActionEvent actionEvent) throws IOException {
-        if (checkLoginAndPassword()) {
-            System.out.println("Login correct Password Correct, entering Service");
-            resultOfAuthorization.setText("Authorization success");
-            resultOfAuthorization.setTextFill(Color.web("#2eb82e"));
-            resultOfAuthorization.setVisible(true);
+        String login = userLoginField.getText();
+        String password = userPasswordField.getText();
 
-            switcher.loadWindow(WindowSwitcher.Window.EDITOR);
+        if (!login.isEmpty() && !password.isEmpty() && databaseModel.userExist(login)) {
+            if (databaseModel.checkPassword(login, password)) {
+                setResultText("Authorization success", true);
+                switcher.loadWindow(WindowSwitcher.Window.EDITOR);
+            } else {
+                setResultText("Password is incorrect", false);
+            }
         } else {
-            System.out.println("Authorization failed");
-            resultOfAuthorization.setText("Authorization failed");
-            resultOfAuthorization.setTextFill(Color.web("#ff3300"));
-            resultOfAuthorization.setVisible(true);
+            setResultText("User don't exist!", false);
         }
     }
 
-    private boolean checkLoginAndPassword() {
-        if (userLoginField.getText().isEmpty() || userPasswordField.getText().isEmpty()) {
-            System.out.println("Login or Password werent typed");
-            return false;
-        } else if (userLoginField.getText().equals("admin") && userPasswordField.getText().equals("admin")) {
-            System.out.println("Correct Login and Password");
-            return true;
+    public void setResultText(String resultText, boolean isValid) {
+        resultOfAuthorization.setText(resultText);
+        if(isValid)
+        {
+            resultOfAuthorization.setTextFill(Color.web("#2eb82e"));
         }
-        System.out.println("Wrong Login or Password");
-        return false;
+        else
+        {
+            resultOfAuthorization.setTextFill(Color.web("#ff3300"));
+        }
+        resultOfAuthorization.setVisible(true);
     }
 }

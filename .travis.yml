@@ -1,3 +1,27 @@
-language: java
-sudo: false
-script: mvn clean verify
+matrix:
+  include:
+    - dist: trusty
+      sudo: false
+      language: java
+
+      script: 
+        - mvn clean verify
+        - mvn clean jfx:jar
+
+    - dist: trusty
+      sudo: required
+      language: java
+
+      before_install:
+        - sudo apt-get update
+        - sudo apt-get install fakeroot
+
+      script: 
+        - mvn clean jfx:native
+
+    - os: osx
+      sudo: false
+      language: java
+
+      script: 
+        - mvn clean jfx:native
