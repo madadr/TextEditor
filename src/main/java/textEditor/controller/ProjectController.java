@@ -95,7 +95,7 @@ public class ProjectController implements Initializable, UserInjectionTarget, Cl
         try {
             projects = dbService.getProjects(user);
         } catch (RemoteException e) {
-            e.printStackTrace(); // todo handle and do sth
+            e.printStackTrace();
         }
     }
 

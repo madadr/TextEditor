@@ -133,16 +133,43 @@ public class DatabaseModelImpl implements DatabaseModel {
 
     @Override
     public List<Project> getProjects(User user) throws RemoteException {
-        // STUB
-        System.out.println("getting project");
+
         List<Project> projects = new ArrayList<>();
 
-        projects.add(new ProjectImpl("Proj1", "Proj1 desc\nNo elo elo 3 2 0", new ArrayList<>(Arrays.asList("User1", "User2"))));
-        projects.add(new ProjectImpl("Proj2", "Proj2 desc\nNo elo elo 3 2 0", new ArrayList<>(Arrays.asList("User2"))));
-        projects.add(new ProjectImpl("Proj3", "Proj3 desc\nNo elo elo 3 2 0", new ArrayList<>(Arrays.asList("User3"))));
-        projects.add(new ProjectImpl("Proj4", "Proj4 desc\nNo elo elo 3 2 0", new ArrayList<>(Arrays.asList("User4"))));
+        ResultSet rs;
+        try {
+            stmt = con.createStatement();
+            rs = stmt.executeQuery("SELECT projekt.* FROM projekt NATURAL JOIN uzytkownik_projekt WHERE uzytkownik_projekt.id_uzytkownika = " + user.getId());
+            while (rs.next()) {
+                System.out.println("LOL");
+                int id_projektu = rs.getInt("id_projektu");
+                String nazwa = rs.getString("nazwa");
+                String opis = rs.getString("opis");
+                String data = rs.getString("data_utworzenia");
+
+                projects.add(new ProjectImpl(nazwa, opis, getContributors(id_projektu)));
+            }
+            rs.close();
+            stmt.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
 
         return projects;
+    }
+
+    private List<String> getContributors(int id_projektu) throws SQLException {
+        Statement statement = con.createStatement();
+        ResultSet resultSet = statement.executeQuery("SELECT uzytkownicy.login FROM uzytkownik_projekt NATURAL JOIN uzytkownicy WHERE uzytkownik_projekt.id_projektu = " + id_projektu);
+        List<String> contributors = new ArrayList<>();
+        while (resultSet.next())
+        {
+            contributors.add(resultSet.getString("login"));
+        }
+        resultSet.close();
+        statement.close();
+
+        return contributors;
     }
 
     @Override
