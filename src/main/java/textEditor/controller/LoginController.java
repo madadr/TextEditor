@@ -15,11 +15,13 @@ import textEditor.view.WindowSwitcher;
 
 import java.io.IOException;
 import java.net.URL;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
 import java.util.ResourceBundle;
 
 public class LoginController implements Initializable, ClientInjectionTarget, WindowSwitcherInjectionTarget {
     @FXML
-    private Button submitLogin, registrationLabel;
+    private Button submitLogin, registrationButton;
     @FXML
     private Label resultOfAuthorization;
     @FXML
@@ -48,15 +50,26 @@ public class LoginController implements Initializable, ClientInjectionTarget, Wi
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         resultOfAuthorization.setVisible(false);
-        databaseModel = (DatabaseModel) rmiClient.getModel("DatabaseModel");
+        try {
+            databaseModel = (DatabaseModel) rmiClient.getModel("DatabaseModel");
+        } catch (RemoteException | NotBoundException e) {
+            setNotConnected();
+        }
 
         runEnableKeyEventHandler();
+    }
+
+    private void setNotConnected() {
+        setResultText("Brak połączenia z bazą danych", false);
+        submitLogin.setDisable(true);
+        registrationButton.setDisable(true);
+        userLoginField.setDisable(true);
+        userPasswordField.setDisable(true);
     }
 
     private void runEnableKeyEventHandler() {
         Platform.runLater(() -> {
             while (this.switcher.getStage().getScene() == null) {
-
             }
             enableKeyEventHandler();
         });
@@ -90,19 +103,26 @@ public class LoginController implements Initializable, ClientInjectionTarget, Wi
 
         if (!login.isEmpty() && !password.isEmpty() && databaseModel.userExist(login)) {
             if (databaseModel.checkPassword(login, password)) {
-                resultOfAuthorization.setText("Authorization success");
-                resultOfAuthorization.setTextFill(Color.web("#2eb82e"));
-                resultOfAuthorization.setVisible(true);
+                setResultText("Authorization success", true);
                 switcher.loadWindow(WindowSwitcher.Window.EDITOR);
             } else {
-                resultOfAuthorization.setText("Password is incorrect");
-                resultOfAuthorization.setTextFill(Color.web("#ff3300"));
-                resultOfAuthorization.setVisible(true);
+                setResultText("Password is incorrect", false);
             }
         } else {
-            resultOfAuthorization.setText("User don't exist!");
-            resultOfAuthorization.setTextFill(Color.web("#ff3300"));
-            resultOfAuthorization.setVisible(true);
+            setResultText("User don't exist!", false);
         }
+    }
+
+    public void setResultText(String resultText, boolean isValid) {
+        resultOfAuthorization.setText(resultText);
+        if(isValid)
+        {
+            resultOfAuthorization.setTextFill(Color.web("#2eb82e"));
+        }
+        else
+        {
+            resultOfAuthorization.setTextFill(Color.web("#ff3300"));
+        }
+        resultOfAuthorization.setVisible(true);
     }
 }

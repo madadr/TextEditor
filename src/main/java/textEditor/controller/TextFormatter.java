@@ -78,10 +78,8 @@ public class TextFormatter {
 
     }
 
-    public void clearHighlight(IndexRange indexRange)
-    {
-        if(indexRange.getStart() > -1)
-        {
+    public void clearHighlight(IndexRange indexRange) {
+        if (indexRange.getStart() > -1) {
             StyleSpans<Collection<String>> newSpans = textArea.getStyleSpans(indexRange).mapStyles(currentStyle -> {
                 List<String> currentStyles = new ArrayList<>(currentStyle);
                 currentStyles.removeIf(s -> Pattern.compile("highlight").matcher(s).find());
@@ -91,10 +89,8 @@ public class TextFormatter {
         }
     }
 
-    public void addHighlight(IndexRange indexRange)
-    {
-        if(indexRange.getStart() > -1)
-        {
+    public void addHighlight(IndexRange indexRange) {
+        if (indexRange.getStart() > -1) {
             StyleSpans<Collection<String>> newSpans = textArea.getStyleSpans(indexRange).mapStyles(currentStyle -> {
                 List<String> currentStyles = new ArrayList<>(currentStyle);
                 currentStyles.add("highlight");

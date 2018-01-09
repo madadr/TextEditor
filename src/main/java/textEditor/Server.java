@@ -9,6 +9,7 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.sql.SQLException;
 
 public class Server {
     public static void main(String[] args) {
@@ -27,7 +28,7 @@ public class Server {
             //Binding names and models interfaces
             registry.rebind("EditorModel", editorModel);
             registry.rebind("DatabaseModel", databaseModel);
-        } catch (RemoteException e) {
+        } catch (RemoteException | SQLException | ClassNotFoundException e) {
             e.printStackTrace();
         }
     }
