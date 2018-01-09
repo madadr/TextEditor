@@ -55,7 +55,7 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     private ChangeListener<String> fontColorListener;
     private ChangeListener<String> paragraphHeadingListener;
     private ChangeListener<String> bulletListListener;
-    private User user;
+    private UserImpl user;
 
     public EditorController() {
     }
@@ -71,7 +71,7 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     }
 
     @Override
-    public void injectUser(User user) {
+    public void injectUser(UserImpl user) {
         System.out.println("Injecting user=" + user);
         this.user = user;
     }

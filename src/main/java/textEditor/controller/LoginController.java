@@ -31,7 +31,7 @@ public class LoginController implements Initializable, ClientInjectionTarget, Wi
 
     private WindowSwitcher switcher;
     private DatabaseModel databaseModel;
-    private User user;
+    private UserImpl user;
 
     public LoginController() {
     }
@@ -42,7 +42,7 @@ public class LoginController implements Initializable, ClientInjectionTarget, Wi
     }
 
     @Override
-    public void injectUser(User user) {
+    public void injectUser(UserImpl user) {
         this.user = user;
     }
 
@@ -113,7 +113,7 @@ public class LoginController implements Initializable, ClientInjectionTarget, Wi
                 resultOfAuthorization.setVisible(true);
             }
         } else {
-            resultOfAuthorization.setText("User doesn't exist!");
+            resultOfAuthorization.setText("UserImpl doesn't exist!");
             resultOfAuthorization.setTextFill(Color.web("#ff3300"));
             resultOfAuthorization.setVisible(true);
         }

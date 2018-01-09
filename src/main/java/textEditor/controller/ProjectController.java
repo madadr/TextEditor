@@ -12,11 +12,11 @@ import javafx.stage.Stage;
 import textEditor.RMIClient;
 import textEditor.controller.projectManagerPopups.ProjectPopupViewFactory;
 import textEditor.model.DatabaseModel;
-import textEditor.model.DatabaseModelImpl;
 import textEditor.view.WindowSwitcher;
 
 import java.io.IOException;
 import java.net.URL;
+import java.rmi.RemoteException;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
@@ -53,12 +53,12 @@ public class ProjectController implements Initializable, UserInjectionTarget, Cl
     private WindowSwitcher switcher;
     private DatabaseModel dbService;
     private RMIClient client;
-    private User user;
+    private UserImpl user;
 
     private List<Project> projects;
 
     @Override
-    public void injectUser(User user) {
+    public void injectUser(UserImpl user) {
         this.user = user;
     }
 
@@ -77,10 +77,22 @@ public class ProjectController implements Initializable, UserInjectionTarget, Cl
         System.out.println("user=" + user);
 
         // get database service object
-        dbService = (DatabaseModelImpl) client.getModel("DatabaseModel");
+        System.out.println("ProjectController getting DatabaseModel");
+        dbService = (DatabaseModel) client.getModel("DatabaseModel");
+        System.out.println("ProjectController got DatabaseModel");
+
+        if (dbService == null) {
+            System.out.println("null");
+        } else {
+            System.out.println(dbService);
+        }
 
         // get all projects data from database
-        projects = dbService.getProjects(user);
+        try {
+            projects = dbService.getProjects(user);
+        } catch (RemoteException e) {
+            e.printStackTrace(); // todo handle and do sth
+        }
 
         setupProjectsListView();
 
@@ -91,7 +103,9 @@ public class ProjectController implements Initializable, UserInjectionTarget, Cl
     }
 
     private void setupProjectsListView() {
+        System.out.println("generating");
         ObservableList<String> items = generateObservableProjectTitleList(this.projects);
+        System.out.println("generated");
         projectListView.setItems(items);
     }
 

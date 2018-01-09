@@ -1,50 +1,19 @@
 package textEditor.controller;
 
-import java.util.ArrayList;
+import java.rmi.Remote;
 import java.util.List;
 
-public class Project {
-    private String title;
-    private String description;
-    private List<String> contributors;
+public interface Project extends Remote {
 
-    // these two will be available via dbService query
-//    private String text;
-//    private StyleSpansWrapper styleSpansWrapper;
+    public String getTitle();
 
-    public Project() {
-        this.title = "";
-        this.description = "";
-        this.contributors = new ArrayList<>();
-    }
+    public void setTitle(String title);
 
-    public Project(String title, String description, List<String> contributors) {//, String text, StyleSpansWrapper styleSpansWrapper) {
-        this.title = title;
-        this.description = description;
-        this.contributors = contributors;
-    }
+    public String getDescription();
 
-    public String getTitle() {
-        return title;
-    }
+    public void setDescription(String description);
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
+    public List<String> getContributors();
 
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public List<String> getContributors() {
-        return contributors;
-    }
-
-    public void setContributors(List<String> contributors) {
-        this.contributors = contributors;
-    }
+    public void setContributors(List<String> contributors);
 }

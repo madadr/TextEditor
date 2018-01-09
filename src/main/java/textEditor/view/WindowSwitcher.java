@@ -7,7 +7,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import textEditor.RMIClient;
 import textEditor.controller.ControllerFactory;
-import textEditor.controller.User;
+import textEditor.controller.UserImpl;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
@@ -16,7 +16,7 @@ public class WindowSwitcher {
     private Stage stage;
     private FXMLLoader loader;
     private final ControllerFactory controllerFactory;
-    private User user;
+    private UserImpl user;
 
     public enum Window {
         LOGIN, REGISTER, PICKPROJECT, EDITOR
@@ -25,7 +25,7 @@ public class WindowSwitcher {
     public WindowSwitcher(Stage stage) throws RemoteException {
         RMIClient rmiClient = new RMIClient();
         this.stage = stage;
-        user = new User();
+        user = new UserImpl();
 
         controllerFactory = new ControllerFactory(rmiClient, this, user);
     }

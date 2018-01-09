@@ -7,9 +7,9 @@ import textEditor.view.WindowSwitcher;
 public class ControllerFactory implements Callback<Class<?>, Object> {
     private RMIClient rmiClient;
     private WindowSwitcher switcher;
-    private User user;
+    private UserImpl user;
 
-    public ControllerFactory(RMIClient rmiClient, WindowSwitcher switcher, User user) {
+    public ControllerFactory(RMIClient rmiClient, WindowSwitcher switcher, UserImpl user) {
         this.rmiClient = rmiClient;
         this.switcher = switcher;
         this.user = user;

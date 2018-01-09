@@ -24,11 +24,11 @@ public class ProjectPopupViewFactory {
         Label newProjectLabel = new Label("New project");
         newProjectLabel.setFont(new Font("System Bold", 20));
 
-        Label projectNameLabel = new Label("Project name");
+        Label projectNameLabel = new Label("ProjectImpl name");
         projectNameLabel.setFont(new Font("System Bold", 12));
         TextField projectNameField = new TextField("");
 
-        Label projectDescriptionLabel = new Label("Project description");
+        Label projectDescriptionLabel = new Label("ProjectImpl description");
         projectDescriptionLabel.setFont(new Font("System Bold", 12));
         TextField projectDescriptionField = new TextField("");
         projectDescriptionField.setPrefHeight(200);
@@ -68,11 +68,11 @@ public class ProjectPopupViewFactory {
         Label newProjectLabel = new Label("Edit project");
         newProjectLabel.setFont(new Font("System Bold", 20));
 
-        Label projectNameLabel = new Label("Project name");
+        Label projectNameLabel = new Label("ProjectImpl name");
         projectNameLabel.setFont(new Font("System Bold", 12));
         TextField projectNameField = new TextField("");
 
-        Label projectDescriptionLabel = new Label("Project description");
+        Label projectDescriptionLabel = new Label("ProjectImpl description");
         projectDescriptionLabel.setFont(new Font("System Bold", 12));
         TextField projectDescriptionField = new TextField("");
         projectDescriptionField.setPrefHeight(200);

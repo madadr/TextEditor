@@ -2,6 +2,7 @@ package textEditor.model;
 
 import textEditor.controller.Project;
 import textEditor.controller.User;
+import textEditor.controller.ProjectImpl;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -133,14 +134,15 @@ public class DatabaseModelImpl implements DatabaseModel {
     @Override
     public List<Project> getProjects(User user) throws RemoteException {
         // STUB
+        System.out.println("getting project");
         List<Project> projects = new ArrayList<>();
 
-        projects.add(new Project("Proj1", "Proj1 desc\nNo elo elo 3 2 0", Arrays.asList("User1", "User2")));
-        projects.add(new Project("Proj2", "Proj2 desc\nNo elo elo 3 2 0", Arrays.asList("User2")));
-        projects.add(new Project("Proj3", "Proj3 desc\nNo elo elo 3 2 0", Arrays.asList("User3")));
-        projects.add(new Project("Proj4", "Proj4 desc\nNo elo elo 3 2 0", Arrays.asList("User4")));
+        projects.add(new ProjectImpl("Proj1", "Proj1 desc\nNo elo elo 3 2 0", new ArrayList<>(Arrays.asList("User1", "User2"))));
+        projects.add(new ProjectImpl("Proj2", "Proj2 desc\nNo elo elo 3 2 0", new ArrayList<>(Arrays.asList("User2"))));
+        projects.add(new ProjectImpl("Proj3", "Proj3 desc\nNo elo elo 3 2 0", new ArrayList<>(Arrays.asList("User3"))));
+        projects.add(new ProjectImpl("Proj4", "Proj4 desc\nNo elo elo 3 2 0", new ArrayList<>(Arrays.asList("User4"))));
 
-        return null;
+        return projects;
     }
 
     @Override
