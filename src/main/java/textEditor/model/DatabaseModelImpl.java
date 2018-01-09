@@ -147,9 +147,18 @@ public class DatabaseModelImpl implements DatabaseModel {
 
     @Override
     public int getUserId(String login) throws RemoteException {
-        // STUB
-        // add getting id from database, when having login
-        return 1;
+
+        try {
+            stmt = con.createStatement();
+            ResultSet userID = stmt.executeQuery("SELECT * FROM `uzytkownicy` WHERE uzytkownicy.login = "+"'"+login+"'");
+            while (userID.next()){
+                return userID.getInt("id_uzytkownika");
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return -1;
     }
 }
 
