@@ -1,10 +1,16 @@
 package textEditor.model;
 
+import textEditor.controller.Project;
+import textEditor.controller.User;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.rmi.RemoteException;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class DatabaseModelImpl implements DatabaseModel {
 
@@ -122,6 +128,19 @@ public class DatabaseModelImpl implements DatabaseModel {
             e.printStackTrace();
         }
         return true;
+    }
+
+    @Override
+    public List<Project> getProjects(User user) {
+        // STUB
+        List<Project> projects = new ArrayList<>();
+
+        projects.add(new Project("Proj1", "Proj1 desc\nNo elo elo 3 2 0", Arrays.asList("User1", "User2")));
+        projects.add(new Project("Proj2", "Proj2 desc\nNo elo elo 3 2 0", Arrays.asList("User2")));
+        projects.add(new Project("Proj3", "Proj3 desc\nNo elo elo 3 2 0", Arrays.asList("User3")));
+        projects.add(new Project("Proj4", "Proj4 desc\nNo elo elo 3 2 0", Arrays.asList("User4")));
+
+        return null;
     }
 }
 

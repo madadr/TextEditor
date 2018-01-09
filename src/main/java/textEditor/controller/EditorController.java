@@ -43,7 +43,6 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     private StyleClassedTextArea mainTextArea;
 
     private EditorModel editorModel;
-    private DatabaseModel databaseModel;
     private RMIClient rmiClient;
     private WindowSwitcher switcher;
     private RemoteObserver observer;
@@ -107,7 +106,6 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
         };
 
         editorModel = (EditorModel) rmiClient.getModel("EditorModel");
-        databaseModel = (DatabaseModel) rmiClient.getModel("DatabaseModel");
 
         initialTextSettings();
 

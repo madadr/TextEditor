@@ -103,7 +103,7 @@
                 </VBox>
                 <VBox alignment="CENTER">
                     <children>
-                        <ListView fx:id="projectList" maxWidth="320.0" minWidth="250.0" prefHeight="305.0" prefWidth="320.0" />
+                        <ListView fx:id="projectListView" maxWidth="320.0" minWidth="250.0" prefHeight="305.0" prefWidth="320.0" />
                     </children>
                 </VBox>
             </children>

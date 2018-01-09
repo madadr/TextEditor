@@ -14,14 +14,20 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import textEditor.RMIClient;
+import textEditor.controller.projectManagerPopups.ProjectPopupViewFactory;
+import textEditor.model.DatabaseModel;
+import textEditor.model.DatabaseModelImpl;
 import textEditor.view.WindowSwitcher;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 
 
-public class ProjectController implements Initializable, UserInjectionTarget, WindowSwitcherInjectionTarget {
+public class ProjectController implements Initializable, UserInjectionTarget, ClientInjectionTarget, WindowSwitcherInjectionTarget {
     @FXML
     private Label description;
 
@@ -29,7 +35,7 @@ public class ProjectController implements Initializable, UserInjectionTarget, Wi
     private Label contributors;
 
     @FXML
-    private ListView<String> projectList;
+    private ListView<String> projectListView;
 
     @FXML
     private Button newButton;
@@ -49,8 +55,12 @@ public class ProjectController implements Initializable, UserInjectionTarget, Wi
     @FXML
     private Button exportButton;
 
-    private User user;
     private WindowSwitcher switcher;
+    private DatabaseModel dbService;
+    private RMIClient client;
+    private User user;
+
+    private List<Project> projects;
 
     @Override
     public void injectUser(User user) {
@@ -63,13 +73,21 @@ public class ProjectController implements Initializable, UserInjectionTarget, Wi
     }
 
     @Override
+    public void injectClient(RMIClient client) {
+        this.client = client;
+    }
+
+    @Override
     public void initialize(URL location, ResourceBundle resources) {
         System.out.println("user=" + user);
 
-        ObservableList<String> items = FXCollections.observableArrayList(
-                "My awesome project 1", "My awesome project 2", "Foo", "Bar");
+        // get database service object
+        dbService = (DatabaseModelImpl) client.getModel("DatabaseModel");
 
-        projectList.setItems(items);
+        // get all projects data from database
+        projects = dbService.getProjects(user);
+
+        setupProjectsListView();
 
         description.setText("This project is about...");
         contributors.setText("John, Anna, Mike");
@@ -77,47 +95,24 @@ public class ProjectController implements Initializable, UserInjectionTarget, Wi
         initButtonsActions();
     }
 
+    private void setupProjectsListView() {
+        ObservableList<String> items = generateObservableProjectTitleList(this.projects);
+        projectListView.setItems(items);
+    }
+
+    private ObservableList<String> generateObservableProjectTitleList(List<Project> projects) {
+        List<String> list = projects.stream()
+                .map(project -> project.getTitle())
+                .collect(Collectors.toList());
+
+        return FXCollections.observableArrayList(list);
+    }
+
     private void initButtonsActions() {
         newButton.setOnAction(event -> {
-            final Stage popup = new Stage();
+            final Stage popup = ProjectPopupViewFactory.createNewProjectView();
+
             popup.initModality(Modality.APPLICATION_MODAL);
-
-            VBox vbox = new VBox(10);
-            vbox.setPadding(new Insets(10));
-
-            Label newProjectLabel = new Label("New project");
-            newProjectLabel.setFont(new Font("System Bold", 20));
-
-            Label projectNameLabel = new Label("Project name");
-            projectNameLabel.setFont(new Font("System Bold", 12));
-            TextField projectNameField = new TextField("");
-
-            Label projectDescriptionLabel = new Label("Project description");
-            projectDescriptionLabel.setFont(new Font("System Bold", 12));
-            TextField projectDescriptionField = new TextField("");
-            projectDescriptionField.setPrefHeight(200);
-            projectDescriptionField.setAlignment(Pos.TOP_LEFT);
-
-            Label contributorsLabel = new Label("Contributors");
-            contributorsLabel.setFont(new Font("System Bold", 12));
-            TextField contributorsField = new TextField("");
-
-            Button addButton = new Button("Add");
-            Button cancelButton = new Button("Cancel");
-
-            HBox buttonBox = new HBox();
-            buttonBox.setSpacing(10);
-            buttonBox.setPadding(new Insets(10));
-            buttonBox.setAlignment(Pos.CENTER);
-            buttonBox.getChildren().addAll(addButton, cancelButton);
-
-            vbox.getChildren().addAll(newProjectLabel, new Separator(Orientation.HORIZONTAL),
-                    projectNameLabel, projectNameField, new Separator(Orientation.HORIZONTAL),
-                    projectDescriptionLabel, projectDescriptionField, new Separator(Orientation.HORIZONTAL),
-                    contributorsLabel, contributorsField,
-                    buttonBox);
-
-            popup.setScene(new Scene(vbox, 400, 500));
             popup.show();
         });
 
