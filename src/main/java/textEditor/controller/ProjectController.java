@@ -1,7 +1,6 @@
 package textEditor.controller;
 
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -19,7 +18,6 @@ import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.stream.Collectors;
 
 
 public class ProjectController implements Initializable, UserInjectionTarget, ClientInjectionTarget, WindowSwitcherInjectionTarget {
@@ -30,7 +28,7 @@ public class ProjectController implements Initializable, UserInjectionTarget, Cl
     private Label contributors;
 
     @FXML
-    private ListView<String> projectListView;
+    private ListView<Project> projectListView;
 
     @FXML
     private Button newButton;
@@ -77,9 +75,7 @@ public class ProjectController implements Initializable, UserInjectionTarget, Cl
         System.out.println("user=" + user);
 
         // get database service object
-        System.out.println("ProjectController getting DatabaseModel");
         dbService = (DatabaseModel) client.getModel("DatabaseModel");
-        System.out.println("ProjectController got DatabaseModel");
 
         if (dbService == null) {
             System.out.println("null");
@@ -87,35 +83,32 @@ public class ProjectController implements Initializable, UserInjectionTarget, Cl
             System.out.println(dbService);
         }
 
+        fetchUserProjectsFromDatabase();
+
+        setupProjectsListView();
+
+        initButtonsActions();
+    }
+
+    private void fetchUserProjectsFromDatabase() {
         // get all projects data from database
         try {
             projects = dbService.getProjects(user);
         } catch (RemoteException e) {
             e.printStackTrace(); // todo handle and do sth
         }
-
-        setupProjectsListView();
-
-        description.setText("This project is about...");
-        contributors.setText("John, Anna, Mike");
-
-        initButtonsActions();
     }
 
     private void setupProjectsListView() {
-        System.out.println("generating");
-        ObservableList<String> items = generateObservableProjectTitleList(this.projects);
-        System.out.println("generated");
-        projectListView.setItems(items);
+        projectListView.setItems(FXCollections.observableArrayList(this.projects));
+
+        projectListView.setOnMouseClicked((e) -> {
+            Project selectedProject = projectListView.getSelectionModel().getSelectedItem();
+            description.setText(selectedProject.getDescription());
+            contributors.setText(selectedProject.getContributors().toString());
+        });
     }
 
-    private ObservableList<String> generateObservableProjectTitleList(List<Project> projects) {
-        List<String> list = projects.stream()
-                .map(project -> project.getTitle())
-                .collect(Collectors.toList());
-
-        return FXCollections.observableArrayList(list);
-    }
 
     private void initButtonsActions() {
         newButton.setOnAction(event -> {

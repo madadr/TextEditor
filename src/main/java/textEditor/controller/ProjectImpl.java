@@ -49,4 +49,9 @@ public class ProjectImpl implements Project, Serializable {
     public void setContributors(List<String> contributors) {
         this.contributors = contributors;
     }
+
+    @Override
+    public String toString() {
+        return this.title;
+    }
 }
