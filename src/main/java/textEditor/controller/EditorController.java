@@ -61,7 +61,7 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     private ChangeListener<? super String> fontColorListener;
     private ChangeListener<? super String> paragraphHeadingListener;
     private ChangeListener<? super String> bulletListListener;
-    private int searchTextIndex = -1;
+    private IndexRange searchTextIndex;
 
     public EditorController() {
     }
@@ -79,6 +79,7 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         textFormatter = new TextFormatter(mainTextArea);
+        searchTextIndex = new IndexRange(-1,-1);
 
         fontSizeListener = (ChangeListener<String>) (observable, oldValue, newValue) -> {
             textFormatter.styleSelectedArea(newValue, FONTSIZE_PATTERN_KEY);
@@ -298,7 +299,7 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     private void closeSearchBoxClicked() {
         searchBox.setVisible(false);
         replaceBox.setVisible(false);
-        textFormatter.clearHighlight(new IndexRange(searchTextIndex, searchTextIndex + searchTextField.getText().length()));
+        textFormatter.clearHighlight(searchTextIndex);
     }
 
     @FXML
@@ -334,24 +335,21 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     @FXML
     private void replaceButtonClicked() {
 
-        String search = searchTextField.getText();
         String replace = replaceTextField.getText();
 
-        if(searchTextIndex > -1)
+        if(searchTextIndex.getStart() > -1)
         {
-            textFormatter.clearHighlight(new IndexRange(searchTextIndex, searchTextIndex + search.length()));
-            mainTextArea.replaceText(new IndexRange(searchTextIndex, searchTextIndex + search.length()), replace);
-            searchButtonClicked();
+            textFormatter.clearHighlight(searchTextIndex);
+            mainTextArea.replaceText(searchTextIndex, replace);
         }
-        else
-            searchButtonClicked();
+        searchButtonClicked();
     }
 
     @FXML
     private void replaceAllButtonClicked() {
-        searchTextIndex = -1;
+        searchTextIndex = new IndexRange(-1,-1);
         searchButtonClicked();
-        while (searchTextIndex > -1)
+        while (searchTextIndex.getStart() > -1)
         {
             replaceButtonClicked();
         }
@@ -393,9 +391,10 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
 
         if(!searchText.isEmpty())
         {
-            textFormatter.clearHighlight(new IndexRange(searchTextIndex, searchTextIndex + searchText.length()));
-            searchTextIndex = mainTextArea.getText().indexOf(searchText, searchTextIndex + 1);
-            textFormatter.addHighlight(new IndexRange(searchTextIndex, searchTextIndex+searchText.length()));
+            textFormatter.clearHighlight(searchTextIndex);
+            int index = mainTextArea.getText().indexOf(searchText, searchTextIndex.getStart() +1);
+            searchTextIndex = new IndexRange(index, index + searchText.length());
+            textFormatter.addHighlight(searchTextIndex);
         }
     }
 
@@ -410,9 +409,10 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
 
         if(!searchText.isEmpty())
         {
-            textFormatter.clearHighlight(new IndexRange(searchTextIndex, searchTextIndex + searchText.length()));
-            searchTextIndex = mainTextArea.getText().substring(0, searchTextIndex + searchText.length() - 1).lastIndexOf(searchText);
-            textFormatter.addHighlight(new IndexRange(searchTextIndex, searchTextIndex+searchText.length()));
+            textFormatter.clearHighlight(searchTextIndex);
+            int index = mainTextArea.getText().substring(0, searchTextIndex.getStart() + searchText.length() - 1).lastIndexOf(searchText);
+            searchTextIndex = new IndexRange(index, index + searchText.length());
+            textFormatter.addHighlight(new IndexRange(searchTextIndex));
 
         }
     }

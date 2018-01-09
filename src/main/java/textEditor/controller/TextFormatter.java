@@ -84,7 +84,7 @@ public class TextFormatter {
         {
             StyleSpans<Collection<String>> newSpans = textArea.getStyleSpans(indexRange).mapStyles(currentStyle -> {
                 List<String> currentStyles = new ArrayList<>(currentStyle);
-                currentStyles.remove("highlight");
+                currentStyles.removeIf(s -> Pattern.compile("highlight").matcher(s).find());
                 return currentStyles;
             });
             textArea.setStyleSpans(indexRange.getStart(), newSpans);
