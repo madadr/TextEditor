@@ -7,10 +7,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.stage.FileChooser;
-import org.fxmisc.richtext.InlineCssTextArea;
 import org.fxmisc.richtext.StyleClassedTextArea;
-import org.fxmisc.richtext.StyledTextArea;
-import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.TwoDimensional;
 import textEditor.RMIClient;
 import textEditor.model.*;
@@ -19,6 +16,7 @@ import textEditor.view.WindowSwitcher;
 
 import java.io.File;
 import java.net.URL;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.util.*;
 
@@ -28,7 +26,7 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     @FXML
     public TextField searchTextField;
     @FXML
-    public TextField replaceTextField;;
+    public TextField replaceTextField;
     @FXML
     public HBox replaceBox;
     @FXML
@@ -57,9 +55,6 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     private ChangeListener<? super String> bulletListListener;
     private IndexRange searchTextIndex;
 
-    public EditorController() {
-    }
-
     @Override
     public void injectClient(RMIClient client) {
         this.rmiClient = client;
@@ -73,7 +68,7 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         textFormatter = new TextFormatter(mainTextArea);
-        searchTextIndex = new IndexRange(-1,-1);
+        searchTextIndex = new IndexRange(-1, -1);
 
         fontSizeListener = (ChangeListener<String>) (observable, oldValue, newValue) -> {
             textFormatter.styleSelectedArea(newValue, FONTSIZE_PATTERN_KEY);
@@ -100,8 +95,12 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
             notifyOthers();
         };
 
-        editorModel = (EditorModel) rmiClient.getModel("EditorModel");
-        databaseModel = (DatabaseModel) rmiClient.getModel("DatabaseModel");
+        try {
+            editorModel = (EditorModel) rmiClient.getModel("EditorModel");
+            databaseModel = (DatabaseModel) rmiClient.getModel("DatabaseModel");
+        } catch (RemoteException | NotBoundException e) {
+            e.printStackTrace();
+        }
 
         initialTextSettings();
 
@@ -240,15 +239,9 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     }
 
     @FXML
-    private void helpAboutUsClicked() {
-        //TODO:  implement javafx stage appear with aboutUs content
-    }
-
-    @FXML
     private void editSearchClicked() {
         searchBox.setVisible(true);
         replaceBox.setVisible(true);
-        //TODO:  implement search
     }
 
     @FXML
@@ -321,8 +314,7 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
 
         String replace = replaceTextField.getText();
 
-        if(searchTextIndex.getStart() > -1)
-        {
+        if (searchTextIndex.getStart() > -1) {
             textFormatter.clearHighlight(searchTextIndex);
             mainTextArea.replaceText(searchTextIndex, replace);
         }
@@ -331,17 +323,11 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
 
     @FXML
     private void replaceAllButtonClicked() {
-        searchTextIndex = new IndexRange(-1,-1);
+        searchTextIndex = new IndexRange(-1, -1);
         searchButtonClicked();
-        while (searchTextIndex.getStart() > -1)
-        {
+        while (searchTextIndex.getStart() > -1) {
             replaceButtonClicked();
         }
-    }
-
-    @FXML
-    private void closeReplaceBoxClicked() {
-
     }
 
     @FXML
@@ -373,10 +359,9 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     private void searchButtonClicked() {
         String searchText = searchTextField.getText();
 
-        if(!searchText.isEmpty())
-        {
+        if (!searchText.isEmpty()) {
             textFormatter.clearHighlight(searchTextIndex);
-            int index = mainTextArea.getText().indexOf(searchText, searchTextIndex.getStart() +1);
+            int index = mainTextArea.getText().indexOf(searchText, searchTextIndex.getStart() + 1);
             searchTextIndex = new IndexRange(index, index + searchText.length());
             textFormatter.addHighlight(searchTextIndex);
         }
@@ -391,8 +376,7 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     private void previousSearchButtonClicked() {
         String searchText = searchTextField.getText();
 
-        if(!searchText.isEmpty())
-        {
+        if (!searchText.isEmpty()) {
             textFormatter.clearHighlight(searchTextIndex);
             int index = mainTextArea.getText().substring(0, searchTextIndex.getStart() + searchText.length() - 1).lastIndexOf(searchText);
             searchTextIndex = new IndexRange(index, index + searchText.length());
