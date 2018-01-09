@@ -33,8 +33,6 @@
                 <Menu fx:id="helpMenu" mnemonicParsing="false" text="Help">
                     <items>
                         <MenuItem mnemonicParsing="false" onAction="#helpHelpClicked" text="Help"/>
-                        <SeparatorMenuItem mnemonicParsing="false"/>
-                        <MenuItem mnemonicParsing="false" onAction="#helpAboutUsClicked" text="About us"/>
                     </items>
                 </Menu>
             </menus>
