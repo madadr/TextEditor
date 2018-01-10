@@ -2,6 +2,7 @@ package textEditor.controller;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -109,8 +110,16 @@ public class ProjectController implements Initializable, UserInjectionTarget, Cl
         projectListView.setItems(FXCollections.observableArrayList(this.projects));
         projectListView.getSelectionModel().getSelectedItems().addListener((ListChangeListener<? super Project>) (e) -> {
             Project selectedProject = projectListView.getSelectionModel().getSelectedItem();
-            description.setText(selectedProject.getDescription());
-            contributors.setText(selectedProject.getContributors().toString());
+            if(selectedProject != null)
+            {
+                description.setText(selectedProject.getDescription());
+                contributors.setText(selectedProject.getContributors().toString());
+            }
+            else
+            {
+                description.setText("");
+                contributors.setText("");
+            }
         });
     }
 
@@ -137,5 +146,21 @@ public class ProjectController implements Initializable, UserInjectionTarget, Cl
 
             }
         });
+    }
+
+    @FXML
+    public void onClickRemove(ActionEvent actionEvent) {
+        Project projectToDelete = projectListView.getSelectionModel().getSelectedItem();
+        final int selectedIdx = projectListView.getSelectionModel().getSelectedIndex();
+        if(selectedIdx != -1)
+        {
+            try {
+                dbService.removeProject(projectToDelete);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+            projectListView.getItems().remove(selectedIdx);
+        }
+
     }
 }

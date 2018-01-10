@@ -16,4 +16,8 @@ public interface Project extends Remote {
     public List<String> getContributors();
 
     public void setContributors(List<String> contributors);
+
+    public void setId(Integer id);
+
+    public Integer getId();
 }
