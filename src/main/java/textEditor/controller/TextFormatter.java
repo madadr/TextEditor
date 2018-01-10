@@ -78,6 +78,28 @@ public class TextFormatter {
 
     }
 
+    public void clearHighlight(IndexRange indexRange) {
+        if (indexRange.getStart() > -1) {
+            StyleSpans<Collection<String>> newSpans = textArea.getStyleSpans(indexRange).mapStyles(currentStyle -> {
+                List<String> currentStyles = new ArrayList<>(currentStyle);
+                currentStyles.removeIf(s -> Pattern.compile("highlight").matcher(s).find());
+                return currentStyles;
+            });
+            textArea.setStyleSpans(indexRange.getStart(), newSpans);
+        }
+    }
+
+    public void addHighlight(IndexRange indexRange) {
+        if (indexRange.getStart() > -1) {
+            StyleSpans<Collection<String>> newSpans = textArea.getStyleSpans(indexRange).mapStyles(currentStyle -> {
+                List<String> currentStyles = new ArrayList<>(currentStyle);
+                currentStyles.add("highlight");
+                return currentStyles;
+            });
+            textArea.setStyleSpans(indexRange.getStart(), newSpans);
+        }
+    }
+
     //this method make paragraphs in range a part of bulletList, also include reversing
     public void applyBulletList(IndexRange paragraphRange, String newValue) {
         if (newValue.equals(" ")) {

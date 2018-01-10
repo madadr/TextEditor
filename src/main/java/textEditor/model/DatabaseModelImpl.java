@@ -18,18 +18,14 @@ public class DatabaseModelImpl implements DatabaseModel {
     Connection con;
     private Statement stmt;
 
-    public DatabaseModelImpl() {
-        try {
-            Class.forName("com.mysql.jdbc.Driver");
-            con = DriverManager.getConnection(
-                    "jdbc:mysql://localhost/",
-                    "root",
-                    "");
-            System.out.println("We are connected");
-            init();
-        } catch (SQLException | RemoteException | ClassNotFoundException e) {
-            e.printStackTrace();
-        }
+    public DatabaseModelImpl() throws SQLException, RemoteException, ClassNotFoundException {
+        Class.forName("com.mysql.jdbc.Driver");
+        con = DriverManager.getConnection(
+                "jdbc:mysql://localhost/",
+                "root",
+                "");
+        System.out.println("We are connected");
+        init();
     }
 
 
