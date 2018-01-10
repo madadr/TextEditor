@@ -297,14 +297,19 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     private void fileSaveClicked() {
         ObjectOutputStream oos = null;
         try {
-            FileOutputStream fout = new FileOutputStream("editor.model");
-            oos = new ObjectOutputStream(fout);
-            oos.writeObject(editorModel.getData());
-            oos.flush();
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Choose resource");
+            File file = fileChooser.showSaveDialog(switcher.getStage());
+            if (file != null) {
+                FileOutputStream fout = new FileOutputStream(file);
+                oos = new ObjectOutputStream(fout);
+                oos.writeObject(editorModel.getData());
+                oos.flush();
 
-            fout.close();
+                fout.close();
 
-            System.out.println("\ttext data " + editorModel.getData());
+                System.out.println("\ttext data " + editorModel.getData());
+            }
         } catch (IOException e) {
             System.out.println("Failed");
         } finally {
