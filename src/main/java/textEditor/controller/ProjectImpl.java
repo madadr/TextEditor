@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ProjectImpl implements Project, Serializable {
+    private Integer id;
     private String title;
     private String description;
     private List<String> contributors;
@@ -15,12 +16,14 @@ public class ProjectImpl implements Project, Serializable {
 //    private StyleSpansWrapper styleSpansWrapper;
 
     public ProjectImpl() throws RemoteException {
+        this.id = -1;
         this.title = "";
         this.description = "";
         this.contributors = new ArrayList<>();
     }
 
-    public ProjectImpl(String title, String description, List<String> contributors) throws RemoteException {
+    public ProjectImpl(Integer id, String title, String description, List<String> contributors) throws RemoteException {
+        this.id = id;
         this.title = title;
         this.description = description;
         this.contributors = contributors;
@@ -49,6 +52,10 @@ public class ProjectImpl implements Project, Serializable {
     public void setContributors(List<String> contributors) {
         this.contributors = contributors;
     }
+
+    public void setId(Integer id) { this.id = id; }
+
+    public Integer getId() { return id; }
 
     @Override
     public String toString() {

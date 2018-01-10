@@ -28,7 +28,7 @@
                         <Font size="15.0" />
                     </font>
                 </Button>
-                <Button fx:id="removeButton" mnemonicParsing="false" text="Remove">
+                <Button fx:id="removeButton" onAction="#onClickRemove" mnemonicParsing="false" text="Remove">
                     <font>
                         <Font size="15.0" />
                     </font>

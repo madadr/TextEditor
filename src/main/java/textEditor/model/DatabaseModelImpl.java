@@ -143,7 +143,7 @@ public class DatabaseModelImpl implements DatabaseModel {
                 String opis = rs.getString("opis");
                 String data = rs.getString("data_utworzenia");
 
-                projects.add(new ProjectImpl(nazwa, opis, getContributors(id_projektu)));
+                projects.add(new ProjectImpl(id_projektu, nazwa, opis, getContributors(id_projektu)));
             }
             rs.close();
             stmt.close();
@@ -182,6 +182,18 @@ public class DatabaseModelImpl implements DatabaseModel {
             e.printStackTrace();
         }
         return -1;
+    }
+
+    @Override
+    public void removeProject(Project projectToDelete) throws RemoteException {
+        try {
+            stmt = con.createStatement();
+            stmt.executeUpdate("DELETE FROM `uzytkownik_projekt` WHERE `uzytkownik_projekt`.`id_projektu` = " + projectToDelete.getId());
+            stmt.executeUpdate("DELETE FROM `projekt` WHERE `projekt`.`id_projektu` = " + projectToDelete.getId());
+            stmt.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }
 
