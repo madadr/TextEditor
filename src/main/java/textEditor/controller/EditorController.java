@@ -4,12 +4,19 @@ import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.*;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.IndexRange;
+import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.HBox;
+import javafx.stage.FileChooser;
 import org.fxmisc.richtext.StyleClassedTextArea;
 import org.fxmisc.richtext.model.TwoDimensional;
 import textEditor.RMIClient;
-import textEditor.model.*;
+import textEditor.model.EditorModel;
+import textEditor.model.RemoteObserver;
+import textEditor.model.RemoteObserverImpl;
+import textEditor.model.StyleSpansWrapper;
 import textEditor.utils.ReadOnlyBoolean;
 import textEditor.view.WindowSwitcher;
 
@@ -17,7 +24,9 @@ import java.io.*;
 import java.net.URL;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.ResourceBundle;
 
 import static textEditor.utils.ConstValues.*;
 
@@ -262,10 +271,15 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     private void fileOpenClicked() {
         ObjectInputStream ois = null;
         try {
-            FileInputStream fout = new FileInputStream("editor.model");
-            ois = new ObjectInputStream(fout);
-            EditorModelData editorModelo = (EditorModelData) ois.readObject();
-            System.out.println("editorModelo " + editorModelo);
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Choose resource");
+            File file = fileChooser.showOpenDialog(switcher.getStage());
+            if (file != null) {
+                FileInputStream fout = new FileInputStream(file);
+                ois = new ObjectInputStream(fout);
+                EditorModelData editorModelo = (EditorModelData) ois.readObject();
+                System.out.println("editorModelo " + editorModelo);
+            }
         } catch (IOException | ClassNotFoundException e) {
             System.out.println("Failed");
         } finally {
