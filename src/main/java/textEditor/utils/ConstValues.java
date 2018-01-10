@@ -1,4 +1,4 @@
-package textEditor.controller;
+package textEditor.utils;
 
 public class ConstValues {
     public static final String BOLD_PATTERN_KEY = "weight";

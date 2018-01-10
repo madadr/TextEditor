@@ -13,7 +13,7 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static textEditor.controller.ConstValues.*;
+import static textEditor.utils.ConstValues.*;
 
 public class TextFormatter {
     private StyleClassedTextArea textArea;
