@@ -10,15 +10,16 @@ import java.io.FileReader;
 import java.rmi.RemoteException;
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+
+import static textEditor.controller.RegistrationFields.*;
 
 public class DatabaseModelImpl implements DatabaseModel {
 
     Connection con;
     private Statement stmt;
 
-    public DatabaseModelImpl() throws SQLException, RemoteException, ClassNotFoundException {
+    public DatabaseModelImpl() throws SQLException, ClassNotFoundException {
         Class.forName("com.mysql.jdbc.Driver");
         con = DriverManager.getConnection(
                 "jdbc:mysql://localhost/",
@@ -30,7 +31,7 @@ public class DatabaseModelImpl implements DatabaseModel {
 
 
     @Override
-    public void init() throws RemoteException {
+    public void init(){
         String s;
         StringBuffer sb = new StringBuffer();
 
@@ -111,15 +112,17 @@ public class DatabaseModelImpl implements DatabaseModel {
     }
 
     @Override
-    public boolean registerUser(String login, String password, String email, String zipCode, String address, String region, String lastName, String firstName) throws RemoteException {
+    public boolean registerUser(ArrayList<String> data) {
         try {
             stmt = con.createStatement();
-            stmt.executeUpdate("INSERT INTO `uzytkownicy` (`id_uzytkownika`, `login`, `haslo`) VALUES (NULL, '" + login + "', '" + password + "')");
-            ResultSet rs = stmt.executeQuery("SELECT id_uzytkownika FROM uzytkownicy WHERE login=\"" + login + "\"");
+            stmt.executeUpdate("INSERT INTO `uzytkownicy` (`id_uzytkownika`, `login`, `haslo`) VALUES (NULL, '" + data.get(USER_LOGIN) + "', '" + data.get(USER_PASSWORD) + "')");
+            ResultSet rs = stmt.executeQuery("SELECT id_uzytkownika FROM uzytkownicy WHERE login=\"" + data.get(USER_LOGIN) + "\"");
             rs.next();
             int id = rs.getInt(1);
-            stmt.executeUpdate("INSERT INTO `dane_uzytkownika` (`id_uzytkownika`, `imie`, `nazwisko`, `email`) VALUES ('" + id + "', '" + firstName + "', '" + lastName + "', '" + email + "');");
-            stmt.executeUpdate("INSERT INTO `adres` (`id_uzytkownika`, `region`, `adres`, `kodPocztowy`) VALUES ('" + id + "', '" + region + "', '" + address + "', '" + zipCode + "');");
+            stmt.executeUpdate("INSERT INTO `dane_uzytkownika` (`id_uzytkownika`, `imie`, `nazwisko`, `email`) VALUES ('" + id + "', '" + data.get(FIRST_NAME) + "', '"
+                    + data.get(LAST_NAME) + "', '" + data.get(EMAIL) + "');");
+            stmt.executeUpdate("INSERT INTO `adres` (`id_uzytkownika`, `region`, `adres`, `kodPocztowy`) VALUES ('" + id + "', '" + data.get(REGION) + "', '"
+                    + data.get(ADRESS) + "', '" + data.get(ZIPCODE) + "');");
             stmt.close();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -158,8 +161,7 @@ public class DatabaseModelImpl implements DatabaseModel {
         Statement statement = con.createStatement();
         ResultSet resultSet = statement.executeQuery("SELECT uzytkownicy.login FROM uzytkownik_projekt NATURAL JOIN uzytkownicy WHERE uzytkownik_projekt.id_projektu = " + id_projektu);
         List<String> contributors = new ArrayList<>();
-        while (resultSet.next())
-        {
+        while (resultSet.next()) {
             contributors.add(resultSet.getString("login"));
         }
         resultSet.close();
@@ -169,12 +171,12 @@ public class DatabaseModelImpl implements DatabaseModel {
     }
 
     @Override
-    public int getUserId(String login) throws RemoteException {
+    public int getUserId(String login) {
 
         try {
             stmt = con.createStatement();
-            ResultSet userID = stmt.executeQuery("SELECT * FROM `uzytkownicy` WHERE uzytkownicy.login = "+"'"+login+"'");
-            while (userID.next()){
+            ResultSet userID = stmt.executeQuery("SELECT * FROM `uzytkownicy` WHERE uzytkownicy.login = " + "'" + login + "'");
+            while (userID.next()) {
                 return userID.getInt("id_uzytkownika");
             }
 

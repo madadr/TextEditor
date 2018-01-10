@@ -1,10 +1,12 @@
 package textEditor.model;
 
+import javafx.scene.control.TextField;
 import textEditor.controller.Project;
 import textEditor.controller.User;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.List;
 
 public interface DatabaseModel extends Remote {
@@ -14,7 +16,7 @@ public interface DatabaseModel extends Remote {
 
     boolean checkPassword(String userName, String password) throws RemoteException;
 
-    boolean registerUser(String login, String s, String email, String zipCode, String address, String region, String userName, String password) throws RemoteException;
+    boolean registerUser(ArrayList<String> entryForm) throws RemoteException;
 
     List<Project> getProjects(User user) throws RemoteException;
 

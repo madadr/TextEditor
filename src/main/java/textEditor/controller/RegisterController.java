@@ -1,6 +1,5 @@
 package textEditor.controller;
 
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -16,7 +15,10 @@ import java.io.IOException;
 import java.net.URL;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
-import java.util.ResourceBundle;
+import java.util.*;
+import java.util.regex.Pattern;
+
+import static textEditor.controller.RegistrationFields.*;
 
 public class RegisterController implements Initializable, ClientInjectionTarget, WindowSwitcherInjectionTarget {
 
@@ -34,7 +36,7 @@ public class RegisterController implements Initializable, ClientInjectionTarget,
 
     private RMIClient client;
     private WindowSwitcher switcher;
-
+    private ArrayList<String> entryForm;
     private DatabaseModel databaseModel;
 
     @Override
@@ -57,40 +59,59 @@ public class RegisterController implements Initializable, ClientInjectionTarget,
     }
 
     @FXML
-    public void onClickRegister(ActionEvent actionEvent) {
-        String login = userLoginField.getText();
-        String password = userPasswordField.getText();
-        String email = emailField.getText();
-        String zipCode = zipCodeField.getText();
-        String address = addressField.getText();
-        String region = regionField.getText();
-        String lastName = lastNameField.getText();
-        String firstName = firstNameField.getText();
+    public void onClickRegister() {
+        entryForm = new ArrayList<>(Arrays.asList(userLoginField.getText(), userPasswordField.getText(), emailField.getText(), zipCodeField.getText(), addressField.getText(),
+                regionField.getText(), lastNameField.getText(), firstNameField.getText()));
 
-        //If we fill required fields
-        if (!login.isEmpty() && !password.isEmpty() && !email.isEmpty()) {
+        if (checkRequiredField() && checkAdditionalFields(entryForm.get(ZIPCODE).isEmpty())) {
             try {
-                if (!databaseModel.userExist(login)) {
-                    if (login.length() < 30 && password.length() < 50 && firstName.length() < 30 && lastName.length() < 40 &&
-                            email.length() < 50 && address.length() < 50 && region.length() < 50 && zipCode.length() < 6) {
-                        databaseModel.registerUser(login, password, email, zipCode, address, region, lastName, firstName);
-                        informationLabel.setTextFill(Color.GREEN);
-                        informationLabel.setText("Registration was successful");
-                        switcher.loadWindow(WindowSwitcher.Window.LOGIN);
-                    } else {
-                        informationLabel.setTextFill(Color.RED);
-                        informationLabel.setText("The length of data is to big!");
-                    }
+                if (!databaseModel.userExist(entryForm.get(USER_LOGIN))) {
+                    databaseModel.registerUser(entryForm);
+                    informationLabel.setTextFill(Color.GREEN);
+                    informationLabel.setText("Registration was successful");
+                    switcher.loadWindow(WindowSwitcher.Window.LOGIN);
                 } else {
                     informationLabel.setTextFill(Color.RED);
-                    informationLabel.setText("This username is already used");
+                    informationLabel.setText("User exist!");
                 }
             } catch (IOException e) {
                 e.printStackTrace();
             }
         } else {
             informationLabel.setTextFill(Color.RED);
-            informationLabel.setText("Fill all required fields");
+            informationLabel.setText("Some fields was not fill correctly");
         }
+    }
+
+    private boolean checkRequiredField() {
+        String matchEmail = "\\b[a-zA-Z0-9]{2,}\\b@\\b[a-zA-Z0-9]{2,}\\b\\.\\b[a-zA-Z0-9]{2,}\\b";
+        String matchLogin = "\\A[a-zA-Z0-9]{1,30}\\Z";
+        String matchPassword = "\\A[a-zA-Z0-9]{1,50}\\Z";
+
+        Pattern emailPattern = Pattern.compile(matchEmail);
+        Pattern loginPattern = Pattern.compile(matchLogin);
+        Pattern passwordPattern = Pattern.compile(matchPassword);
+
+        boolean isLoginFilled = loginPattern.matcher(entryForm.get(USER_LOGIN)).matches();
+        boolean isPasswordFilled = passwordPattern.matcher(entryForm.get(USER_PASSWORD)).matches();
+        boolean isEmailMeetRequirement = emailPattern.matcher(entryForm.get(EMAIL)).matches();
+
+        return isLoginFilled && isPasswordFilled && isEmailMeetRequirement;
+    }
+
+    private boolean checkAdditionalFields(boolean isZipCodeEmpty) {
+        String matchZipCode = "\\A[0-9]{2}-[0-9]{3}\\Z";
+        String matchRegion = "\\A[a-zA-Z\\p{L}]{0,50}\\Z";
+
+        Pattern zipCodePattern = Pattern.compile(matchZipCode);
+        Pattern regionPattern = Pattern.compile(matchRegion);
+        boolean isZipCodeCorrect = true, isRegionCorrect;
+
+        if (!isZipCodeEmpty) {
+            isZipCodeCorrect = zipCodePattern.matcher(entryForm.get(ZIPCODE)).matches();
+        }
+        isRegionCorrect = regionPattern.matcher(entryForm.get(REGION)).matches();
+
+        return isZipCodeCorrect && isRegionCorrect;
     }
 }

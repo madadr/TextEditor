@@ -20,7 +20,7 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.util.*;
 
-import static textEditor.controller.ConstValues.*;
+import static textEditor.utils.ConstValues.*;
 
 public class EditorController implements Initializable, ClientInjectionTarget, WindowSwitcherInjectionTarget, UserInjectionTarget {
     @FXML
