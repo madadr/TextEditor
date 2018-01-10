@@ -53,6 +53,7 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     private ChangeListener<String> paragraphHeadingListener;
     private ChangeListener<String> bulletListListener;
     private UserImpl user;
+    private IndexRange searchTextIndex;
 
     public EditorController() {
     }
@@ -104,7 +105,11 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
             notifyOthers();
         };
 
-        editorModel = (EditorModel) rmiClient.getModel("EditorModel");
+        try {
+            editorModel = (EditorModel) rmiClient.getModel("EditorModel");
+        } catch (RemoteException | NotBoundException e) {
+            e.printStackTrace();
+        }
 
         initialTextSettings();
 

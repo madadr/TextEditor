@@ -16,6 +16,7 @@ import textEditor.view.WindowSwitcher;
 
 import java.io.IOException;
 import java.net.URL;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -76,7 +77,11 @@ public class ProjectController implements Initializable, UserInjectionTarget, Cl
         System.out.println("user=" + user);
 
         // get database service object
-        dbService = (DatabaseModel) client.getModel("DatabaseModel");
+        try {
+            dbService = (DatabaseModel) client.getModel("DatabaseModel");
+        } catch (RemoteException | NotBoundException e) {
+            e.printStackTrace();
+        }
 
         if (dbService == null) {
             System.out.println("null");
