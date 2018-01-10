@@ -6,7 +6,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
-import javafx.stage.FileChooser;
 import org.fxmisc.richtext.StyleClassedTextArea;
 import org.fxmisc.richtext.model.TwoDimensional;
 import textEditor.RMIClient;
@@ -14,7 +13,7 @@ import textEditor.model.*;
 import textEditor.utils.ReadOnlyBoolean;
 import textEditor.view.WindowSwitcher;
 
-import java.io.File;
+import java.io.*;
 import java.net.URL;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
@@ -261,19 +260,48 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
 
     @FXML
     private void fileOpenClicked() {
-        System.out.println("File will be open");
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Choose resource");
-        File file = fileChooser.showOpenDialog(switcher.getStage());
-        if (file != null) {
-            //TODO: handle this
-            //openFile(file);
+        ObjectInputStream ois = null;
+        try {
+            FileInputStream fout = new FileInputStream("editor.model");
+            ois = new ObjectInputStream(fout);
+            EditorModelData editorModelo = (EditorModelData) ois.readObject();
+            System.out.println("editorModelo " + editorModelo);
+        } catch (IOException | ClassNotFoundException e) {
+            System.out.println("Failed");
+        } finally {
+            if (ois != null) {
+                try {
+                    ois.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 
     @FXML
     private void fileSaveClicked() {
-        System.out.println("file will be save");
+        ObjectOutputStream oos = null;
+        try {
+            FileOutputStream fout = new FileOutputStream("editor.model");
+            oos = new ObjectOutputStream(fout);
+            oos.writeObject(editorModel.getData());
+            oos.flush();
+
+            fout.close();
+
+            System.out.println("\ttext data " + editorModel.getData());
+        } catch (IOException e) {
+            System.out.println("Failed");
+        } finally {
+            if (oos != null) {
+                try {
+                    oos.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
     @FXML

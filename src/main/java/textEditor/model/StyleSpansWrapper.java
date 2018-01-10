@@ -11,8 +11,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class StyleSpansWrapper implements Serializable {
-    private ArrayList<Pair<Integer, ArrayList<String>>> pairsOfLengthAndStyle;
     private int stylesStart;
+    private ArrayList<Pair<Integer, ArrayList<String>>> pairsOfLengthAndStyle;
+
+    public StyleSpansWrapper() {
+        stylesStart = 0;
+        pairsOfLengthAndStyle = new ArrayList<>();
+    }
 
     public StyleSpansWrapper(int from, StyleSpans<Collection<String>> styleSpans) {
         this.stylesStart = from;
@@ -52,5 +57,13 @@ public class StyleSpansWrapper implements Serializable {
 
             this.pairsOfLengthAndStyle.add(lengthStylePair);
         }
+    }
+
+    @Override
+    public String toString() {
+        return "StyleSpansWrapper{" +
+                "pairsOfLengthAndStyle=" + pairsOfLengthAndStyle +
+                ", stylesStart=" + stylesStart +
+                '}';
     }
 }
