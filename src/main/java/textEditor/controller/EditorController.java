@@ -22,7 +22,7 @@ import java.util.*;
 
 import static textEditor.controller.ConstValues.*;
 
-public class EditorController implements Initializable, ClientInjectionTarget, WindowSwitcherInjectionTarget {
+public class EditorController implements Initializable, ClientInjectionTarget, WindowSwitcherInjectionTarget, UserInjectionTarget {
     @FXML
     public TextField searchTextField;
     @FXML
@@ -40,7 +40,6 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     private StyleClassedTextArea mainTextArea;
 
     private EditorModel editorModel;
-    private DatabaseModel databaseModel;
     private RMIClient rmiClient;
     private WindowSwitcher switcher;
     private RemoteObserver observer;
@@ -48,12 +47,16 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     private ReadOnlyBoolean isThisClientUpdatingText;
 
     //FontStyle Listeners
-    private ChangeListener<? super String> fontSizeListener;
-    private ChangeListener<? super String> fontFamilyListener;
-    private ChangeListener<? super String> fontColorListener;
-    private ChangeListener<? super String> paragraphHeadingListener;
-    private ChangeListener<? super String> bulletListListener;
-    private IndexRange searchTextIndex;
+    private ChangeListener<String> fontSizeListener;
+    private ChangeListener<String> fontFamilyListener;
+    private ChangeListener<String> fontColorListener;
+    private ChangeListener<String> paragraphHeadingListener;
+    private ChangeListener<String> bulletListListener;
+    private UserImpl user;
+
+    public EditorController() {
+    }
+
 
     @Override
     public void injectClient(RMIClient client) {
@@ -63,6 +66,12 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     @Override
     public void injectWindowSwitcher(WindowSwitcher switcher) {
         this.switcher = switcher;
+    }
+
+    @Override
+    public void injectUser(UserImpl user) {
+        System.out.println("Injecting user=" + user);
+        this.user = user;
     }
 
     @Override
@@ -95,12 +104,7 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
             notifyOthers();
         };
 
-        try {
-            editorModel = (EditorModel) rmiClient.getModel("EditorModel");
-            databaseModel = (DatabaseModel) rmiClient.getModel("DatabaseModel");
-        } catch (RemoteException | NotBoundException e) {
-            e.printStackTrace();
-        }
+        editorModel = (EditorModel) rmiClient.getModel("EditorModel");
 
         initialTextSettings();
 

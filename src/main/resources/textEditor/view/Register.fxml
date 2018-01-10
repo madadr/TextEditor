@@ -23,8 +23,8 @@
                         <Font name="System Bold" size="16.0" />
                      </font>
                   </Label>
-                  <Label text="Email(*)" GridPane.halignment="RIGHT" GridPane.rowIndex="6" />
-                        <Label alignment="CENTER_RIGHT" contentDisplay="RIGHT" prefHeight="100.0" prefWidth="300.0" text="User Name(*):" GridPane.rowIndex="1">
+                  <Label text="E-mail (*)" GridPane.halignment="RIGHT" GridPane.rowIndex="6" />
+                        <Label alignment="CENTER_RIGHT" contentDisplay="RIGHT" prefHeight="100.0" prefWidth="300.0" text="Username (*):" GridPane.rowIndex="1">
                             <GridPane.margin>
                                 <Insets />
                             </GridPane.margin>
@@ -34,7 +34,7 @@
                                 <Insets />
                             </GridPane.margin>
                         </TextField>
-                        <Label alignment="CENTER_RIGHT" contentDisplay="RIGHT" prefHeight="100.0" prefWidth="300.0" text="Password(*):" GridPane.rowIndex="2" />
+                        <Label alignment="CENTER_RIGHT" contentDisplay="RIGHT" prefHeight="100.0" prefWidth="300.0" text="Password (*):" GridPane.rowIndex="2" />
                         <PasswordField fx:id="userPasswordField" maxWidth="-Infinity" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
                             <GridPane.margin>
                                 <Insets />
@@ -68,7 +68,7 @@
                   </TextField>
                   <Label text="Region" GridPane.halignment="RIGHT" GridPane.rowIndex="7" />
                   <Label alignment="CENTER_RIGHT" contentDisplay="RIGHT" prefHeight="100.0" prefWidth="300.0" text="Zip-code" GridPane.rowIndex="8" />
-                  <Label alignment="CENTER_RIGHT" contentDisplay="RIGHT" text="Login data" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.valignment="TOP">
+                  <Label alignment="CENTER_RIGHT" contentDisplay="RIGHT" text="User credentials" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.valignment="TOP">
                      <GridPane.margin>
                         <Insets />
                      </GridPane.margin>
@@ -80,7 +80,7 @@
                   <Label alignment="CENTER_RIGHT" contentDisplay="RIGHT" prefHeight="100.0" prefWidth="300.0" text="First name" GridPane.rowIndex="4" />
                   <TextField fx:id="addressField" maxWidth="-Infinity" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="9" />
                   <TextField fx:id="zipCodeField" maxWidth="-Infinity" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="8" />
-                  <Label prefHeight="100.0" prefWidth="300.0" text="* - data requaired" textFill="RED" GridPane.rowIndex="10">
+                  <Label prefHeight="100.0" prefWidth="300.0" text="* - field required" textFill="RED" GridPane.rowIndex="10">
                      <GridPane.margin>
                         <Insets left="40.0" />
                      </GridPane.margin>

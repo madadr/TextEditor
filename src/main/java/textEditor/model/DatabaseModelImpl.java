@@ -1,10 +1,17 @@
 package textEditor.model;
 
+import textEditor.controller.Project;
+import textEditor.controller.User;
+import textEditor.controller.ProjectImpl;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.rmi.RemoteException;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class DatabaseModelImpl implements DatabaseModel {
 
@@ -118,6 +125,63 @@ public class DatabaseModelImpl implements DatabaseModel {
             e.printStackTrace();
         }
         return true;
+    }
+
+    @Override
+    public List<Project> getProjects(User user) throws RemoteException {
+
+        List<Project> projects = new ArrayList<>();
+
+        ResultSet rs;
+        try {
+            stmt = con.createStatement();
+            rs = stmt.executeQuery("SELECT projekt.* FROM projekt NATURAL JOIN uzytkownik_projekt WHERE uzytkownik_projekt.id_uzytkownika = " + user.getId());
+            while (rs.next()) {
+                System.out.println("LOL");
+                int id_projektu = rs.getInt("id_projektu");
+                String nazwa = rs.getString("nazwa");
+                String opis = rs.getString("opis");
+                String data = rs.getString("data_utworzenia");
+
+                projects.add(new ProjectImpl(nazwa, opis, getContributors(id_projektu)));
+            }
+            rs.close();
+            stmt.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return projects;
+    }
+
+    private List<String> getContributors(int id_projektu) throws SQLException {
+        Statement statement = con.createStatement();
+        ResultSet resultSet = statement.executeQuery("SELECT uzytkownicy.login FROM uzytkownik_projekt NATURAL JOIN uzytkownicy WHERE uzytkownik_projekt.id_projektu = " + id_projektu);
+        List<String> contributors = new ArrayList<>();
+        while (resultSet.next())
+        {
+            contributors.add(resultSet.getString("login"));
+        }
+        resultSet.close();
+        statement.close();
+
+        return contributors;
+    }
+
+    @Override
+    public int getUserId(String login) throws RemoteException {
+
+        try {
+            stmt = con.createStatement();
+            ResultSet userID = stmt.executeQuery("SELECT * FROM `uzytkownicy` WHERE uzytkownicy.login = "+"'"+login+"'");
+            while (userID.next()){
+                return userID.getInt("id_uzytkownika");
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return -1;
     }
 }
 

@@ -7,24 +7,27 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import textEditor.RMIClient;
 import textEditor.controller.ControllerFactory;
+import textEditor.controller.UserImpl;
 
 import java.io.IOException;
+import java.rmi.RemoteException;
 
 public class WindowSwitcher {
     private Stage stage;
     private FXMLLoader loader;
     private final ControllerFactory controllerFactory;
+    private UserImpl user;
 
     public enum Window {
-        LOGIN, REGISTER, EDITOR
+        LOGIN, REGISTER, PICKPROJECT, EDITOR
     }
 
-    public WindowSwitcher(Stage stage) {
-        this.stage = stage;
-
+    public WindowSwitcher(Stage stage) throws RemoteException {
         RMIClient rmiClient = new RMIClient();
+        this.stage = stage;
+        user = new UserImpl();
 
-        controllerFactory = new ControllerFactory(rmiClient, this);
+        controllerFactory = new ControllerFactory(rmiClient, this, user);
     }
 
     public final Stage getStage() {
@@ -36,11 +39,14 @@ public class WindowSwitcher {
             case LOGIN:
                 loadLoginWindow();
                 break;
-            case EDITOR:
-                loadEditorWindow();
-                break;
             case REGISTER:
                 loadRegisterWindow();
+                break;
+            case PICKPROJECT:
+                loadPickProjectWindow();
+                break;
+            case EDITOR:
+                loadEditorWindow();
                 break;
             default:
                 System.err.println("Invalid window!");
@@ -48,6 +54,18 @@ public class WindowSwitcher {
                 System.exit(1);
         }
         reinitializeCloseHandler();
+    }
+
+    private void loadLoginWindow() throws IOException {
+        loadResource("Login.fxml");
+
+        stage.setTitle("Editor - login");
+        stage.setResizable(false);
+        stage.setScene(new Scene((Parent) loader.load(), 600, 400));
+
+        if (!isStageDisplayed()) {
+            stage.show();
+        }
     }
 
     private void loadRegisterWindow() throws IOException {
@@ -62,10 +80,10 @@ public class WindowSwitcher {
         }
     }
 
-    private void loadLoginWindow() throws IOException {
-        loadResource("Login.fxml");
+    private void loadPickProjectWindow() throws IOException {
+        loadResource("ManageProject.fxml");
 
-        stage.setTitle("Editor - login");
+        stage.setTitle("Editor - project");
         stage.setResizable(false);
         stage.setScene(new Scene((Parent) loader.load(), 600, 400));
 

@@ -19,7 +19,7 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.util.ResourceBundle;
 
-public class LoginController implements Initializable, ClientInjectionTarget, WindowSwitcherInjectionTarget {
+public class LoginController implements Initializable, ClientInjectionTarget, WindowSwitcherInjectionTarget, UserInjectionTarget {
     @FXML
     private Button submitLogin, registrationButton;
     @FXML
@@ -33,6 +33,7 @@ public class LoginController implements Initializable, ClientInjectionTarget, Wi
 
     private WindowSwitcher switcher;
     private DatabaseModel databaseModel;
+    private UserImpl user;
 
     public LoginController() {
     }
@@ -40,6 +41,11 @@ public class LoginController implements Initializable, ClientInjectionTarget, Wi
     @Override
     public void injectClient(RMIClient client) {
         this.rmiClient = client;
+    }
+
+    @Override
+    public void injectUser(UserImpl user) {
+        this.user = user;
     }
 
     @Override
@@ -103,8 +109,11 @@ public class LoginController implements Initializable, ClientInjectionTarget, Wi
 
         if (!login.isEmpty() && !password.isEmpty() && databaseModel.userExist(login)) {
             if (databaseModel.checkPassword(login, password)) {
+                int userId = databaseModel.getUserId(login);
+                this.user.setUsername(login);
+                this.user.setId(userId);
                 setResultText("Authorization success", true);
-                switcher.loadWindow(WindowSwitcher.Window.EDITOR);
+                switcher.loadWindow(WindowSwitcher.Window.PICKPROJECT);
             } else {
                 setResultText("Password is incorrect", false);
             }
