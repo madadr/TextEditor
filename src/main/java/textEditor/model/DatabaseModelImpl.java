@@ -3,6 +3,7 @@ package textEditor.model;
 import textEditor.controller.Project;
 import textEditor.controller.User;
 import textEditor.controller.ProjectImpl;
+import textEditor.controller.UserImpl;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -12,6 +13,7 @@ import java.sql.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static textEditor.controller.RegistrationFields.*;
@@ -280,7 +282,7 @@ public class DatabaseModelImpl implements DatabaseModel {
 
     @Override
     public List<User> getFriends(User user) throws RemoteException {
-        return null;
+        return new ArrayList<>(Arrays.asList(new UserImpl(1, "aaaa")));
     }
 
     @Override

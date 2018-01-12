@@ -23,7 +23,7 @@
                         <Font name="System Bold" size="12.0"/>
                     </font>
                 </Label>
-                <ListView prefHeight="200.0" prefWidth="200.0"/>
+                <ListView fx:id="friendsListView" prefHeight="200.0" prefWidth="200.0"/>
                 <Button fx:id="removeButton" alignment="CENTER" mnemonicParsing="false" text="Remove"
                         textAlignment="CENTER"/>
                 <Separator prefWidth="200.0"/>
@@ -35,7 +35,7 @@
                 <HBox alignment="CENTER_LEFT" prefHeight="18.0" prefWidth="380.0" spacing="8.0">
                     <children>
                         <Label alignment="CENTER" text="Nickname:"/>
-                        <TextField fx:id="nicknameField"/>
+                        <TextField fx:id="usernameField"/>
                         <Button fx:id="addButton" mnemonicParsing="false" text="Add"/>
                     </children>
                     <padding>

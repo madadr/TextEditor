@@ -64,7 +64,6 @@ public class WindowSwitcher {
                 loadFriendsWindow();
                 break;
             default:
-                System.err.println("Invalid window!");
                 Platform.exit();
                 System.exit(1);
         }
@@ -88,27 +87,11 @@ public class WindowSwitcher {
     }
 
     private void loadChooseActionWindow() throws IOException {
-        loadResource("Action.fxml");
-
-        stage.setTitle("Editor - choose action");
-        stage.setResizable(false);
-        stage.setScene(new Scene((Parent) loader.load()));
-
-        if (!isStageDisplayed()) {
-            stage.show();
-        }
+        loadWindow("Action.fxml", "Editor - choose action", false);
     }
 
     private void loadFriendsWindow() throws IOException {
-        loadResource("Friends.fxml");
-
-        stage.setTitle("Editor - friends list");
-        stage.setResizable(false);
-        stage.setScene(new Scene((Parent) loader.load()));
-
-        if (!isStageDisplayed()) {
-            stage.show();
-        }
+        loadWindow("Friends.fxml", "Editor - friends list", false);
     }
 
     private void loadPickProjectWindow() throws IOException {

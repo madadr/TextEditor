@@ -82,12 +82,6 @@ public class ProjectController implements Initializable, UserInjectionTarget, Cl
             e.printStackTrace();
         }
 
-        if (dbService == null) {
-            System.out.println("null");
-        } else {
-            System.out.println(dbService);
-        }
-
         fetchUserProjectsFromDatabase();
 
         setupProjectsListView();
@@ -117,7 +111,6 @@ public class ProjectController implements Initializable, UserInjectionTarget, Cl
             }
         });
     }
-
 
     private void initButtonsActions() {
         newButton.setOnAction(event -> {
@@ -165,7 +158,6 @@ public class ProjectController implements Initializable, UserInjectionTarget, Cl
             }
             projectListView.getItems().remove(selectedIdx);
         }
-
     }
 
     @Override

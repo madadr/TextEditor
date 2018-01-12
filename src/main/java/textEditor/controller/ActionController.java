@@ -71,8 +71,8 @@ public class ActionController implements Initializable, UserInjectionTarget, Cli
 
     private void initFriendsListButton() {
         friendsListButton.setOnMouseClicked(e -> {
-            System.out.println("Friends action");
             try {
+                System.out.println("FERIEININSIONDIOA BSOD ");
                 switcher.loadWindow(WindowSwitcher.Window.FRIENDS_LIST);
             } catch (IOException e1) {
                 // error
@@ -83,7 +83,7 @@ public class ActionController implements Initializable, UserInjectionTarget, Cli
     private void initManageProjectsButton() {
         manageProjectsButton.setOnMouseClicked(e -> {
             try {
-                switcher.loadWindow(WindowSwitcher.Window.PICKPROJECT);
+                switcher.loadWindow(WindowSwitcher.Window.PICK_PROJECT);
             } catch (IOException e1) {
                 // error
             }
