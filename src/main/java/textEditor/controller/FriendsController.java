@@ -9,6 +9,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import textEditor.RMIClient;
 import textEditor.model.DatabaseModel;
+import textEditor.utils.AlertManager;
 import textEditor.view.WindowSwitcher;
 
 import java.io.IOException;
@@ -16,6 +17,7 @@ import java.net.URL;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.util.List;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 public class FriendsController implements Initializable, UserInjectionTarget, ClientInjectionTarget, WindowSwitcherInjectionTarget {
@@ -104,15 +106,15 @@ public class FriendsController implements Initializable, UserInjectionTarget, Cl
 
     private void initAddButton() {
         addButton.setOnMouseClicked(e -> {
+            String friendUsername = usernameField.getText();
+
+            if (friendUsername.equals("")) {
+                return;
+            }
+
             try {
-                String friendUsername = usernameField.getText();
-
-                if(this.user.getUsername().equals(friendUsername)) {
-                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                    alert.setTitle("Already in friends list");
-                    alert.setContentText("You cannot add yourself to friends list!");
-
-                    alert.showAndWait();
+                if (this.user.getUsername().equals(friendUsername)) {
+                    AlertManager.displayAlert(Alert.AlertType.INFORMATION,  "You cannot add yourself to friends list!");
                 }
 
                 if (dbService.userExist(friendUsername)) {
@@ -123,21 +125,10 @@ public class FriendsController implements Initializable, UserInjectionTarget, Cl
 
                         updateFriendsList();
                     } else {
-                        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                        alert.setTitle("Already in friends list");
-                        alert.setHeaderText("Already in friends list");
-                        alert.setContentText("User is already in your friends list!");
-
-                        alert.showAndWait();
+                        AlertManager.displayAlert(Alert.AlertType.INFORMATION,  "User is already in your friends list!");
                     }
                 } else {
-                    // TODO: user doesn't exists
-                    Alert alert = new Alert(Alert.AlertType.WARNING);
-                    alert.setTitle("Invalid user");
-                    alert.setHeaderText("Invalid user");
-                    alert.setContentText("User doesn't exists!");
-
-                    alert.showAndWait();
+                    AlertManager.displayAlert(Alert.AlertType.WARNING, "User doesn't exist!");
                 }
             } catch (RemoteException e1) {
                 // TODO
