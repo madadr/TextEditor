@@ -113,7 +113,7 @@ public class LoginController implements Initializable, ClientInjectionTarget, Wi
                 this.user.setUsername(login);
                 this.user.setId(userId);
                 setResultText("Authorization success", true);
-                switcher.loadWindow(WindowSwitcher.Window.PICK_PROJECT);
+                switcher.loadWindow(WindowSwitcher.Window.CHOOSE_ACTION);
             } else {
                 setResultText("Password is incorrect", false);
             }
