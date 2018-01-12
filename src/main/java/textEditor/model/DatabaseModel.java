@@ -9,8 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public interface DatabaseModel extends Remote {
-    void init() throws RemoteException;
-
     boolean userExist(String username) throws RemoteException;
 
     boolean checkPassword(String userName, String password) throws RemoteException;

@@ -32,9 +32,7 @@ public class DatabaseModelImpl implements DatabaseModel {
         init();
     }
 
-
-    @Override
-    public void init() {
+    private void init() {
         String s;
         StringBuffer sb = new StringBuffer();
 
