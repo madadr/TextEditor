@@ -33,7 +33,7 @@ public class DatabaseModelImpl implements DatabaseModel {
 
 
     @Override
-    public void init(){
+    public void init() {
         String s;
         StringBuffer sb = new StringBuffer();
 
@@ -96,7 +96,7 @@ public class DatabaseModelImpl implements DatabaseModel {
     @Override
     public boolean checkPassword(String userName, String password) {
         boolean flag = false;
-        if(password == null)
+        if (password == null)
             return false;
         try {
             String checkPasswordQuery = "SELECT haslo FROM uzytkownicy WHERE login=?";
@@ -205,8 +205,7 @@ public class DatabaseModelImpl implements DatabaseModel {
             if (result.next()) {
                 return result.getInt(1);
             }
-        }
-        catch (SQLException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return -1;
@@ -220,7 +219,7 @@ public class DatabaseModelImpl implements DatabaseModel {
             PreparedStatement deleteContributorStatement = con.prepareStatement(deleteContributorQuery);
             deleteContributorStatement.setInt(1, projectToDelete.getId());
             int result = deleteContributorStatement.executeUpdate();
-            if(result == 0){
+            if (result == 0) {
                 throw new SQLException("Failed to delete contributors");
             }
 
@@ -229,7 +228,7 @@ public class DatabaseModelImpl implements DatabaseModel {
             PreparedStatement deleteProjectStatement = con.prepareStatement(deleteProjectQuery);
             deleteProjectStatement.setInt(1, projectToDelete.getId());
             result = deleteProjectStatement.executeUpdate();
-            if(result == 0){
+            if (result == 0) {
                 throw new SQLException("Failed to delete contributors");
             }
 
@@ -253,23 +252,22 @@ public class DatabaseModelImpl implements DatabaseModel {
             insertProjectStatement.setString(3, now.toString());
 
             int affectedRow = insertProjectStatement.executeUpdate();
-            if(affectedRow == 0){
+            if (affectedRow == 0) {
                 throw new SQLException("User is not added!");
             }
             ResultSet resultSet = insertProjectStatement.getGeneratedKeys();
             Integer idProject = null;
-            if (resultSet.next())
-            {
+            if (resultSet.next()) {
                 idProject = resultSet.getInt(1);
             }
-            if(idProject == null) {
+            if (idProject == null) {
                 throw new SQLException("Key wasn't generate");
             }
 
             //Inserting contributors into database
             String insertContributorQuery = "INSERT INTO `uzytkownik_projekt` (`id_uzytkownika`, `id_projektu`) VALUES (?, ?)";
-            for (String contributor:
-                 project.getContributors()) {
+            for (String contributor :
+                    project.getContributors()) {
                 PreparedStatement insertContributorStatement = con.prepareStatement(insertContributorQuery);
                 insertContributorStatement.setInt(1, getUserId(contributor));
                 insertContributorStatement.setInt(2, idProject);

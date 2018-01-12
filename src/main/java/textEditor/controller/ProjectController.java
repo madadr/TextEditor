@@ -108,13 +108,10 @@ public class ProjectController implements Initializable, UserInjectionTarget, Cl
         projectListView.setItems(FXCollections.observableArrayList(this.projects));
         projectListView.getSelectionModel().getSelectedItems().addListener((ListChangeListener<? super Project>) (e) -> {
             Project selectedProject = projectListView.getSelectionModel().getSelectedItem();
-            if(selectedProject != null)
-            {
+            if (selectedProject != null) {
                 description.setText(selectedProject.getDescription());
                 contributors.setText(selectedProject.getContributors().toString());
-            }
-            else
-            {
+            } else {
                 description.setText("");
                 contributors.setText("");
             }
@@ -135,7 +132,7 @@ public class ProjectController implements Initializable, UserInjectionTarget, Cl
             try {
                 Project project = projectListView.getSelectionModel().getSelectedItem();
                 final int selectedIdx = projectListView.getSelectionModel().getSelectedIndex();
-                if(selectedIdx != -1) {
+                if (selectedIdx != -1) {
                     selectedProject.setId(project.getId());
                     selectedProject.setTitle(project.getTitle());
                     selectedProject.setDescription(project.getDescription());
@@ -160,8 +157,7 @@ public class ProjectController implements Initializable, UserInjectionTarget, Cl
     public void onClickRemove(ActionEvent actionEvent) {
         Project projectToDelete = projectListView.getSelectionModel().getSelectedItem();
         final int selectedIdx = projectListView.getSelectionModel().getSelectedIndex();
-        if(selectedIdx != -1)
-        {
+        if (selectedIdx != -1) {
             try {
                 dbService.removeProject(projectToDelete);
             } catch (RemoteException e) {

@@ -49,8 +49,8 @@ public class WindowSwitcher {
                 loadPickProjectWindow();
                 break;
             case CHOOSE_ACTION:
-            loadChooseActionWindow();
-            break;
+                loadChooseActionWindow();
+                break;
             case EDITOR:
                 loadEditorWindow();
                 break;
@@ -80,7 +80,7 @@ public class WindowSwitcher {
     }
 
     private void loadLoginWindow() throws IOException {
-        loadWindow("Login.fxml","Editor - login", false);
+        loadWindow("Login.fxml", "Editor - login", false);
     }
 
     private void loadRegisterWindow() throws IOException {

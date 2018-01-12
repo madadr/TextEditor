@@ -66,9 +66,13 @@ public class ProjectImpl implements Project, Serializable {
         this.contributors = contributors;
     }
 
-    public void setId(Integer id) { this.id = id; }
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
-    public Integer getId() { return id; }
+    public Integer getId() {
+        return id;
+    }
 
     @Override
     public String toString() {
