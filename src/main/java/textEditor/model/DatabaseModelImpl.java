@@ -218,7 +218,7 @@ public class DatabaseModelImpl implements DatabaseModel {
             getUserStatement.setInt(1, id);
             ResultSet result = getUserStatement.executeQuery();
             if (result.next()) {
-                return result.getString(1);
+                return result.getString(2);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -297,7 +297,7 @@ public class DatabaseModelImpl implements DatabaseModel {
     public List<User> getFriends(User user) throws RemoteException {
         List<User> friends = new ArrayList<>();
         try {
-            String getProjectsQuery = "SELECT lista_znajomych.* FROM lista_znajomych WHERE uzytkownicy.id_uzytkownika = ?";
+            String getProjectsQuery = "SELECT lista_znajomych.* FROM lista_znajomych WHERE id_uzytkownika = ?";
             PreparedStatement getProjectsStatement = con.prepareStatement(getProjectsQuery);
             getProjectsStatement.setInt(1, user.getId());
 

@@ -3,10 +3,10 @@ package textEditor.controller;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
-import javafx.stage.Popup;
 import textEditor.RMIClient;
 import textEditor.model.DatabaseModel;
 import textEditor.view.WindowSwitcher;
@@ -59,8 +59,7 @@ public class FriendsController implements Initializable, UserInjectionTarget, Cl
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         initDatabaseService();
-        fetchFriendsListFromDatabase();
-        setupFriendsListView();
+        updateFriendsList();
 
         initBackButton();
         initAddButton();
@@ -73,6 +72,11 @@ public class FriendsController implements Initializable, UserInjectionTarget, Cl
         } catch (RemoteException | NotBoundException e) {
             e.printStackTrace();
         }
+    }
+
+    private void updateFriendsList() {
+        fetchFriendsListFromDatabase();
+        setupFriendsListView();
     }
 
     private void fetchFriendsListFromDatabase() {
@@ -101,18 +105,39 @@ public class FriendsController implements Initializable, UserInjectionTarget, Cl
     private void initAddButton() {
         addButton.setOnMouseClicked(e -> {
             try {
-                String username = usernameField.getText();
+                String friendUsername = usernameField.getText();
 
-                if(dbService.userExist(username)) {
-                    User friend = new UserImpl(dbService.getUserId(username), username);
-                    dbService.addFriend(user, friend);
+                if(this.user.getUsername().equals(friendUsername)) {
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Already in friends list");
+                    alert.setContentText("You cannot add yourself to friends list!");
 
-                    fetchFriendsListFromDatabase();
-                    setupFriendsListView();
+                    alert.showAndWait();
+                }
+
+                if (dbService.userExist(friendUsername)) {
+                    User friend = new UserImpl(dbService.getUserId(friendUsername), friendUsername);
+
+                    if (!friends.contains(friend)) {
+                        dbService.addFriend(user, friend);
+
+                        updateFriendsList();
+                    } else {
+                        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                        alert.setTitle("Already in friends list");
+                        alert.setHeaderText("Already in friends list");
+                        alert.setContentText("User is already in your friends list!");
+
+                        alert.showAndWait();
+                    }
                 } else {
                     // TODO: user doesn't exists
-                    Popup popup = new Popup();
-                    popup.show(switcher.getStage());
+                    Alert alert = new Alert(Alert.AlertType.WARNING);
+                    alert.setTitle("Invalid user");
+                    alert.setHeaderText("Invalid user");
+                    alert.setContentText("User doesn't exists!");
+
+                    alert.showAndWait();
                 }
             } catch (RemoteException e1) {
                 // TODO
@@ -127,8 +152,7 @@ public class FriendsController implements Initializable, UserInjectionTarget, Cl
 
                 dbService.removeFriend(user, friend);
 
-                fetchFriendsListFromDatabase();
-                setupFriendsListView();
+                updateFriendsList();
             } catch (RemoteException e1) {
                 // TODO
             }
