@@ -7,6 +7,8 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import textEditor.RMIClient;
 import textEditor.controller.ControllerFactory;
+import textEditor.controller.Project;
+import textEditor.controller.ProjectImpl;
 import textEditor.controller.UserImpl;
 
 import java.io.IOException;
@@ -19,15 +21,16 @@ public class WindowSwitcher {
     private UserImpl user;
 
     public enum Window {
-        LOGIN, REGISTER, PICKPROJECT, EDITOR
+        LOGIN, REGISTER, PICK_PROJECT, EDITOR, ADD_PROJECT, EDIT_PROJECT
     }
 
     public WindowSwitcher(Stage stage) throws RemoteException {
         RMIClient rmiClient = new RMIClient();
         this.stage = stage;
         user = new UserImpl();
+        Project project = new ProjectImpl();
 
-        controllerFactory = new ControllerFactory(rmiClient, this, user);
+        controllerFactory = new ControllerFactory(rmiClient, this, user, project);
     }
 
     public final Stage getStage() {
@@ -42,11 +45,17 @@ public class WindowSwitcher {
             case REGISTER:
                 loadRegisterWindow();
                 break;
-            case PICKPROJECT:
+            case PICK_PROJECT:
                 loadPickProjectWindow();
                 break;
             case EDITOR:
                 loadEditorWindow();
+                break;
+            case ADD_PROJECT:
+                loadAddProjectWindow();
+                break;
+            case EDIT_PROJECT:
+                loadEditProjectWindow();
                 break;
             default:
                 System.err.println("Invalid window!");
@@ -56,47 +65,35 @@ public class WindowSwitcher {
         reinitializeCloseHandler();
     }
 
+    private void loadEditProjectWindow() throws IOException {
+        loadWindow("EditProject.fxml", "Editor - edit project", false);
+    }
+
+    private void loadAddProjectWindow() throws IOException {
+        loadWindow("AddProject.fxml", "Editor - add project", false);
+    }
+
     private void loadLoginWindow() throws IOException {
-        loadResource("Login.fxml");
-
-        stage.setTitle("Editor - login");
-        stage.setResizable(false);
-        stage.setScene(new Scene((Parent) loader.load(), 600, 400));
-
-        if (!isStageDisplayed()) {
-            stage.show();
-        }
+        loadWindow("Login.fxml","Editor - login", false);
     }
 
     private void loadRegisterWindow() throws IOException {
-        loadResource("Register.fxml");
-
-        stage.setTitle("Editor - register");
-        stage.setResizable(false);
-        stage.setScene(new Scene((Parent) loader.load(), 600, 400));
-
-        if (!isStageDisplayed()) {
-            stage.show();
-        }
+        loadWindow("Register.fxml", "Editor - register", false);
     }
 
     private void loadPickProjectWindow() throws IOException {
-        loadResource("ManageProject.fxml");
-
-        stage.setTitle("Editor - project");
-        stage.setResizable(false);
-        stage.setScene(new Scene((Parent) loader.load(), 600, 400));
-
-        if (!isStageDisplayed()) {
-            stage.show();
-        }
+        loadWindow("ManageProject.fxml", "Editor - project", false);
     }
 
     private void loadEditorWindow() throws IOException {
-        loadResource("Editor.fxml");
+        loadWindow("Editor.fxml", "Editor", true);
+    }
 
-        stage.setTitle("Editor");
-        stage.setResizable(true);
+    private void loadWindow(String file, String title, boolean isResizable) throws IOException {
+        loadResource(file);
+
+        stage.setTitle(title);
+        stage.setResizable(isResizable);
         stage.setScene(new Scene((Parent) loader.load()));
 
         if (!isStageDisplayed()) {

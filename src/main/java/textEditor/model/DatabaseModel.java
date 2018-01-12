@@ -23,4 +23,6 @@ public interface DatabaseModel extends Remote {
     int getUserId(String login) throws RemoteException;
 
     void removeProject(Project projectToDelete) throws RemoteException;
+
+    void addProject(Project project) throws RemoteException;
 }

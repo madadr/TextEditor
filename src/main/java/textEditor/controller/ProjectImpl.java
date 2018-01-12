@@ -29,6 +29,19 @@ public class ProjectImpl implements Project, Serializable {
         this.contributors = contributors;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        ProjectImpl project = (ProjectImpl) o;
+
+        if (id != null ? !id.equals(project.id) : project.id != null) return false;
+        if (title != null ? !title.equals(project.title) : project.title != null) return false;
+        if (description != null ? !description.equals(project.description) : project.description != null) return false;
+        return contributors != null ? contributors.equals(project.contributors) : project.contributors == null;
+    }
+
     public String getTitle() {
         return title;
     }

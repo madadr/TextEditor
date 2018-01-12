@@ -8,10 +8,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
 import textEditor.RMIClient;
-import textEditor.controller.projectManagerPopups.ProjectPopupViewFactory;
 import textEditor.model.DatabaseModel;
 import textEditor.view.WindowSwitcher;
 
@@ -23,7 +20,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 
-public class ProjectController implements Initializable, UserInjectionTarget, ClientInjectionTarget, WindowSwitcherInjectionTarget {
+public class ProjectController implements Initializable, UserInjectionTarget, ClientInjectionTarget, WindowSwitcherInjectionTarget, SelectedProjectInjectionTarget {
     @FXML
     private Label description;
 
@@ -57,6 +54,7 @@ public class ProjectController implements Initializable, UserInjectionTarget, Cl
     private UserImpl user;
 
     private List<Project> projects;
+    private Project selectedProject;
 
     @Override
     public void injectUser(UserImpl user) {
@@ -126,17 +124,27 @@ public class ProjectController implements Initializable, UserInjectionTarget, Cl
 
     private void initButtonsActions() {
         newButton.setOnAction(event -> {
-            final Stage popup = ProjectPopupViewFactory.createNewProjectView();
-
-            popup.initModality(Modality.APPLICATION_MODAL);
-            popup.show();
+            try {
+                switcher.loadWindow(WindowSwitcher.Window.ADD_PROJECT);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         });
 
-        // TODO: Remove code duplication. Find better solution to avoid another fxml file and another controller.
         editButton.setOnAction(event -> {
-            final Stage popup = ProjectPopupViewFactory.createEditProjectView();
-
-            popup.show();
+            try {
+                Project project = projectListView.getSelectionModel().getSelectedItem();
+                final int selectedIdx = projectListView.getSelectionModel().getSelectedIndex();
+                if(selectedIdx != -1) {
+                    selectedProject.setId(project.getId());
+                    selectedProject.setTitle(project.getTitle());
+                    selectedProject.setDescription(project.getDescription());
+                    selectedProject.setContributors(project.getContributors());
+                    switcher.loadWindow(WindowSwitcher.Window.EDIT_PROJECT);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         });
 
         openButton.setOnAction(event -> {
@@ -162,5 +170,10 @@ public class ProjectController implements Initializable, UserInjectionTarget, Cl
             projectListView.getItems().remove(selectedIdx);
         }
 
+    }
+
+    @Override
+    public void injectSelectedProject(Project project) {
+        this.selectedProject = project;
     }
 }
