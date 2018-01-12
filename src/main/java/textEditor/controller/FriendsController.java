@@ -17,7 +17,6 @@ import java.net.URL;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.util.List;
-import java.util.Objects;
 import java.util.ResourceBundle;
 
 public class FriendsController implements Initializable, UserInjectionTarget, ClientInjectionTarget, WindowSwitcherInjectionTarget {
@@ -114,7 +113,7 @@ public class FriendsController implements Initializable, UserInjectionTarget, Cl
 
             try {
                 if (this.user.getUsername().equals(friendUsername)) {
-                    AlertManager.displayAlert(Alert.AlertType.INFORMATION,  "You cannot add yourself to friends list!");
+                    AlertManager.displayAlert(Alert.AlertType.INFORMATION, "You cannot add yourself to friends list!");
                 }
 
                 if (dbService.userExist(friendUsername)) {
@@ -125,7 +124,7 @@ public class FriendsController implements Initializable, UserInjectionTarget, Cl
 
                         updateFriendsList();
                     } else {
-                        AlertManager.displayAlert(Alert.AlertType.INFORMATION,  "User is already in your friends list!");
+                        AlertManager.displayAlert(Alert.AlertType.INFORMATION, "User is already in your friends list!");
                     }
                 } else {
                     AlertManager.displayAlert(Alert.AlertType.WARNING, "User doesn't exist!");
@@ -140,6 +139,10 @@ public class FriendsController implements Initializable, UserInjectionTarget, Cl
         removeButton.setOnMouseClicked(e -> {
             try {
                 User friend = friendsListView.getSelectionModel().getSelectedItem();
+
+                if (friend == null) {
+                    return;
+                }
 
                 dbService.removeFriend(user, friend);
 

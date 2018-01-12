@@ -317,12 +317,38 @@ public class DatabaseModelImpl implements DatabaseModel {
 
     @Override
     public void addFriend(User user, User friend) throws RemoteException {
+        try {
+            // Inserting project into database
+            String insertUserQuery = "INSERT INTO `lista_znajomych` (`id_uzytkownika`, `id_znajomego`) VALUES (?, ?)";
+            PreparedStatement statement = con.prepareStatement(insertUserQuery, Statement.RETURN_GENERATED_KEYS);
 
+            statement.setInt(1, user.getId());
+            statement.setInt(2, friend.getId());
+
+            int affectedRows = statement.executeUpdate();
+            if (affectedRows == 0) {
+                throw new SQLException("Failed to add friend!");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     public void removeFriend(User user, User friend) throws RemoteException {
-
+        try {
+            //Delete project
+            String deleteProjectQuery = "DELETE FROM `lista_znajomych` WHERE `id_uzytkownika`=? AND `id_znajomego`=?";
+            PreparedStatement deleteProjectStatement = con.prepareStatement(deleteProjectQuery);
+            deleteProjectStatement.setInt(1, user.getId());
+            deleteProjectStatement.setInt(2, friend.getId());
+            int affectedRows = deleteProjectStatement.executeUpdate();
+            if (affectedRows == 0) {
+                throw new SQLException("Failed to delete friend!");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }
 
