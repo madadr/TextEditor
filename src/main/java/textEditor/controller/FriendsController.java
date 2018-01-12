@@ -35,7 +35,7 @@ public class FriendsController implements Initializable, UserInjectionTarget, Cl
     private WindowSwitcher switcher;
     private DatabaseModel dbService;
     private RMIClient client;
-    private UserImpl user;
+    private User user;
 
     @Override
     public void injectUser(UserImpl user) {

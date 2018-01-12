@@ -72,7 +72,6 @@ public class ActionController implements Initializable, UserInjectionTarget, Cli
     private void initFriendsListButton() {
         friendsListButton.setOnMouseClicked(e -> {
             try {
-                System.out.println("FERIEININSIONDIOA BSOD ");
                 switcher.loadWindow(WindowSwitcher.Window.FRIENDS_LIST);
             } catch (IOException e1) {
                 // error
