@@ -1,6 +1,5 @@
 package textEditor.model;
 
-import javafx.scene.control.TextField;
 import textEditor.controller.Project;
 import textEditor.controller.User;
 
@@ -25,4 +24,10 @@ public interface DatabaseModel extends Remote {
     void removeProject(Project projectToDelete) throws RemoteException;
 
     void addProject(Project project) throws RemoteException;
+
+    List<User> getFriends(User user) throws RemoteException;
+
+    void addFriend(User user, User friend) throws RemoteException;
+
+    void removeFriend(User user, User friend) throws RemoteException;
 }

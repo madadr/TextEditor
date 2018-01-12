@@ -11,10 +11,6 @@ public class ProjectImpl implements Project, Serializable {
     private String description;
     private List<String> contributors;
 
-    // these two will be available via dbService query
-//    private String text;
-//    private StyleSpansWrapper styleSpansWrapper;
-
     public ProjectImpl() throws RemoteException {
         this.id = -1;
         this.title = "";

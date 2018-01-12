@@ -277,6 +277,21 @@ public class DatabaseModelImpl implements DatabaseModel {
             e.printStackTrace();
         }
     }
+
+    @Override
+    public List<User> getFriends(User user) throws RemoteException {
+        return null;
+    }
+
+    @Override
+    public void addFriend(User user, User friend) throws RemoteException {
+
+    }
+
+    @Override
+    public void removeFriend(User user, User friend) throws RemoteException {
+
+    }
 }
 
 
