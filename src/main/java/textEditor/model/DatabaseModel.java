@@ -25,4 +25,6 @@ public interface DatabaseModel extends Remote {
     void removeProject(Project projectToDelete) throws RemoteException;
 
     void addProject(Project project) throws RemoteException;
+
+    void editProject(Project editedProject) throws RemoteException;
 }
