@@ -1,8 +1,8 @@
 package textEditor.model;
 
 import textEditor.controller.Project;
-import textEditor.controller.User;
 import textEditor.controller.ProjectImpl;
+import textEditor.controller.User;
 import textEditor.controller.UserImpl;
 
 import java.io.BufferedReader;
@@ -13,7 +13,6 @@ import java.sql.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import static textEditor.controller.RegistrationFields.*;
@@ -198,7 +197,7 @@ public class DatabaseModelImpl implements DatabaseModel {
     }
 
     @Override
-    public int getUserId(String login) {
+    public int getUserId(String login) throws RemoteException {
         try {
             String getUserQuery = "SELECT * FROM `uzytkownicy` WHERE uzytkownicy.login = ?";
             PreparedStatement getUserStatement = con.prepareStatement(getUserQuery);
@@ -211,6 +210,22 @@ public class DatabaseModelImpl implements DatabaseModel {
             e.printStackTrace();
         }
         return -1;
+    }
+
+    @Override
+    public String getUserLogin(int id) {
+        try {
+            String getUserQuery = "SELECT * FROM `uzytkownicy` WHERE uzytkownicy.id_uzytkownika = ?";
+            PreparedStatement getUserStatement = con.prepareStatement(getUserQuery);
+            getUserStatement.setInt(1, id);
+            ResultSet result = getUserStatement.executeQuery();
+            if (result.next()) {
+                return result.getString(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return "";
     }
 
     @Override
@@ -282,7 +297,24 @@ public class DatabaseModelImpl implements DatabaseModel {
 
     @Override
     public List<User> getFriends(User user) throws RemoteException {
-        return new ArrayList<>(Arrays.asList(new UserImpl(1, "aaaa")));
+        List<User> friends = new ArrayList<>();
+        try {
+            String getProjectsQuery = "SELECT lista_znajomych.* FROM lista_znajomych WHERE uzytkownicy.id_uzytkownika = ?";
+            PreparedStatement getProjectsStatement = con.prepareStatement(getProjectsQuery);
+            getProjectsStatement.setInt(1, user.getId());
+
+            ResultSet result = getProjectsStatement.executeQuery();
+            while (result.next()) {
+                int id_uzytkownika = result.getInt("id_znajomego");
+                User friend = new UserImpl(id_uzytkownika, getUserLogin(id_uzytkownika));
+
+                friends.add(friend);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return friends;
     }
 
     @Override
