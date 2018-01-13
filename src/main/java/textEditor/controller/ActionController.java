@@ -27,10 +27,10 @@ public class ActionController implements Initializable, UserInjectionTarget, Cli
     private WindowSwitcher switcher;
     private DatabaseModel dbService;
     private RMIClient client;
-    private UserImpl user;
+    private User user;
 
     @Override
-    public void injectUser(UserImpl user) {
+    public void injectUser(User user) {
         this.user = user;
     }
 
@@ -61,7 +61,11 @@ public class ActionController implements Initializable, UserInjectionTarget, Cli
     }
 
     private void initHelloLabel() {
-        hello.setText("Hello, " + user.getUsername() + "!");
+        try {
+            hello.setText("Hello, " + user.getUsername() + "!");
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
     }
 
     private void initButtons() {
@@ -72,7 +76,7 @@ public class ActionController implements Initializable, UserInjectionTarget, Cli
 
     private void initCloseButton() {
         closeButton.setOnMouseClicked(e -> {
-            switcher.getStage().close();
+            switcher.getMainStage().close();
         });
     }
 

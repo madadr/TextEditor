@@ -5,54 +5,62 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import textEditor.RMIClient;
-import textEditor.controller.ControllerFactory;
-import textEditor.controller.Project;
-import textEditor.controller.ProjectImpl;
-import textEditor.controller.UserImpl;
+import textEditor.controller.*;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
 
 public class WindowSwitcher {
-    private Stage stage;
+    private Stage stage, popupStage;
     private FXMLLoader loader;
     private final ControllerFactory controllerFactory;
-    private UserImpl user;
+    private User user;
+    private Project project;
 
     public enum Window {
-        LOGIN, REGISTER, PICK_PROJECT, EDITOR, ADD_PROJECT, EDIT_PROJECT, FRIENDS_LIST, CHOOSE_ACTION
+        LOGIN, REGISTER, PICK_PROJECT, EDITOR, POPUP_ACTIVE_USERS, ADD_PROJECT, EDIT_PROJECT, FRIENDS_LIST, CHOOSE_ACTION
     }
 
     public WindowSwitcher(Stage stage) throws RemoteException {
         RMIClient rmiClient = new RMIClient();
         this.stage = stage;
         user = new UserImpl();
-        Project project = new ProjectImpl();
-
-        controllerFactory = new ControllerFactory(rmiClient, this, user, project);
+        project = new ProjectImpl();
+        controllerFactory = new ControllerFactory(rmiClient, this, user,project);
     }
 
-    public final Stage getStage() {
+    public final Stage getMainStage() {
         return this.stage;
+    }
+    public final Stage getPopupStage(){
+        return this.popupStage;
     }
 
     public void loadWindow(Window window) throws IOException {
         switch (window) {
             case LOGIN:
                 loadLoginWindow();
+                reinitializeCloseHandler();
                 break;
             case REGISTER:
                 loadRegisterWindow();
+                reinitializeCloseHandler();
                 break;
             case PICK_PROJECT:
                 loadPickProjectWindow();
+                reinitializeCloseHandler();
                 break;
             case CHOOSE_ACTION:
                 loadChooseActionWindow();
-                break;
-            case EDITOR:
+		break;
+	    case EDITOR:
                 loadEditorWindow();
+                reinitializeCloseHandler();
+                break;
+            case POPUP_ACTIVE_USERS:
+                loadActiveUsersPopup();
                 break;
             case ADD_PROJECT:
                 loadAddProjectWindow();
@@ -64,10 +72,19 @@ public class WindowSwitcher {
                 loadFriendsWindow();
                 break;
             default:
+                System.err.println("Invalid window!");
                 Platform.exit();
                 System.exit(1);
         }
-        reinitializeCloseHandler();
+    }
+
+    private void loadActiveUsersPopup() throws IOException {
+        loadResource("PopupUsersEditing.fxml");
+
+        popupStage = new Stage();
+        popupStage.setScene(new Scene((Parent) loader.load(), 230, 240));
+        popupStage.setResizable(false);
+        popupStage.show();
     }
 
     private void loadEditProjectWindow() throws IOException {

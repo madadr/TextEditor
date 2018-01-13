@@ -21,7 +21,7 @@ public class EditProjectController implements Initializable, UserInjectionTarget
     public TextField contributorsField;
     private RMIClient rmiClient;
     private Project project;
-    private UserImpl user;
+    private User user;
     private WindowSwitcher windowSwitcher;
 
     private DatabaseModel databaseModel;
@@ -75,7 +75,7 @@ public class EditProjectController implements Initializable, UserInjectionTarget
     }
 
     @Override
-    public void injectUser(UserImpl user) {
+    public void injectUser(User user) {
         this.user = user;
     }
 

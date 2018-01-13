@@ -1,9 +1,6 @@
 package textEditor;
 
-import textEditor.model.DatabaseModel;
-import textEditor.model.DatabaseModelImpl;
-import textEditor.model.EditorModel;
-import textEditor.model.EditorModelImpl;
+import textEditor.model.*;
 
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -18,16 +15,20 @@ public class Server {
             registry = LocateRegistry.createRegistry(4321);
 
             //Creating models implementation of our classes
-            EditorModelImpl editorModelImpl = new EditorModelImpl();
-            DatabaseModelImpl databaseModelImpl = new DatabaseModelImpl();
+            EditorModel editorModel = new EditorModelImpl();
+            DatabaseModel databaseModel = new DatabaseModelImpl();
+            ActiveUserHandler activeUsersHandler = new ActiveUsersHandlerImpl();
 
             //Exporting models interface to client
-            EditorModel editorModel = (EditorModel) UnicastRemoteObject.exportObject(editorModelImpl, 0);
-            DatabaseModel databaseModel = (DatabaseModel) UnicastRemoteObject.exportObject(databaseModelImpl, 0);
+            EditorModel editorModelExport = (EditorModel) UnicastRemoteObject.exportObject(editorModel, 0);
+            DatabaseModel databaseModelExport = (DatabaseModel) UnicastRemoteObject.exportObject(databaseModel, 0);
+            ActiveUserHandler activeUserHandlerExport = (ActiveUserHandler) UnicastRemoteObject.exportObject(activeUsersHandler,0);
 
             //Binding names and models interfaces
-            registry.rebind("EditorModel", editorModel);
-            registry.rebind("DatabaseModel", databaseModel);
+            registry.rebind("EditorModel", editorModelExport);
+            registry.rebind("DatabaseModel", databaseModelExport);
+            registry.rebind("ActiveUserHandler",activeUserHandlerExport);
+
         } catch (RemoteException | SQLException | ClassNotFoundException e) {
             e.printStackTrace();
         }
