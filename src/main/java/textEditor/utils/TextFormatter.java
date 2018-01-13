@@ -1,4 +1,4 @@
-package textEditor.controller;
+package textEditor.utils;
 
 import javafx.beans.value.ChangeListener;
 import javafx.scene.control.ChoiceBox;
@@ -13,7 +13,7 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static textEditor.utils.ConstValues.*;
+import static textEditor.utils.Const.Format.*;
 
 public class TextFormatter {
     private StyleClassedTextArea textArea;

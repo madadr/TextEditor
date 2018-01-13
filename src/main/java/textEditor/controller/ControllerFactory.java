@@ -1,7 +1,13 @@
 package textEditor.controller;
 
 import javafx.util.Callback;
-import textEditor.RMIClient;
+import textEditor.controller.inject.ClientInjectionTarget;
+import textEditor.controller.inject.ProjectInjectionTarget;
+import textEditor.controller.inject.UserInjectionTarget;
+import textEditor.controller.inject.WindowSwitcherInjectionTarget;
+import textEditor.model.interfaces.Project;
+import textEditor.model.interfaces.User;
+import textEditor.utils.RMIClient;
 import textEditor.view.WindowSwitcher;
 
 public class ControllerFactory implements Callback<Class<?>, Object> {

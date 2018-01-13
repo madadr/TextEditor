@@ -7,18 +7,22 @@ import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.paint.Color;
-import textEditor.RMIClient;
-import textEditor.model.DatabaseModel;
+import textEditor.controller.inject.ClientInjectionTarget;
+import textEditor.controller.inject.WindowSwitcherInjectionTarget;
+import textEditor.model.interfaces.DatabaseModel;
+import textEditor.utils.RMIClient;
 import textEditor.view.WindowSwitcher;
 
 import java.io.IOException;
 import java.net.URL;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.ResourceBundle;
 import java.util.regex.Pattern;
 
-import static textEditor.controller.RegistrationFields.*;
+import static textEditor.utils.Const.RegistrationFields.*;
 
 public class RegisterController implements Initializable, ClientInjectionTarget, WindowSwitcherInjectionTarget {
 

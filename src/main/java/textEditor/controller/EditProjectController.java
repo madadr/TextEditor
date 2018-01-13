@@ -7,8 +7,15 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.paint.Color;
 import org.controlsfx.control.CheckComboBox;
-import textEditor.RMIClient;
-import textEditor.model.DatabaseModel;
+import textEditor.controller.inject.ClientInjectionTarget;
+import textEditor.controller.inject.ProjectInjectionTarget;
+import textEditor.controller.inject.UserInjectionTarget;
+import textEditor.controller.inject.WindowSwitcherInjectionTarget;
+import textEditor.model.ProjectImpl;
+import textEditor.model.interfaces.DatabaseModel;
+import textEditor.model.interfaces.Project;
+import textEditor.model.interfaces.User;
+import textEditor.utils.RMIClient;
 import textEditor.view.WindowSwitcher;
 
 import java.io.IOException;
@@ -41,7 +48,7 @@ public class EditProjectController implements Initializable, UserInjectionTarget
 
     }
 
-    public void applyClicked(ActionEvent actionEvent) {
+    public void applyClicked() {
         try {
             List contributors = Arrays.asList(contributorsField.getCheckModel().getCheckedItems().toArray());
             if (contributors.isEmpty()) {

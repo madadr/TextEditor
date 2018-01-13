@@ -1,4 +1,4 @@
-package textEditor.controller;
+package textEditor.controller.inject;
 
 import textEditor.view.WindowSwitcher;
 

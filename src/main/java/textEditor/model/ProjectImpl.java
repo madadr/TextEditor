@@ -1,4 +1,7 @@
-package textEditor.controller;
+package textEditor.model;
+
+import textEditor.model.interfaces.Project;
+import textEditor.model.interfaces.User;
 
 import java.io.Serializable;
 import java.rmi.RemoteException;
@@ -25,6 +28,7 @@ public class ProjectImpl implements Project, Serializable {
         this.contributors = contributors;
     }
 
+    //TODO : GENERATE HERE METHOD EQUALS
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -62,12 +66,12 @@ public class ProjectImpl implements Project, Serializable {
         this.contributors = contributors;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
     public Integer getId() {
         return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     @Override

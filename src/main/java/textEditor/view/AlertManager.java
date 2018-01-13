@@ -1,4 +1,4 @@
-package textEditor.utils;
+package textEditor.view;
 
 import javafx.scene.control.Alert;
 

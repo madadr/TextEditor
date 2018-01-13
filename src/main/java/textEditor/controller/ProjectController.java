@@ -8,8 +8,14 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
-import textEditor.RMIClient;
-import textEditor.model.DatabaseModel;
+import textEditor.controller.inject.ClientInjectionTarget;
+import textEditor.controller.inject.ProjectInjectionTarget;
+import textEditor.controller.inject.UserInjectionTarget;
+import textEditor.controller.inject.WindowSwitcherInjectionTarget;
+import textEditor.model.interfaces.DatabaseModel;
+import textEditor.model.interfaces.Project;
+import textEditor.model.interfaces.User;
+import textEditor.utils.RMIClient;
 import textEditor.view.WindowSwitcher;
 
 import java.io.IOException;
