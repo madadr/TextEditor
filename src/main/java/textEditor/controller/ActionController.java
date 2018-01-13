@@ -4,12 +4,12 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import textEditor.RMIClient;
-import textEditor.controller.targetInjections.ClientInjectionTarget;
-import textEditor.controller.targetInjections.UserInjectionTarget;
-import textEditor.controller.targetInjections.WindowSwitcherInjectionTarget;
+import textEditor.controller.inject.ClientInjectionTarget;
+import textEditor.controller.inject.UserInjectionTarget;
+import textEditor.controller.inject.WindowSwitcherInjectionTarget;
 import textEditor.model.interfaces.DatabaseModel;
 import textEditor.model.interfaces.User;
+import textEditor.utils.RMIClient;
 import textEditor.view.WindowSwitcher;
 
 import java.io.IOException;

@@ -7,10 +7,10 @@ import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.paint.Color;
-import textEditor.RMIClient;
-import textEditor.controller.targetInjections.ClientInjectionTarget;
-import textEditor.controller.targetInjections.WindowSwitcherInjectionTarget;
+import textEditor.controller.inject.ClientInjectionTarget;
+import textEditor.controller.inject.WindowSwitcherInjectionTarget;
 import textEditor.model.interfaces.DatabaseModel;
+import textEditor.utils.RMIClient;
 import textEditor.view.WindowSwitcher;
 
 import java.io.IOException;
@@ -22,7 +22,7 @@ import java.util.Arrays;
 import java.util.ResourceBundle;
 import java.util.regex.Pattern;
 
-import static textEditor.utils.RegistrationFields.*;
+import static textEditor.utils.Const.RegistrationFields.*;
 
 public class RegisterController implements Initializable, ClientInjectionTarget, WindowSwitcherInjectionTarget {
 

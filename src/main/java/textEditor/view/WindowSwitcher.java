@@ -5,12 +5,12 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import textEditor.RMIClient;
 import textEditor.controller.ControllerFactory;
 import textEditor.model.ProjectImpl;
 import textEditor.model.UserImpl;
 import textEditor.model.interfaces.Project;
 import textEditor.model.interfaces.User;
+import textEditor.utils.RMIClient;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
