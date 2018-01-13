@@ -4,10 +4,8 @@ import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.IndexRange;
-import javafx.scene.control.TextField;
-import javafx.scene.control.ToggleButton;
+import javafx.print.*;
+import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.stage.FileChooser;
 import org.fxmisc.richtext.StyleClassedTextArea;
@@ -26,6 +24,7 @@ import textEditor.model.interfaces.*;
 import textEditor.utils.RMIClient;
 import textEditor.utils.ReadOnlyBoolean;
 import textEditor.utils.TextFormatter;
+import textEditor.view.AlertManager;
 import textEditor.view.WindowSwitcher;
 
 import java.io.File;
@@ -345,7 +344,24 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     private void fileSaveClicked() {
         System.out.println("file will be save");
     }
+    @FXML
+    private void filePrintClicked(){
+        PrinterJob printerJob = PrinterJob.createPrinterJob();
 
+        boolean successOnPrinting = printerJob.showPrintDialog(switcher.getMainStage());
+
+        if(successOnPrinting)
+        {
+            PageLayout pageLayout = Printer.getDefaultPrinter().createPageLayout(Paper.A4, PageOrientation.PORTRAIT,Printer.MarginType.HARDWARE_MINIMUM);
+            printerJob.getJobSettings().setPageLayout(pageLayout);
+            successOnPrinting = printerJob.printPage(pageLayout,mainTextArea);
+            if(successOnPrinting)
+            {
+                AlertManager.displayAlert(Alert.AlertType.CONFIRMATION,"Printer information","Printing end with result: SUCCESS");
+                printerJob.endJob();
+            }
+        }
+    }
     @FXML
     private void fileCloseClicked() {
         try {
