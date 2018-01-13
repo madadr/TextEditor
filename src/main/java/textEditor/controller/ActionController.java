@@ -3,6 +3,7 @@ package textEditor.controller;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import textEditor.RMIClient;
 import textEditor.model.DatabaseModel;
 import textEditor.view.WindowSwitcher;
@@ -14,6 +15,8 @@ import java.rmi.RemoteException;
 import java.util.ResourceBundle;
 
 public class ActionController implements Initializable, UserInjectionTarget, ClientInjectionTarget, WindowSwitcherInjectionTarget {
+    @FXML
+    public Label hello;
     @FXML
     private Button friendsListButton;
     @FXML
@@ -54,6 +57,11 @@ public class ActionController implements Initializable, UserInjectionTarget, Cli
         }
 
         initButtons();
+        initHelloLabel();
+    }
+
+    private void initHelloLabel() {
+        hello.setText("Hello, " + user.getUsername() + "!");
     }
 
     private void initButtons() {
@@ -64,7 +72,6 @@ public class ActionController implements Initializable, UserInjectionTarget, Cli
 
     private void initCloseButton() {
         closeButton.setOnMouseClicked(e -> {
-            System.out.println("Close action");
             switcher.getStage().close();
         });
     }

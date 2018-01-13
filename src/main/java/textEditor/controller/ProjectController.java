@@ -23,30 +23,24 @@ import java.util.ResourceBundle;
 public class ProjectController implements Initializable, UserInjectionTarget, ClientInjectionTarget, WindowSwitcherInjectionTarget, SelectedProjectInjectionTarget {
     @FXML
     private Label description;
-
     @FXML
     private Label contributors;
-
     @FXML
     private ListView<Project> projectListView;
-
     @FXML
     private Button newButton;
-
     @FXML
     private Button editButton;
-
     @FXML
     private Button removeButton;
-
     @FXML
     private Button openButton;
-
     @FXML
     private Button importButton;
-
     @FXML
     private Button exportButton;
+    @FXML
+    private Button backButton;
 
     private WindowSwitcher switcher;
     private DatabaseModel dbService;
@@ -75,7 +69,6 @@ public class ProjectController implements Initializable, UserInjectionTarget, Cl
     public void initialize(URL location, ResourceBundle resources) {
         System.out.println("user=" + user);
 
-        // get database service object
         try {
             dbService = (DatabaseModel) client.getModel("DatabaseModel");
         } catch (RemoteException | NotBoundException e) {
@@ -90,7 +83,6 @@ public class ProjectController implements Initializable, UserInjectionTarget, Cl
     }
 
     private void fetchUserProjectsFromDatabase() {
-        // get all projects data from database
         try {
             projects = dbService.getProjects(user);
         } catch (RemoteException e) {
@@ -140,6 +132,15 @@ public class ProjectController implements Initializable, UserInjectionTarget, Cl
         openButton.setOnAction(event -> {
             try {
                 switcher.loadWindow(WindowSwitcher.Window.EDITOR);
+            } catch (IOException ignored) {
+
+            }
+        });
+
+
+        backButton.setOnAction(event -> {
+            try {
+                switcher.loadWindow(WindowSwitcher.Window.CHOOSE_ACTION);
             } catch (IOException ignored) {
 
             }
