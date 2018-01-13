@@ -15,14 +15,16 @@ import textEditor.utils.ReadOnlyBoolean;
 import textEditor.view.WindowSwitcher;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.util.*;
 
 import static textEditor.utils.ConstValues.*;
+import static textEditor.view.WindowSwitcher.Window.POPUP_ACTIVE_USERS;
 
-public class EditorController implements Initializable, ClientInjectionTarget, WindowSwitcherInjectionTarget, UserInjectionTarget {
+public class EditorController implements Initializable, ClientInjectionTarget, WindowSwitcherInjectionTarget, UserInjectionTarget, ProjectInjectionTarget {
     @FXML
     public TextField searchTextField;
     @FXML
@@ -40,8 +42,12 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     private StyleClassedTextArea mainTextArea;
 
     private EditorModel editorModel;
+    private ActiveUserHandler activeUserHandler;
+    private User user;
+    private Project project;
     private RMIClient rmiClient;
     private WindowSwitcher switcher;
+
     private RemoteObserver observer;
     private TextFormatter textFormatter;
     private ReadOnlyBoolean isThisClientUpdatingText;
@@ -52,12 +58,8 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     private ChangeListener<String> fontColorListener;
     private ChangeListener<String> paragraphHeadingListener;
     private ChangeListener<String> bulletListListener;
-    private UserImpl user;
+
     private IndexRange searchTextIndex;
-
-    public EditorController() {
-    }
-
 
     @Override
     public void injectClient(RMIClient client) {
@@ -70,7 +72,12 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     }
 
     @Override
-    public void injectUser(UserImpl user) {
+    public void injectProject(Project project) {
+        this.project = project;
+    }
+
+    @Override
+    public void injectUser(User user) {
         System.out.println("Injecting user=" + user);
         this.user = user;
     }
@@ -78,38 +85,12 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         textFormatter = new TextFormatter(mainTextArea);
+
         searchTextIndex = new IndexRange(-1, -1);
 
-        fontSizeListener = (ChangeListener<String>) (observable, oldValue, newValue) -> {
-            textFormatter.styleSelectedArea(newValue, FONTSIZE_PATTERN_KEY);
-            notifyOthers();
-        };
+        setModels();
 
-        fontFamilyListener = (ChangeListener<String>) (observable, oldValue, newValue) -> {
-            textFormatter.styleSelectedArea(newValue, FONTFAMILY_PATTERN_KEY);
-            notifyOthers();
-        };
-
-        fontColorListener = (ChangeListener<String>) (observable, oldValue, newValue) -> {
-            textFormatter.styleSelectedArea(newValue, FONTCOLOR_PATTERN_KEY);
-            notifyOthers();
-        };
-
-        paragraphHeadingListener = (ChangeListener<String>) (observable, oldValue, newValue) -> {
-            textFormatter.styleSelectedParagraph(getParagraphRange(), newValue, new ArrayList<>(Arrays.asList(HEADING_PATTERN_KEY, FONTSIZE_PATTERN_KEY, FONTCOLOR_PATTERN_KEY, FONTFAMILY_PATTERN_KEY)));
-            notifyOthers();
-        };
-
-        bulletListListener = (ChangeListener<String>) (observable, oldValue, newValue) -> {
-            textFormatter.applyBulletList(getParagraphRange(), newValue);
-            notifyOthers();
-        };
-
-        try {
-            editorModel = (EditorModel) rmiClient.getModel("EditorModel");
-        } catch (RemoteException | NotBoundException e) {
-            e.printStackTrace();
-        }
+        setListeners();
 
         initialTextSettings();
 
@@ -118,6 +99,58 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
         loadCssStyleSheet();
 
         initTextSelection();
+    }
+
+    private void setListeners() {
+        fontSizeListener = (observable, oldValue, newValue) -> {
+            textFormatter.styleSelectedArea(newValue, FONTSIZE_PATTERN_KEY);
+            notifyOthers();
+        };
+
+        fontFamilyListener = (observable, oldValue, newValue) -> {
+            textFormatter.styleSelectedArea(newValue, FONTFAMILY_PATTERN_KEY);
+            notifyOthers();
+        };
+
+        fontColorListener = (observable, oldValue, newValue) -> {
+            textFormatter.styleSelectedArea(newValue, FONTCOLOR_PATTERN_KEY);
+            notifyOthers();
+        };
+
+        paragraphHeadingListener = (observable, oldValue, newValue) -> {
+            textFormatter.styleSelectedParagraph(getParagraphRange(), newValue, new ArrayList<>(Arrays.asList(HEADING_PATTERN_KEY, FONTSIZE_PATTERN_KEY, FONTCOLOR_PATTERN_KEY, FONTFAMILY_PATTERN_KEY)));
+            notifyOthers();
+        };
+
+        bulletListListener = (observable, oldValue, newValue) -> {
+            textFormatter.applyBulletList(getParagraphRange(), newValue);
+            notifyOthers();
+        };
+    }
+
+    private void setModels() {
+        try {
+            editorModel = (EditorModel) rmiClient.getModel("EditorModel");
+            activeUserHandler = (ActiveUserHandler) rmiClient.getModel("ActiveUserHandler");
+        } catch (RemoteException | NotBoundException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private void handleUserInProject() {
+        System.out.println("IM IN HANDLE USER IN PROJECT");
+        switcher.getMainStage().setOnCloseRequest(event -> {
+            System.out.println("SETTING WHAT HAPPEND ON CLOSE BEFORE");
+            try {
+                System.out.println("SETTING WHAT HAPPEND ON CLOSE");
+                activeUserHandler.removeUserToProject(project.getId(), user.getUsername());
+            } catch (RemoteException e) {
+                System.err.println("USER HAVE SOME BAD NAME, I DONT LIKE HIM....");
+            }
+            Platform.exit();
+            System.exit(0);
+        });
     }
 
     private void initTextArea() {
@@ -213,7 +246,21 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     private void editUndoClicked() {
         mainTextArea.undo();
     }
-
+    @FXML
+    private void editActiveUsers()
+    {
+        handleUserInProject();
+        try {
+            activeUserHandler.addUserToProject(project.getId(), user.getUsername());
+        } catch (RemoteException e) {
+            System.err.println("USER HAVE SOME BAD NAME, I DONT LIKE HIM....");
+        }
+        try {
+            switcher.loadWindow(POPUP_ACTIVE_USERS);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
     @FXML
     private void editRedoClicked() {
         mainTextArea.redo();
@@ -264,7 +311,7 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
         System.out.println("File will be open");
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Choose resource");
-        File file = fileChooser.showOpenDialog(switcher.getStage());
+        File file = fileChooser.showOpenDialog(switcher.getMainStage());
         if (file != null) {
             //TODO: handle this
             //openFile(file);
@@ -278,6 +325,11 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
 
     @FXML
     private void fileCloseClicked() {
+        try {
+            activeUserHandler.removeUserToProject(project.getId(), user.getUsername());
+        } catch (RemoteException e) {
+            System.err.println("USER HAVE SOME BAD NAME, I DONT LIKE HIM....");
+        }
         Platform.exit();
     }
 
@@ -393,4 +445,5 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
 
         }
     }
+
 }

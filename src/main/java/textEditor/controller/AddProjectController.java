@@ -26,7 +26,7 @@ public class AddProjectController implements Initializable, ClientInjectionTarge
 
 
     private RMIClient rmiClient;
-    private UserImpl user;
+    private User user;
     private WindowSwitcher windowSwitcher;
 
     private DatabaseModel databaseModel;
@@ -48,7 +48,7 @@ public class AddProjectController implements Initializable, ClientInjectionTarge
     }
 
     @Override
-    public void injectUser(UserImpl user) {
+    public void injectUser(User user) {
         this.user = user;
     }
 

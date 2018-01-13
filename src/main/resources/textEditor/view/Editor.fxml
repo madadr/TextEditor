@@ -16,7 +16,6 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.text.Font?>
 
-<?import org.fxmisc.richtext.InlineCssTextArea?>
 <?import org.fxmisc.richtext.StyleClassedTextArea?>
 
 <AnchorPane minHeight="-Infinity" prefHeight="500.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="textEditor.controller.EditorController">
@@ -36,6 +35,7 @@
                         <MenuItem mnemonicParsing="false" onAction="#editUndoClicked" text="Undo" />
                         <MenuItem mnemonicParsing="false" onAction="#editRedoClicked" text="Redo" />
                         <MenuItem mnemonicParsing="false" onAction="#editSearchClicked" text="Search" />
+                        <MenuItem mnemonicParsing="false" onAction="#editActiveUsers" text="Active Users" />
                         <SeparatorMenuItem mnemonicParsing="false" />
                         <MenuItem mnemonicParsing="false" onAction="#editCopyClicked" text="Copy" />
                         <MenuItem mnemonicParsing="false" onAction="#editCutClicked" text="Cut" />

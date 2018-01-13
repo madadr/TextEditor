@@ -39,7 +39,7 @@ public class FriendsController implements Initializable, UserInjectionTarget, Cl
     private User user;
 
     @Override
-    public void injectUser(UserImpl user) {
+    public void injectUser(User user) {
         this.user = user;
     }
 
