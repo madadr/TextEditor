@@ -58,6 +58,7 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     @FXML
     private StyleClassedTextArea mainTextArea;
 
+    private ProjectManager projectManager;
     private EditorModel editorModel;
     private ActiveUserHandler activeUserHandler;
     private User user;
@@ -90,6 +91,9 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
 
     @Override
     public void injectProject(Project project) {
+        System.out.println("injecting project " + project);
+        System.out.println("\tproject id " + project.getId());
+        System.out.println("\tproject getTitle " + project.getTitle());
         this.project = project;
     }
 
@@ -149,12 +153,17 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
 
     private void setModels() {
         try {
-            editorModel = (EditorModel) rmiClient.getModel("EditorModel");
-            activeUserHandler = (ActiveUserHandler) rmiClient.getModel("ActiveUserHandler");
+            projectManager = (ProjectManager) rmiClient.getModel("ProjectManager");
+//            editorModel = (EditorModel) rmiClient.getModel("EditorModel");
+//            activeUserHandler = (ActiveUserHandler) rmiClient.getModel("ActiveUserHandler");
+            System.out.println("1");
+            this.editorModel = projectManager.getEditorModel(this.project);
+            System.out.println("2");
+            this.activeUserHandler = projectManager.getActiveUserHandler(this.project);
+            System.out.println("3");
         } catch (RemoteException | NotBoundException e) {
             e.printStackTrace();
         }
-
     }
 
     private void handleUserInProject() {

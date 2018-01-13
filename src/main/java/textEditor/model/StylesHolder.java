@@ -17,6 +17,12 @@ public class StylesHolder implements Serializable {
     private List<Pair<Integer, List<String>>> pairsOfLengthAndStyle;
     private List<List<String>> paragraphStyles;
 
+    public StylesHolder() {
+        this.stylesStart = 0;
+        this.pairsOfLengthAndStyle = new ArrayList<>();
+        this.paragraphStyles = new ArrayList<>();
+    }
+
     public StylesHolder(int from, StyleSpans<Collection<String>> styleSpans,
                         LiveList<Paragraph<Collection<String>, String, Collection<String>>> paragraphs) {
         this.stylesStart = from;
@@ -26,7 +32,6 @@ public class StylesHolder implements Serializable {
         setStyleSpans(from, styleSpans);
 
         setParagraphStyles(paragraphs);
-
     }
 
     public int getStylesStart() {

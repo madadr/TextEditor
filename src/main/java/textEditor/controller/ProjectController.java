@@ -144,6 +144,7 @@ public class ProjectController implements Initializable, UserInjectionTarget, Cl
 
         openButton.setOnAction(event -> {
             try {
+                this.project = projectListView.getSelectionModel().getSelectedItem();
                 switcher.loadWindow(WindowSwitcher.Window.EDITOR);
             } catch (IOException ignored) {
 

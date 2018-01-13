@@ -12,11 +12,17 @@ import java.util.List;
 public class EditorModelImpl implements EditorModel, RemoteObservable {
     private String text = "";
     private StylesHolder stylesHolder;
-
     private ArrayList<RemoteObserver> observers;
 
     public EditorModelImpl() throws RemoteException {
         System.out.println("EditorModelImpl::ctor");
+        this.observers = new ArrayList<>();
+    }
+
+    public EditorModelImpl(EditorModelData editorModelData) throws RemoteException {
+        System.out.println("EditorModelImpl::ctor editorModelData");
+        this.text = editorModelData.getText();
+        this.stylesHolder = editorModelData.getStylesHolder();
         this.observers = new ArrayList<>();
     }
 

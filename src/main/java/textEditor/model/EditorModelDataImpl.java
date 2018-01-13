@@ -9,6 +9,11 @@ public class EditorModelDataImpl implements Serializable, EditorModelData {
     private String text = "";
     private StylesHolder stylesHolder;
 
+    public EditorModelDataImpl() {
+        this.text = "";
+        this.stylesHolder = new StylesHolder();
+    }
+
     public EditorModelDataImpl(String text, StylesHolder stylesHolder) {
         this.text = text;
         this.stylesHolder = stylesHolder;
