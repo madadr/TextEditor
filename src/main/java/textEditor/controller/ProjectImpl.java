@@ -9,7 +9,7 @@ public class ProjectImpl implements Project, Serializable {
     private Integer id;
     private String title;
     private String description;
-    private List<String> contributors;
+    private List<User> contributors;
 
     public ProjectImpl() throws RemoteException {
         this.id = -1;
@@ -18,7 +18,7 @@ public class ProjectImpl implements Project, Serializable {
         this.contributors = new ArrayList<>();
     }
 
-    public ProjectImpl(Integer id, String title, String description, List<String> contributors) throws RemoteException {
+    public ProjectImpl(Integer id, String title, String description, List<User> contributors) throws RemoteException {
         this.id = id;
         this.title = title;
         this.description = description;
@@ -54,11 +54,11 @@ public class ProjectImpl implements Project, Serializable {
         this.description = description;
     }
 
-    public List<String> getContributors() {
+    public List<User> getContributors() {
         return contributors;
     }
 
-    public void setContributors(List<String> contributors) {
+    public void setContributors(List<User> contributors) {
         this.contributors = contributors;
     }
 

@@ -122,13 +122,13 @@ public class ProjectController implements Initializable, UserInjectionTarget, Cl
 
         editButton.setOnAction(event -> {
             try {
-                Project project = projectListView.getSelectionModel().getSelectedItem();
+                Project selectedProject = projectListView.getSelectionModel().getSelectedItem();
                 final int selectedIdx = projectListView.getSelectionModel().getSelectedIndex();
                 if (selectedIdx != -1) {
-                    project.setId(project.getId());
-                    project.setTitle(project.getTitle());
-                    project.setDescription(project.getDescription());
-                    project.setContributors(project.getContributors());
+                    project.setId(selectedProject.getId());
+                    project.setTitle(selectedProject.getTitle());
+                    project.setDescription(selectedProject.getDescription());
+                    project.setContributors(selectedProject.getContributors());
                     switcher.loadWindow(WindowSwitcher.Window.EDIT_PROJECT);
                 }
             } catch (IOException e) {

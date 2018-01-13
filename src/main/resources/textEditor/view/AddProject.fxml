@@ -10,6 +10,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
+<?import org.controlsfx.control.CheckComboBox?>
 <AnchorPane prefHeight="500.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="textEditor.controller.AddProjectController">
    <children>
       <VBox spacing="10.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
@@ -27,7 +28,7 @@
             <TextArea fx:id="projectDescriptionField" prefHeight="200.0" prefWidth="200.0" />
             <Separator prefWidth="200.0" />
             <Label text="Contributors" />
-            <TextField fx:id="contributorsField" />
+            <CheckComboBox fx:id="contributorsField" />
             <HBox alignment="CENTER" spacing="20.0">
                <children>
                   <Button mnemonicParsing="false" onAction="#addButtonClicked" text="Add" />
@@ -36,5 +37,6 @@
             </HBox>
          </children>
       </VBox>
+      <Label fx:id="information" visible="false" alignment="BOTTOM_CENTER" contentDisplay="CENTER" text="Label" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
    </children>
 </AnchorPane>
