@@ -11,7 +11,10 @@ import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.HBox;
 import javafx.stage.FileChooser;
 import org.fxmisc.richtext.StyleClassedTextArea;
+import org.fxmisc.richtext.model.Paragraph;
+import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.TwoDimensional;
+import org.reactfx.collection.LiveList;
 import textEditor.controller.inject.ClientInjectionTarget;
 import textEditor.controller.inject.ProjectInjectionTarget;
 import textEditor.controller.inject.UserInjectionTarget;
@@ -32,6 +35,7 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.ResourceBundle;
 
 import static textEditor.utils.Const.Format.*;
@@ -253,7 +257,6 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
         });
     }
 
-
     private IndexRange getParagraphRange() {
         int start = mainTextArea.offsetToPosition(mainTextArea.getSelection().getStart(), TwoDimensional.Bias.Forward).getMajor();
         int end = mainTextArea.offsetToPosition(mainTextArea.getSelection().getEnd(), TwoDimensional.Bias.Backward).getMajor();
@@ -296,7 +299,14 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
 
     private void notifyOthers() {
         try {
-            editorModel.setTextStyle(new StylesHolder(0, mainTextArea.getStyleSpans(0, mainTextArea.getText().length())), observer);
+            int begin = 0;
+            int end = mainTextArea.getText().length();
+
+            StyleSpans<Collection<String>> styleSpans = mainTextArea.getStyleSpans(begin, end);
+
+            LiveList<Paragraph<Collection<String>, String, Collection<String>>> paragraphs = mainTextArea.getParagraphs();
+
+            editorModel.setTextStyle(new StylesHolder(begin, styleSpans, paragraphs), observer);
         } catch (RemoteException e) {
             e.printStackTrace();
         }

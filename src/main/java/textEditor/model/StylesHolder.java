@@ -2,55 +2,68 @@ package textEditor.model;
 
 
 import javafx.util.Pair;
-import org.fxmisc.richtext.model.StyleSpan;
+import org.fxmisc.richtext.model.Paragraph;
 import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyleSpansBuilder;
+import org.reactfx.collection.LiveList;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 
 public class StylesHolder implements Serializable {
-    private ArrayList<Pair<Integer, ArrayList<String>>> pairsOfLengthAndStyle;
     private int stylesStart;
+    private ArrayList<Pair<Integer, ArrayList<String>>> pairsOfLengthAndStyle;
+    private ArrayList<ArrayList<String>> paragraphStyles;
 
-    public StylesHolder(int from, StyleSpans<Collection<String>> styleSpans) {
+    public StylesHolder(int from, StyleSpans<Collection<String>> styleSpans,
+                        LiveList<Paragraph<Collection<String>, String, Collection<String>>> paragraphs) {
         this.stylesStart = from;
         this.pairsOfLengthAndStyle = new ArrayList<>(styleSpans.length());
+        this.paragraphStyles = new ArrayList<>(paragraphs.size());
 
-        for (StyleSpan<Collection<String>> span : styleSpans) {
-            Pair<Integer, ArrayList<String>> lengthStylePair
-                    = new Pair<>(span.getLength(), new ArrayList<>(span.getStyle()));
+        styleSpans.forEach(styleSpan -> {
+            this.pairsOfLengthAndStyle.add(new Pair<>(styleSpan.getLength(), new ArrayList<>(styleSpan.getStyle())));
+        });
 
-            this.pairsOfLengthAndStyle.add(lengthStylePair);
-        }
+        paragraphs.forEach(paragraph -> {
+            this.paragraphStyles.add(new ArrayList<>(paragraph.getParagraphStyle()));
+        });
 
         System.out.println(this.pairsOfLengthAndStyle);
-    }
-
-    public StyleSpans<Collection<String>> getStyleSpans() {
-        StyleSpansBuilder<Collection<String>> builder = new StyleSpansBuilder<>(pairsOfLengthAndStyle.size());
-
-        for (Pair<Integer, ArrayList<String>> pair : pairsOfLengthAndStyle) {
-            builder.add(pair.getValue(), pair.getKey());
-        }
-
-        return builder.create();
     }
 
     public int getStylesStart() {
         return this.stylesStart;
     }
 
+    public StyleSpans<Collection<String>> getStyleSpans() {
+        StyleSpansBuilder<Collection<String>> builder = new StyleSpansBuilder<>(pairsOfLengthAndStyle.size());
+
+        this.pairsOfLengthAndStyle.forEach(pair -> {
+            builder.add(pair.getValue(), pair.getKey());
+        });
+
+        return builder.create();
+    }
+
     public void setStyleSpans(int from, StyleSpans<Collection<String>> styleSpans) {
         this.stylesStart = from;
         this.pairsOfLengthAndStyle = new ArrayList<>(styleSpans.length());
 
-        for (StyleSpan<Collection<String>> span : styleSpans) {
-            Pair<Integer, ArrayList<String>> lengthStylePair
-                    = new Pair<>(span.getLength(), new ArrayList<>(span.getStyle()));
+        styleSpans.forEach(styleSpan -> {
+            this.pairsOfLengthAndStyle.add(new Pair<>(styleSpan.getLength(), new ArrayList<>(styleSpan.getStyle())));
+        });
+    }
 
-            this.pairsOfLengthAndStyle.add(lengthStylePair);
-        }
+    public LiveList<Paragraph<Collection<String>, String, Collection<String>>> getParagraphLiveList() {
+        // TODO: add implementation
+        LiveList<Paragraph<Collection<String>, String, Collection<String>>> liveList = null;
+
+        return liveList;
+    }
+
+    public void setParagraphLiveList(LiveList<Paragraph<Collection<String>, String, Collection<String>>> paragraphs) {
+        this.paragraphStyles = paragraphStyles;
     }
 }
