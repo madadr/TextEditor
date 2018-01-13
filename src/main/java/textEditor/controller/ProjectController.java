@@ -23,30 +23,24 @@ import java.util.ResourceBundle;
 public class ProjectController implements Initializable, UserInjectionTarget, ClientInjectionTarget, WindowSwitcherInjectionTarget, SelectedProjectInjectionTarget {
     @FXML
     private Label description;
-
     @FXML
     private Label contributors;
-
     @FXML
     private ListView<Project> projectListView;
-
     @FXML
     private Button newButton;
-
     @FXML
     private Button editButton;
-
     @FXML
     private Button removeButton;
-
     @FXML
     private Button openButton;
-
     @FXML
     private Button importButton;
-
     @FXML
     private Button exportButton;
+    @FXML
+    private Button backButton;
 
     private WindowSwitcher switcher;
     private DatabaseModel dbService;
@@ -73,19 +67,10 @@ public class ProjectController implements Initializable, UserInjectionTarget, Cl
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        System.out.println("user=" + user);
-
-        // get database service object
         try {
             dbService = (DatabaseModel) client.getModel("DatabaseModel");
         } catch (RemoteException | NotBoundException e) {
             e.printStackTrace();
-        }
-
-        if (dbService == null) {
-            System.out.println("null");
-        } else {
-            System.out.println(dbService);
         }
 
         fetchUserProjectsFromDatabase();
@@ -96,7 +81,6 @@ public class ProjectController implements Initializable, UserInjectionTarget, Cl
     }
 
     private void fetchUserProjectsFromDatabase() {
-        // get all projects data from database
         try {
             projects = dbService.getProjects(user);
         } catch (RemoteException e) {
@@ -108,19 +92,15 @@ public class ProjectController implements Initializable, UserInjectionTarget, Cl
         projectListView.setItems(FXCollections.observableArrayList(this.projects));
         projectListView.getSelectionModel().getSelectedItems().addListener((ListChangeListener<? super Project>) (e) -> {
             Project selectedProject = projectListView.getSelectionModel().getSelectedItem();
-            if(selectedProject != null)
-            {
+            if (selectedProject != null) {
                 description.setText(selectedProject.getDescription());
                 contributors.setText(selectedProject.getContributors().toString());
-            }
-            else
-            {
+            } else {
                 description.setText("");
                 contributors.setText("");
             }
         });
     }
-
 
     private void initButtonsActions() {
         newButton.setOnAction(event -> {
@@ -135,7 +115,7 @@ public class ProjectController implements Initializable, UserInjectionTarget, Cl
             try {
                 Project project = projectListView.getSelectionModel().getSelectedItem();
                 final int selectedIdx = projectListView.getSelectionModel().getSelectedIndex();
-                if(selectedIdx != -1) {
+                if (selectedIdx != -1) {
                     selectedProject.setId(project.getId());
                     selectedProject.setTitle(project.getTitle());
                     selectedProject.setDescription(project.getDescription());
@@ -154,14 +134,22 @@ public class ProjectController implements Initializable, UserInjectionTarget, Cl
 
             }
         });
+
+
+        backButton.setOnAction(event -> {
+            try {
+                switcher.loadWindow(WindowSwitcher.Window.CHOOSE_ACTION);
+            } catch (IOException ignored) {
+
+            }
+        });
     }
 
     @FXML
     public void onClickRemove(ActionEvent actionEvent) {
         Project projectToDelete = projectListView.getSelectionModel().getSelectedItem();
         final int selectedIdx = projectListView.getSelectionModel().getSelectedIndex();
-        if(selectedIdx != -1)
-        {
+        if (selectedIdx != -1) {
             try {
                 dbService.removeProject(projectToDelete);
             } catch (RemoteException e) {
@@ -169,7 +157,6 @@ public class ProjectController implements Initializable, UserInjectionTarget, Cl
             }
             projectListView.getItems().remove(selectedIdx);
         }
-
     }
 
     @Override

@@ -21,7 +21,7 @@ public class WindowSwitcher {
     private UserImpl user;
 
     public enum Window {
-        LOGIN, REGISTER, PICK_PROJECT, EDITOR, ADD_PROJECT, EDIT_PROJECT
+        LOGIN, REGISTER, PICK_PROJECT, EDITOR, ADD_PROJECT, EDIT_PROJECT, FRIENDS_LIST, CHOOSE_ACTION
     }
 
     public WindowSwitcher(Stage stage) throws RemoteException {
@@ -48,6 +48,9 @@ public class WindowSwitcher {
             case PICK_PROJECT:
                 loadPickProjectWindow();
                 break;
+            case CHOOSE_ACTION:
+                loadChooseActionWindow();
+                break;
             case EDITOR:
                 loadEditorWindow();
                 break;
@@ -57,8 +60,10 @@ public class WindowSwitcher {
             case EDIT_PROJECT:
                 loadEditProjectWindow();
                 break;
+            case FRIENDS_LIST:
+                loadFriendsWindow();
+                break;
             default:
-                System.err.println("Invalid window!");
                 Platform.exit();
                 System.exit(1);
         }
@@ -74,11 +79,19 @@ public class WindowSwitcher {
     }
 
     private void loadLoginWindow() throws IOException {
-        loadWindow("Login.fxml","Editor - login", false);
+        loadWindow("Login.fxml", "Editor - login", false);
     }
 
     private void loadRegisterWindow() throws IOException {
         loadWindow("Register.fxml", "Editor - register", false);
+    }
+
+    private void loadChooseActionWindow() throws IOException {
+        loadWindow("Action.fxml", "Editor - choose action", false);
+    }
+
+    private void loadFriendsWindow() throws IOException {
+        loadWindow("Friends.fxml", "Editor - friends list", false);
     }
 
     private void loadPickProjectWindow() throws IOException {

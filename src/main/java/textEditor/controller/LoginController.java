@@ -113,7 +113,7 @@ public class LoginController implements Initializable, ClientInjectionTarget, Wi
                 this.user.setUsername(login);
                 this.user.setId(userId);
                 setResultText("Authorization success", true);
-                switcher.loadWindow(WindowSwitcher.Window.PICK_PROJECT);
+                switcher.loadWindow(WindowSwitcher.Window.CHOOSE_ACTION);
             } else {
                 setResultText("Password is incorrect", false);
             }
@@ -124,12 +124,9 @@ public class LoginController implements Initializable, ClientInjectionTarget, Wi
 
     public void setResultText(String resultText, boolean isValid) {
         resultOfAuthorization.setText(resultText);
-        if(isValid)
-        {
+        if (isValid) {
             resultOfAuthorization.setTextFill(Color.web("#2eb82e"));
-        }
-        else
-        {
+        } else {
             resultOfAuthorization.setTextFill(Color.web("#ff3300"));
         }
         resultOfAuthorization.setVisible(true);

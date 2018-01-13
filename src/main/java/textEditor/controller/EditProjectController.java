@@ -39,8 +39,7 @@ public class EditProjectController implements Initializable, UserInjectionTarget
     public void applyClicked(ActionEvent actionEvent) {
         try {
             Project editedProject = new ProjectImpl(project.getId(), projectNameField.getText(), projectDescriptionField.getText(), Arrays.asList(contributorsField.getText().split(",")));
-            if(editedProject == project)
-            {
+            if (editedProject == project) {
                 windowSwitcher.loadWindow(WindowSwitcher.Window.PICK_PROJECT);
                 return;
             }

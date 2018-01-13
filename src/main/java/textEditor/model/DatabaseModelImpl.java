@@ -1,8 +1,9 @@
 package textEditor.model;
 
 import textEditor.controller.Project;
-import textEditor.controller.User;
 import textEditor.controller.ProjectImpl;
+import textEditor.controller.User;
+import textEditor.controller.UserImpl;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -22,17 +23,12 @@ public class DatabaseModelImpl implements DatabaseModel {
 
     public DatabaseModelImpl() throws SQLException, ClassNotFoundException {
         Class.forName("com.mysql.jdbc.Driver");
-        con = DriverManager.getConnection(
-                "jdbc:mysql://localhost/",
-                "root",
-                "");
+        con = DriverManager.getConnection("jdbc:mysql://localhost/", "root", "");
         System.out.println("We are connected");
         init();
     }
 
-
-    @Override
-    public void init(){
+    private void init() {
         String s;
         StringBuffer sb = new StringBuffer();
 
@@ -95,7 +91,7 @@ public class DatabaseModelImpl implements DatabaseModel {
     @Override
     public boolean checkPassword(String userName, String password) {
         boolean flag = false;
-        if(password == null)
+        if (password == null)
             return false;
         try {
             String checkPasswordQuery = "SELECT haslo FROM uzytkownicy WHERE login=?";
@@ -204,11 +200,26 @@ public class DatabaseModelImpl implements DatabaseModel {
             if (result.next()) {
                 return result.getInt(1);
             }
-        }
-        catch (SQLException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return -1;
+    }
+
+    @Override
+    public String getUserLogin(int id) {
+        try {
+            String getUserQuery = "SELECT * FROM `uzytkownicy` WHERE uzytkownicy.id_uzytkownika = ?";
+            PreparedStatement getUserStatement = con.prepareStatement(getUserQuery);
+            getUserStatement.setInt(1, id);
+            ResultSet result = getUserStatement.executeQuery();
+            if (result.next()) {
+                return result.getString(2);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return "";
     }
 
     @Override
@@ -219,7 +230,7 @@ public class DatabaseModelImpl implements DatabaseModel {
             PreparedStatement deleteContributorStatement = con.prepareStatement(deleteContributorQuery);
             deleteContributorStatement.setInt(1, projectToDelete.getId());
             int result = deleteContributorStatement.executeUpdate();
-            if(result == 0){
+            if (result == 0) {
                 throw new SQLException("Failed to delete contributors");
             }
 
@@ -228,7 +239,7 @@ public class DatabaseModelImpl implements DatabaseModel {
             PreparedStatement deleteProjectStatement = con.prepareStatement(deleteProjectQuery);
             deleteProjectStatement.setInt(1, projectToDelete.getId());
             result = deleteProjectStatement.executeUpdate();
-            if(result == 0){
+            if (result == 0) {
                 throw new SQLException("Failed to delete contributors");
             }
 
@@ -252,22 +263,22 @@ public class DatabaseModelImpl implements DatabaseModel {
             insertProjectStatement.setString(3, now.toString());
 
             int affectedRow = insertProjectStatement.executeUpdate();
-            if(affectedRow == 0){
+            if (affectedRow == 0) {
                 throw new SQLException("User is not added!");
             }
             ResultSet resultSet = insertProjectStatement.getGeneratedKeys();
             Integer idProject = null;
-            if (resultSet.next())
-            {
+            if (resultSet.next()) {
                 idProject = resultSet.getInt(1);
             }
-            if(idProject == null) {
+            if (idProject == null) {
                 throw new SQLException("Key wasn't generate");
             }
 
             //Inserting contributors into database
             String insertContributorQuery = "INSERT INTO `uzytkownik_projekt` (`id_uzytkownika`, `id_projektu`) VALUES (?, ?)";
-            for (String contributor: project.getContributors()) {
+
+            for (String contributor : project.getContributors()) {
                 PreparedStatement insertContributorStatement = con.prepareStatement(insertContributorQuery);
                 insertContributorStatement.setInt(1, getUserId(contributor));
                 insertContributorStatement.setInt(2, idProject);
@@ -294,23 +305,77 @@ public class DatabaseModelImpl implements DatabaseModel {
             PreparedStatement deleteContributorsStatement = con.prepareStatement(deleteContributorsQuery);
             deleteContributorsStatement.setInt(1, editedProject.getId());
             deleteContributorsStatement.executeUpdate();
-            System.out.println(editedProject.getContributors());
             String insertContributorsQuery = "INSERT INTO `uzytkownik_projekt` (`id_uzytkownika`, `id_projektu`) VALUES (?,?)";
             for (String contributor : editedProject.getContributors()) {
                 Integer userId = getUserId(contributor);
-                if(userId != -1)
-                {
+                if (userId != -1) {
                     PreparedStatement insertContributorsStatement = con.prepareStatement(insertContributorsQuery);
                     insertContributorsStatement.setInt(1, getUserId(contributor));
                     insertContributorsStatement.setInt(2, editedProject.getId());
                     insertContributorsStatement.executeUpdate();
                 }
             }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
+    @Override
+    public List<User> getFriends(User user) throws RemoteException {
+        List<User> friends = new ArrayList<>();
+        try {
+            String getProjectsQuery = "SELECT lista_znajomych.* FROM lista_znajomych WHERE id_uzytkownika = ?";
+            PreparedStatement getProjectsStatement = con.prepareStatement(getProjectsQuery);
+            getProjectsStatement.setInt(1, user.getId());
+
+            ResultSet result = getProjectsStatement.executeQuery();
+            while (result.next()) {
+                int id_uzytkownika = result.getInt("id_znajomego");
+                User friend = new UserImpl(id_uzytkownika, getUserLogin(id_uzytkownika));
+
+                friends.add(friend);
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
+        return friends;
+    }
+
+    @Override
+    public void addFriend(User user, User friend) throws RemoteException {
+        try {
+            // Inserting project into database
+            String insertUserQuery = "INSERT INTO `lista_znajomych` (`id_uzytkownika`, `id_znajomego`) VALUES (?, ?)";
+            PreparedStatement statement = con.prepareStatement(insertUserQuery, Statement.RETURN_GENERATED_KEYS);
+
+            statement.setInt(1, user.getId());
+            statement.setInt(2, friend.getId());
+
+            int affectedRows = statement.executeUpdate();
+            if (affectedRows == 0) {
+                throw new SQLException("Failed to add friend!");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void removeFriend(User user, User friend) throws RemoteException {
+        try {
+            //Delete project
+            String deleteProjectQuery = "DELETE FROM `lista_znajomych` WHERE `id_uzytkownika`=? AND `id_znajomego`=?";
+            PreparedStatement deleteProjectStatement = con.prepareStatement(deleteProjectQuery);
+            deleteProjectStatement.setInt(1, user.getId());
+            deleteProjectStatement.setInt(2, friend.getId());
+            int affectedRows = deleteProjectStatement.executeUpdate();
+            if (affectedRows == 0) {
+                throw new SQLException("Failed to delete friend!");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }
 
