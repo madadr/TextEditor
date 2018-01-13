@@ -10,11 +10,12 @@ import org.reactfx.collection.LiveList;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 public class StylesHolder implements Serializable {
     private int stylesStart;
-    private ArrayList<Pair<Integer, ArrayList<String>>> pairsOfLengthAndStyle;
-    private ArrayList<ArrayList<String>> paragraphStyles;
+    private List<Pair<Integer, List<String>>> pairsOfLengthAndStyle;
+    private List<List<String>> paragraphStyles;
 
     public StylesHolder(int from, StyleSpans<Collection<String>> styleSpans,
                         LiveList<Paragraph<Collection<String>, String, Collection<String>>> paragraphs) {
@@ -22,15 +23,10 @@ public class StylesHolder implements Serializable {
         this.pairsOfLengthAndStyle = new ArrayList<>(styleSpans.length());
         this.paragraphStyles = new ArrayList<>(paragraphs.size());
 
-        styleSpans.forEach(styleSpan -> {
-            this.pairsOfLengthAndStyle.add(new Pair<>(styleSpan.getLength(), new ArrayList<>(styleSpan.getStyle())));
-        });
+        setStyleSpans(from, styleSpans);
 
-        paragraphs.forEach(paragraph -> {
-            this.paragraphStyles.add(new ArrayList<>(paragraph.getParagraphStyle()));
-        });
+        setParagraphStyles(paragraphs);
 
-        System.out.println(this.pairsOfLengthAndStyle);
     }
 
     public int getStylesStart() {
@@ -56,14 +52,17 @@ public class StylesHolder implements Serializable {
         });
     }
 
-    public LiveList<Paragraph<Collection<String>, String, Collection<String>>> getParagraphLiveList() {
-        // TODO: add implementation
-        LiveList<Paragraph<Collection<String>, String, Collection<String>>> liveList = null;
-
-        return liveList;
+    public List<List<String>> getParagraphStyles() {
+        return paragraphStyles;
     }
 
-    public void setParagraphLiveList(LiveList<Paragraph<Collection<String>, String, Collection<String>>> paragraphs) {
+    public void setParagraphStyles(List<List<String>> paragraphStyles) {
         this.paragraphStyles = paragraphStyles;
+    }
+
+    public void setParagraphStyles(LiveList<Paragraph<Collection<String>, String, Collection<String>>> paragraphStyles) {
+        paragraphStyles.forEach(paragraph -> {
+            this.paragraphStyles.add(new ArrayList<>(paragraph.getParagraphStyle()));
+        });
     }
 }

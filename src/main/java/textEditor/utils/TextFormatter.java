@@ -75,7 +75,6 @@ public class TextFormatter {
                 textArea.setParagraphStyle(paragraph, Collections.singleton(ALIGN_LEFT));
             }
         }
-
     }
 
     public void clearHighlight(IndexRange indexRange) {
