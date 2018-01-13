@@ -4,22 +4,29 @@ import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.*;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.IndexRange;
+import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.HBox;
 import javafx.stage.FileChooser;
 import org.fxmisc.richtext.StyleClassedTextArea;
 import org.fxmisc.richtext.model.TwoDimensional;
 import textEditor.RMIClient;
-import textEditor.model.*;
+import textEditor.model.EditorModel;
+import textEditor.model.RemoteObserver;
+import textEditor.model.RemoteObserverImpl;
+import textEditor.model.StyleSpansWrapper;
 import textEditor.utils.ReadOnlyBoolean;
 import textEditor.view.WindowSwitcher;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.net.URL;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.ResourceBundle;
 
 import static textEditor.utils.ConstValues.*;
 import static textEditor.view.WindowSwitcher.Window.POPUP_ACTIVE_USERS;
@@ -308,19 +315,58 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
 
     @FXML
     private void fileOpenClicked() {
-        System.out.println("File will be open");
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Choose resource");
-        File file = fileChooser.showOpenDialog(switcher.getMainStage());
-        if (file != null) {
-            //TODO: handle this
-            //openFile(file);
+        ObjectInputStream ois = null;
+        try {
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Choose resource");
+            File file = fileChooser.showOpenDialog(switcher.getStage());
+            if (file != null) {
+                FileInputStream fout = new FileInputStream(file);
+                ois = new ObjectInputStream(fout);
+                EditorModelData editorModelo = (EditorModelData) ois.readObject();
+                System.out.println("editorModelo " + editorModelo);
+            }
+        } catch (IOException | ClassNotFoundException e) {
+            System.out.println("Failed");
+        } finally {
+            if (ois != null) {
+                try {
+                    ois.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 
     @FXML
     private void fileSaveClicked() {
-        System.out.println("file will be save");
+        ObjectOutputStream oos = null;
+        try {
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Choose resource");
+            File file = fileChooser.showSaveDialog(switcher.getStage());
+            if (file != null) {
+                FileOutputStream fout = new FileOutputStream(file);
+                oos = new ObjectOutputStream(fout);
+                oos.writeObject(editorModel.getData());
+                oos.flush();
+
+                fout.close();
+
+                System.out.println("\ttext data " + editorModel.getData());
+            }
+        } catch (IOException e) {
+            System.out.println("Failed");
+        } finally {
+            if (oos != null) {
+                try {
+                    oos.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
     @FXML
