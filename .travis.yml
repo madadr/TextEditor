@@ -8,7 +8,8 @@ matrix:
         - mvn clean verify
         - mvn clean jfx:jar
 
-    - dist: trusty
+    - if: branch = master
+      dist: trusty
       sudo: required
       language: java
 
@@ -19,7 +20,8 @@ matrix:
       script: 
         - mvn clean jfx:native
 
-    - os: osx
+    - if: branch = master
+      os: osx
       sudo: false
       language: java
 
