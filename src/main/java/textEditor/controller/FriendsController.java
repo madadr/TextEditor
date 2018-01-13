@@ -8,7 +8,12 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import textEditor.RMIClient;
-import textEditor.model.DatabaseModel;
+import textEditor.controller.targetInjections.ClientInjectionTarget;
+import textEditor.controller.targetInjections.UserInjectionTarget;
+import textEditor.controller.targetInjections.WindowSwitcherInjectionTarget;
+import textEditor.model.UserImpl;
+import textEditor.model.interfaces.DatabaseModel;
+import textEditor.model.interfaces.User;
 import textEditor.utils.AlertManager;
 import textEditor.view.WindowSwitcher;
 
@@ -21,13 +26,13 @@ import java.util.ResourceBundle;
 
 public class FriendsController implements Initializable, UserInjectionTarget, ClientInjectionTarget, WindowSwitcherInjectionTarget {
     @FXML
+    public Button backButton;
+    @FXML
     private Button removeButton;
     @FXML
     private TextField usernameField;
     @FXML
     private Button addButton;
-    @FXML
-    public Button backButton;
     @FXML
     private ListView<User> friendsListView;
 
@@ -37,6 +42,10 @@ public class FriendsController implements Initializable, UserInjectionTarget, Cl
     private DatabaseModel dbService;
     private RMIClient client;
     private User user;
+
+    public FriendsController() {
+
+    }
 
     @Override
     public void injectUser(User user) {
@@ -51,10 +60,6 @@ public class FriendsController implements Initializable, UserInjectionTarget, Cl
     @Override
     public void injectClient(RMIClient client) {
         this.client = client;
-    }
-
-    public FriendsController() {
-
     }
 
     @Override

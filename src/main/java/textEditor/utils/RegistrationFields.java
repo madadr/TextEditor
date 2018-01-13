@@ -1,4 +1,4 @@
-package textEditor.controller;
+package textEditor.utils;
 
 public class RegistrationFields {
     public final static int USER_LOGIN = 0;
