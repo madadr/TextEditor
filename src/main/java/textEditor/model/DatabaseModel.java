@@ -25,6 +25,8 @@ public interface DatabaseModel extends Remote {
 
     void addProject(Project project) throws RemoteException;
 
+    void editProject(Project editedProject) throws RemoteException;
+
     List<User> getFriends(User user) throws RemoteException;
 
     void addFriend(User user, User friend) throws RemoteException;

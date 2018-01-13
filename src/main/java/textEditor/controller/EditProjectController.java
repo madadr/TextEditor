@@ -43,7 +43,7 @@ public class EditProjectController implements Initializable, UserInjectionTarget
                 windowSwitcher.loadWindow(WindowSwitcher.Window.PICK_PROJECT);
                 return;
             }
-            //databaseModel.editProject(new ProjectImpl())
+            databaseModel.editProject(editedProject);
             windowSwitcher.loadWindow(WindowSwitcher.Window.PICK_PROJECT);
 
         } catch (IOException e1) {
