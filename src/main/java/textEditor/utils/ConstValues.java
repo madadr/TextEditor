@@ -23,4 +23,6 @@ public class ConstValues {
 
     public static final String BULLET_LIST = "BulletList";
     public static final String BULLET_UNLIST = "Unlist";
+
+    public static final int TWO_SECONDS = 2;
 }

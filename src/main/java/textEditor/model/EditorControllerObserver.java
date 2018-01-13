@@ -1,12 +1,11 @@
-package textEditor.controller;
+package textEditor.model;
 
 
 import javafx.application.Platform;
 import org.fxmisc.richtext.StyleClassedTextArea;
-import textEditor.model.EditorModel;
-import textEditor.model.RemoteObservable;
-import textEditor.model.RemoteObserver;
-import textEditor.model.StyleSpansWrapper;
+import textEditor.model.interfaces.EditorModel;
+import textEditor.model.interfaces.RemoteObservable;
+import textEditor.model.interfaces.RemoteObserver;
 import textEditor.utils.ReadOnlyBoolean;
 
 import java.io.Serializable;
@@ -22,53 +21,6 @@ public class EditorControllerObserver implements Serializable, RemoteObserver {
 
     public EditorControllerObserver(StyleClassedTextArea textArea) {
         this.textArea = textArea;
-    }
-
-    private class UpdateTextWrapper implements Runnable {
-        private RemoteObservable observable;
-
-        public UpdateTextWrapper(RemoteObservable observable) {
-            this.observable = observable;
-        }
-
-        @Override
-        public void run() {
-            isUpdating.set(true);
-            int oldCaretPosition = textArea.getCaretPosition();
-            String oldText = textArea.getText();
-            try {
-                String newText = ((EditorModel) observable).getTextString();
-                textArea.replaceText(newText);
-                int newCaretPosition = calculateNewCaretPosition(oldCaretPosition, oldText, newText);
-                textArea.moveTo(newCaretPosition);
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            } finally {
-                isUpdating.set(false);
-            }
-        }
-    }
-
-    private class UpdateStyleWrapper implements Runnable {
-        private RemoteObservable observable;
-
-        public UpdateStyleWrapper(RemoteObservable observable) {
-            this.observable = observable;
-        }
-
-        @Override
-        public void run() {
-            try {
-                StyleSpansWrapper newStyle = ((EditorModel) observable).getTextStyle();
-                if (newStyle != null && newStyle.getStyleSpans() != null) {
-                    textArea.setStyleSpans(newStyle.getStylesStart(), newStyle.getStyleSpans());
-                }
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            } catch (IndexOutOfBoundsException e) {
-                System.out.println("CRASH");
-            }
-        }
     }
 
     @Override
@@ -121,5 +73,52 @@ public class EditorControllerObserver implements Serializable, RemoteObserver {
 
     public ReadOnlyBoolean getIsUpdating() {
         return new ReadOnlyBoolean(isUpdating);
+    }
+
+    private class UpdateTextWrapper implements Runnable {
+        private RemoteObservable observable;
+
+        public UpdateTextWrapper(RemoteObservable observable) {
+            this.observable = observable;
+        }
+
+        @Override
+        public void run() {
+            isUpdating.set(true);
+            int oldCaretPosition = textArea.getCaretPosition();
+            String oldText = textArea.getText();
+            try {
+                String newText = ((EditorModel) observable).getTextString();
+                textArea.replaceText(newText);
+                int newCaretPosition = calculateNewCaretPosition(oldCaretPosition, oldText, newText);
+                textArea.moveTo(newCaretPosition);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            } finally {
+                isUpdating.set(false);
+            }
+        }
+    }
+
+    private class UpdateStyleWrapper implements Runnable {
+        private RemoteObservable observable;
+
+        public UpdateStyleWrapper(RemoteObservable observable) {
+            this.observable = observable;
+        }
+
+        @Override
+        public void run() {
+            try {
+                StyleSpansWrapper newStyle = ((EditorModel) observable).getTextStyle();
+                if (newStyle != null && newStyle.getStyleSpans() != null) {
+                    textArea.setStyleSpans(newStyle.getStylesStart(), newStyle.getStyleSpans());
+                }
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            } catch (IndexOutOfBoundsException e) {
+                System.out.println("CRASH");
+            }
+        }
     }
 }

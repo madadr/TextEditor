@@ -1,5 +1,9 @@
 package textEditor.model;
 
+import textEditor.model.interfaces.EditorModel;
+import textEditor.model.interfaces.RemoteObservable;
+import textEditor.model.interfaces.RemoteObserver;
+
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,16 +17,6 @@ public class EditorModelImpl implements EditorModel, RemoteObservable {
     public EditorModelImpl() throws RemoteException {
         System.out.println("EditorModelImpl::ctor");
         this.observers = new ArrayList<>();
-    }
-
-    @Override
-    public synchronized void setTextString(String text) throws RemoteException {
-        if (text != null) {
-            System.out.println("Updating text to:");
-            System.out.println("\t" + text);
-            this.text = text;
-            notifyObservers(UpdateTarget.ONLY_TEXT);
-        }
     }
 
     @Override
@@ -46,12 +40,12 @@ public class EditorModelImpl implements EditorModel, RemoteObservable {
     }
 
     @Override
-    public synchronized void setTextStyle(StyleSpansWrapper styleSpans) throws RemoteException {
-        if (styleSpans != null) {
-            System.out.println("Updating style to:");
-            System.out.println("\t" + styleSpans);
-            this.styleSpans = styleSpans;
-            notifyObservers(UpdateTarget.ONLY_STYLE);
+    public synchronized void setTextString(String text) throws RemoteException {
+        if (text != null) {
+            System.out.println("Updating text to:");
+            System.out.println("\t" + text);
+            this.text = text;
+            notifyObservers(UpdateTarget.ONLY_TEXT);
         }
     }
 
@@ -73,6 +67,16 @@ public class EditorModelImpl implements EditorModel, RemoteObservable {
     @Override
     public synchronized StyleSpansWrapper getTextStyle() throws RemoteException {
         return this.styleSpans;
+    }
+
+    @Override
+    public synchronized void setTextStyle(StyleSpansWrapper styleSpans) throws RemoteException {
+        if (styleSpans != null) {
+            System.out.println("Updating style to:");
+            System.out.println("\t" + styleSpans);
+            this.styleSpans = styleSpans;
+            notifyObservers(UpdateTarget.ONLY_STYLE);
+        }
     }
 
     @Override

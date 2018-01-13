@@ -4,14 +4,23 @@ import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.*;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.IndexRange;
+import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.HBox;
 import javafx.stage.FileChooser;
 import org.fxmisc.richtext.StyleClassedTextArea;
 import org.fxmisc.richtext.model.TwoDimensional;
 import textEditor.RMIClient;
+import textEditor.model.interfaces.*;
+import textEditor.controller.targetInjections.ClientInjectionTarget;
+import textEditor.controller.targetInjections.ProjectInjectionTarget;
+import textEditor.controller.targetInjections.UserInjectionTarget;
+import textEditor.controller.targetInjections.WindowSwitcherInjectionTarget;
 import textEditor.model.*;
 import textEditor.utils.ReadOnlyBoolean;
+import textEditor.utils.TextFormatter;
 import textEditor.view.WindowSwitcher;
 
 import java.io.File;
@@ -19,7 +28,9 @@ import java.io.IOException;
 import java.net.URL;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.ResourceBundle;
 
 import static textEditor.utils.ConstValues.*;
 import static textEditor.view.WindowSwitcher.Window.POPUP_ACTIVE_USERS;
@@ -99,6 +110,8 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
         loadCssStyleSheet();
 
         initTextSelection();
+
+        handleUserInProject();
     }
 
     private void setListeners() {
@@ -139,14 +152,17 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     }
 
     private void handleUserInProject() {
-        System.out.println("IM IN HANDLE USER IN PROJECT");
+        try {
+            activeUserHandler.addUserToProject(project.getId(), user.getUsername());
+        } catch (RemoteException e) {
+            System.err.println("Error when getting user name");
+        }
         switcher.getMainStage().setOnCloseRequest(event -> {
-            System.out.println("SETTING WHAT HAPPEND ON CLOSE BEFORE");
+            event.consume();
             try {
-                System.out.println("SETTING WHAT HAPPEND ON CLOSE");
-                activeUserHandler.removeUserToProject(project.getId(), user.getUsername());
+                activeUserHandler.removeUserFromProject(project.getId(), user.getUsername());
             } catch (RemoteException e) {
-                System.err.println("USER HAVE SOME BAD NAME, I DONT LIKE HIM....");
+                System.err.println("Error when getting user name");
             }
             Platform.exit();
             System.exit(0);
@@ -246,21 +262,16 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     private void editUndoClicked() {
         mainTextArea.undo();
     }
+
     @FXML
-    private void editActiveUsers()
-    {
-        handleUserInProject();
-        try {
-            activeUserHandler.addUserToProject(project.getId(), user.getUsername());
-        } catch (RemoteException e) {
-            System.err.println("USER HAVE SOME BAD NAME, I DONT LIKE HIM....");
-        }
+    private void editActiveUsers() {
         try {
             switcher.loadWindow(POPUP_ACTIVE_USERS);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+
     @FXML
     private void editRedoClicked() {
         mainTextArea.redo();
@@ -326,9 +337,9 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     @FXML
     private void fileCloseClicked() {
         try {
-            activeUserHandler.removeUserToProject(project.getId(), user.getUsername());
+            activeUserHandler.removeUserFromProject(project.getId(), user.getUsername());
         } catch (RemoteException e) {
-            System.err.println("USER HAVE SOME BAD NAME, I DONT LIKE HIM....");
+            System.err.println("Error when getting user name");
         }
         Platform.exit();
     }

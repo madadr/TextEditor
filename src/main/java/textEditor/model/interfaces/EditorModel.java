@@ -1,4 +1,6 @@
-package textEditor.model;
+package textEditor.model.interfaces;
+
+import textEditor.model.StyleSpansWrapper;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;

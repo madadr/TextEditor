@@ -9,7 +9,13 @@ import javafx.scene.control.TextField;
 import javafx.scene.paint.Color;
 import org.controlsfx.control.CheckComboBox;
 import textEditor.RMIClient;
-import textEditor.model.DatabaseModel;
+import textEditor.controller.targetInjections.ClientInjectionTarget;
+import textEditor.controller.targetInjections.UserInjectionTarget;
+import textEditor.controller.targetInjections.WindowSwitcherInjectionTarget;
+import textEditor.model.ProjectImpl;
+import textEditor.model.interfaces.DatabaseModel;
+import textEditor.model.interfaces.Project;
+import textEditor.model.interfaces.User;
 import textEditor.view.WindowSwitcher;
 
 import java.io.IOException;

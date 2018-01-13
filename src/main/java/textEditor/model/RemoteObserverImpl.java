@@ -1,6 +1,7 @@
 package textEditor.model;
 
-import textEditor.controller.EditorControllerObserver;
+import textEditor.model.interfaces.RemoteObservable;
+import textEditor.model.interfaces.RemoteObserver;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
