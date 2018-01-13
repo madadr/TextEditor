@@ -1,11 +1,11 @@
 package textEditor;
 
-import textEditor.model.ActiveUsersHandlerImpl;
 import textEditor.model.DatabaseModelImpl;
 import textEditor.model.EditorModelImpl;
-import textEditor.model.interfaces.ActiveUserHandler;
+import textEditor.model.ProjectManagerImpl;
 import textEditor.model.interfaces.DatabaseModel;
 import textEditor.model.interfaces.EditorModel;
+import textEditor.model.interfaces.ProjectManager;
 
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -22,17 +22,20 @@ public class Server {
             //Creating models implementation of our classes
             EditorModel editorModel = new EditorModelImpl();
             DatabaseModel databaseModel = new DatabaseModelImpl();
-            ActiveUserHandler activeUsersHandler = new ActiveUsersHandlerImpl();
+            ProjectManager projectManager = new ProjectManagerImpl();
+//            ActiveUserHandler activeUsersHandler = new ActiveUsersHandlerImpl();
 
             //Exporting models interface to client
             EditorModel editorModelExport = (EditorModel) UnicastRemoteObject.exportObject(editorModel, 0);
             DatabaseModel databaseModelExport = (DatabaseModel) UnicastRemoteObject.exportObject(databaseModel, 0);
-            ActiveUserHandler activeUserHandlerExport = (ActiveUserHandler) UnicastRemoteObject.exportObject(activeUsersHandler, 0);
+//            ActiveUserHandler activeUserHandlerExport = (ActiveUserHandler) UnicastRemoteObject.exportObject(activeUsersHandler, 0);
+            ProjectManager projectManagerExport = (ProjectManager) UnicastRemoteObject.exportObject(projectManager, 0);
 
             //Binding names and models interfaces
             registry.rebind("EditorModel", editorModelExport);
             registry.rebind("DatabaseModel", databaseModelExport);
-            registry.rebind("ActiveUserHandler", activeUserHandlerExport);
+//            registry.rebind("ActiveUserHandler", activeUserHandlerExport);
+            registry.rebind("ProjectManager", projectManagerExport);
 
         } catch (RemoteException | SQLException | ClassNotFoundException e) {
             e.printStackTrace();
