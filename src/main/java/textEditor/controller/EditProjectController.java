@@ -19,7 +19,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.ResourceBundle;
 
-public class EditProjectController implements Initializable, UserInjectionTarget, ClientInjectionTarget, WindowSwitcherInjectionTarget, SelectedProjectInjectionTarget {
+public class EditProjectController implements Initializable, UserInjectionTarget, ClientInjectionTarget, WindowSwitcherInjectionTarget, ProjectInjectionTarget {
     public TextField projectNameField;
     public TextArea projectDescriptionField;
     public CheckComboBox contributorsField;
@@ -109,7 +109,7 @@ public class EditProjectController implements Initializable, UserInjectionTarget
     }
 
     @Override
-    public void injectSelectedProject(Project project) {
+    public void injectProject(Project project) {
         this.project = project;
     }
 
