@@ -14,7 +14,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-import static textEditor.utils.RegistrationFields.*;
+import static textEditor.utils.Const.RegistrationFields.*;
 
 public class DatabaseModelImpl implements DatabaseModel {
 

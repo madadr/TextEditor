@@ -1,4 +1,4 @@
-package textEditor;
+package textEditor.utils;
 
 import java.rmi.NotBoundException;
 import java.rmi.Remote;

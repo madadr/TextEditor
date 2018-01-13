@@ -5,12 +5,12 @@ import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ListView;
-import textEditor.RMIClient;
-import textEditor.controller.targetInjections.ClientInjectionTarget;
-import textEditor.controller.targetInjections.ProjectInjectionTarget;
-import textEditor.controller.targetInjections.WindowSwitcherInjectionTarget;
+import textEditor.controller.inject.ClientInjectionTarget;
+import textEditor.controller.inject.ProjectInjectionTarget;
+import textEditor.controller.inject.WindowSwitcherInjectionTarget;
 import textEditor.model.interfaces.ActiveUserHandler;
 import textEditor.model.interfaces.Project;
+import textEditor.utils.RMIClient;
 import textEditor.view.WindowSwitcher;
 
 import java.net.URL;
@@ -23,7 +23,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
-import static textEditor.utils.ConstValues.TWO_SECONDS;
 
 
 public class PopupActiveUsersController implements WindowSwitcherInjectionTarget, Initializable, ClientInjectionTarget, ProjectInjectionTarget {
@@ -92,7 +91,7 @@ public class PopupActiveUsersController implements WindowSwitcherInjectionTarget
     private void establishUpdater() {
         updateActiveUserList();
         scheduler = Executors.newScheduledThreadPool(1);
-        updateHandler = scheduler.scheduleAtFixedRate(updater, 0, TWO_SECONDS, SECONDS);
+        updateHandler = scheduler.scheduleAtFixedRate(updater, 0, 2, SECONDS);
         defineClosing();
     }
 

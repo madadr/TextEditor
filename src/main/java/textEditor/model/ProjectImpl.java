@@ -1,6 +1,7 @@
 package textEditor.model;
 
 import textEditor.model.interfaces.Project;
+import textEditor.model.interfaces.User;
 
 import java.io.Serializable;
 import java.rmi.RemoteException;

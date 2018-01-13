@@ -12,13 +12,15 @@ import javafx.scene.layout.HBox;
 import javafx.stage.FileChooser;
 import org.fxmisc.richtext.StyleClassedTextArea;
 import org.fxmisc.richtext.model.TwoDimensional;
-import textEditor.RMIClient;
+import textEditor.controller.inject.ClientInjectionTarget;
+import textEditor.controller.inject.ProjectInjectionTarget;
+import textEditor.controller.inject.UserInjectionTarget;
+import textEditor.controller.inject.WindowSwitcherInjectionTarget;
+import textEditor.model.EditorControllerObserver;
+import textEditor.model.RemoteObserverImpl;
+import textEditor.model.StyleSpansWrapper;
 import textEditor.model.interfaces.*;
-import textEditor.controller.targetInjections.ClientInjectionTarget;
-import textEditor.controller.targetInjections.ProjectInjectionTarget;
-import textEditor.controller.targetInjections.UserInjectionTarget;
-import textEditor.controller.targetInjections.WindowSwitcherInjectionTarget;
-import textEditor.model.*;
+import textEditor.utils.RMIClient;
 import textEditor.utils.ReadOnlyBoolean;
 import textEditor.utils.TextFormatter;
 import textEditor.view.WindowSwitcher;
@@ -32,7 +34,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.ResourceBundle;
 
-import static textEditor.utils.ConstValues.*;
+import static textEditor.utils.Const.Format.*;
 import static textEditor.view.WindowSwitcher.Window.POPUP_ACTIVE_USERS;
 
 public class EditorController implements Initializable, ClientInjectionTarget, WindowSwitcherInjectionTarget, UserInjectionTarget, ProjectInjectionTarget {
