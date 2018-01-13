@@ -3,6 +3,7 @@ package textEditor.model.interfaces;
 import java.rmi.RemoteException;
 
 public interface RemoteObservable {
+    // TODO: consider adding ONLY_PARAGRAPH
     public enum UpdateTarget {
         ONLY_TEXT, ONLY_STYLE
     }
