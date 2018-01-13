@@ -110,7 +110,7 @@ public class EditorControllerObserver implements Serializable, RemoteObserver {
         @Override
         public void run() {
             try {
-                StyleSpansWrapper newStyle = ((EditorModel) observable).getTextStyle();
+                StylesHolder newStyle = ((EditorModel) observable).getTextStyle();
                 if (newStyle != null && newStyle.getStyleSpans() != null) {
                     textArea.setStyleSpans(newStyle.getStylesStart(), newStyle.getStyleSpans());
                 }
