@@ -1,7 +1,5 @@
 package textEditor.model;
 
-import textEditor.controller.EditorModelData;
-
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
@@ -17,6 +15,4 @@ public interface EditorModel extends Remote, RemoteObservable {
     void setTextStyle(StyleSpansWrapper styleSpans, RemoteObserver source) throws RemoteException;
 
     StyleSpansWrapper getTextStyle() throws RemoteException;
-
-    EditorModelData getData() throws RemoteException;
 }

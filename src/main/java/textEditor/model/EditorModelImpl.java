@@ -1,18 +1,14 @@
 package textEditor.model;
 
-import textEditor.controller.EditorModelData;
-import textEditor.controller.EditorModelDataImpl;
-
-import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EditorModelImpl implements Serializable, EditorModel, RemoteObservable {
+public class EditorModelImpl implements EditorModel, RemoteObservable {
     private String text = "";
     private StyleSpansWrapper styleSpans;
 
-    private transient ArrayList<RemoteObserver> observers;
+    private ArrayList<RemoteObserver> observers;
 
     public EditorModelImpl() throws RemoteException {
         System.out.println("EditorModelImpl::ctor");
@@ -134,10 +130,5 @@ public class EditorModelImpl implements Serializable, EditorModel, RemoteObserva
                 // cannot remove observer but nothing to do here?
             }
         });
-    }
-
-    @Override
-    public EditorModelData getData() throws RemoteException {
-        return new EditorModelDataImpl(this.text, this.styleSpans);
     }
 }
