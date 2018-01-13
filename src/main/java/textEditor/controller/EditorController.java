@@ -13,8 +13,14 @@ import javafx.stage.FileChooser;
 import org.fxmisc.richtext.StyleClassedTextArea;
 import org.fxmisc.richtext.model.TwoDimensional;
 import textEditor.RMIClient;
+import textEditor.model.interfaces.*;
+import textEditor.controller.targetInjections.ClientInjectionTarget;
+import textEditor.controller.targetInjections.ProjectInjectionTarget;
+import textEditor.controller.targetInjections.UserInjectionTarget;
+import textEditor.controller.targetInjections.WindowSwitcherInjectionTarget;
 import textEditor.model.*;
 import textEditor.utils.ReadOnlyBoolean;
+import textEditor.utils.TextFormatter;
 import textEditor.view.WindowSwitcher;
 
 import java.io.File;
@@ -149,15 +155,14 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
         try {
             activeUserHandler.addUserToProject(project.getId(), user.getUsername());
         } catch (RemoteException e) {
-            System.err.println("USER HAVE SOME BAD NAME, I DONT LIKE HIM....");
+            System.err.println("Error when getting user name");
         }
         switcher.getMainStage().setOnCloseRequest(event -> {
             event.consume();
             try {
-                System.out.println("Set remove define");
-                activeUserHandler.removeUserToProject(project.getId(), user.getUsername());
+                activeUserHandler.removeUserFromProject(project.getId(), user.getUsername());
             } catch (RemoteException e) {
-                System.err.println("USER HAVE SOME BAD NAME, I DONT LIKE HIM....");
+                System.err.println("Error when getting user name");
             }
             Platform.exit();
             System.exit(0);
@@ -332,9 +337,9 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     @FXML
     private void fileCloseClicked() {
         try {
-            activeUserHandler.removeUserToProject(project.getId(), user.getUsername());
+            activeUserHandler.removeUserFromProject(project.getId(), user.getUsername());
         } catch (RemoteException e) {
-            System.err.println("USER HAVE SOME BAD NAME, I DONT LIKE HIM....");
+            System.err.println("Error when getting user name");
         }
         Platform.exit();
     }

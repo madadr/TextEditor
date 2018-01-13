@@ -5,7 +5,14 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import textEditor.RMIClient;
-import textEditor.model.DatabaseModel;
+import textEditor.controller.targetInjections.ClientInjectionTarget;
+import textEditor.controller.targetInjections.ProjectInjectionTarget;
+import textEditor.controller.targetInjections.UserInjectionTarget;
+import textEditor.controller.targetInjections.WindowSwitcherInjectionTarget;
+import textEditor.model.ProjectImpl;
+import textEditor.model.interfaces.DatabaseModel;
+import textEditor.model.interfaces.Project;
+import textEditor.model.interfaces.User;
 import textEditor.view.WindowSwitcher;
 
 import java.io.IOException;
@@ -15,7 +22,7 @@ import java.rmi.RemoteException;
 import java.util.Arrays;
 import java.util.ResourceBundle;
 
-public class EditProjectController implements Initializable, UserInjectionTarget, ClientInjectionTarget, WindowSwitcherInjectionTarget, ProjectInjectionTarget{
+public class EditProjectController implements Initializable, UserInjectionTarget, ClientInjectionTarget, WindowSwitcherInjectionTarget, ProjectInjectionTarget {
     public TextField projectNameField;
     public TextArea projectDescriptionField;
     public TextField contributorsField;

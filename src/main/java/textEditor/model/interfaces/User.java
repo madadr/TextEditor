@@ -1,4 +1,4 @@
-package textEditor.controller;
+package textEditor.model.interfaces;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;

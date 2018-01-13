@@ -1,5 +1,7 @@
 package textEditor.model;
 
+import textEditor.model.interfaces.ActiveUserHandler;
+
 import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -10,25 +12,21 @@ public class ActiveUsersHandlerImpl implements Serializable, ActiveUserHandler {
     private HashMap<Integer, ArrayList<String>> activeUserInProjects;
 
     public ActiveUsersHandlerImpl() {
-        System.out.println("Im here and im probably Acrive User Handler");
         activeUserInProjects = new HashMap<>();
     }
 
     @Override
     public void addUserToProject(int projectId, String userName) throws RemoteException {
-        if(activeUserInProjects.containsKey(projectId) && !activeUserInProjects.get(projectId).contains(userName))
-        {
+        if (activeUserInProjects.containsKey(projectId) && !activeUserInProjects.get(projectId).contains(userName)) {
             activeUserInProjects.get(projectId).add(userName);
-        }
-        else if (!activeUserInProjects.containsKey(projectId)){
-            activeUserInProjects.put(projectId,new ArrayList<>(Arrays.asList(userName)));
+        } else if (!activeUserInProjects.containsKey(projectId)) {
+            activeUserInProjects.put(projectId, new ArrayList<>(Arrays.asList(userName)));
         }
     }
 
     @Override
-    public void removeUserToProject(int projectId, String userName) throws RemoteException {
+    public void removeUserFromProject(int projectId, String userName) throws RemoteException {
         if (activeUserInProjects.containsKey(projectId)) {
-            System.out.println("REMOVING user");
             activeUserInProjects.get(projectId).remove(userName);
         }
     }

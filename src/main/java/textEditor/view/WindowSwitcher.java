@@ -6,7 +6,11 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import textEditor.RMIClient;
-import textEditor.controller.*;
+import textEditor.controller.ControllerFactory;
+import textEditor.model.ProjectImpl;
+import textEditor.model.UserImpl;
+import textEditor.model.interfaces.Project;
+import textEditor.model.interfaces.User;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
@@ -15,15 +19,11 @@ import static textEditor.view.WindowSwitcher.Window.EDITOR;
 import static textEditor.view.WindowSwitcher.Window.POPUP_ACTIVE_USERS;
 
 public class WindowSwitcher {
+    private final ControllerFactory controllerFactory;
     private Stage stage, popupStage;
     private FXMLLoader loader;
-    private final ControllerFactory controllerFactory;
     private User user;
     private Project project;
-
-    public enum Window {
-        LOGIN, REGISTER, PICK_PROJECT, EDITOR, POPUP_ACTIVE_USERS, ADD_PROJECT, EDIT_PROJECT, FRIENDS_LIST, CHOOSE_ACTION
-    }
 
     public WindowSwitcher(Stage stage) throws RemoteException {
         RMIClient rmiClient = new RMIClient();
@@ -138,7 +138,7 @@ public class WindowSwitcher {
     }
 
     private void reinitializeCloseHandler(Window window) {
-        if(window.equals(EDITOR) || window.equals(POPUP_ACTIVE_USERS)) {
+        if (window.equals(EDITOR) || window.equals(POPUP_ACTIVE_USERS)) {
             return;
         }
 
@@ -151,5 +151,9 @@ public class WindowSwitcher {
 
     private boolean isStageDisplayed() {
         return stage != null && stage.isShowing();
+    }
+
+    public enum Window {
+        LOGIN, REGISTER, PICK_PROJECT, EDITOR, POPUP_ACTIVE_USERS, ADD_PROJECT, EDIT_PROJECT, FRIENDS_LIST, CHOOSE_ACTION
     }
 }

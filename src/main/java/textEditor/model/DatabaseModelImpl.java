@@ -1,9 +1,8 @@
 package textEditor.model;
 
-import textEditor.controller.Project;
-import textEditor.controller.ProjectImpl;
-import textEditor.controller.User;
-import textEditor.controller.UserImpl;
+import textEditor.model.interfaces.DatabaseModel;
+import textEditor.model.interfaces.Project;
+import textEditor.model.interfaces.User;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -15,7 +14,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-import static textEditor.controller.RegistrationFields.*;
+import static textEditor.utils.RegistrationFields.*;
 
 public class DatabaseModelImpl implements DatabaseModel {
 

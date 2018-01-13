@@ -1,4 +1,4 @@
-package textEditor.controller;
+package textEditor.utils;
 
 import javafx.beans.value.ChangeListener;
 import javafx.scene.control.ChoiceBox;
