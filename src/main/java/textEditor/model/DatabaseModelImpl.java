@@ -73,7 +73,7 @@ public class DatabaseModelImpl implements DatabaseModel {
     public boolean userExist(String username) {
         boolean flag = false;
         try {
-            String userExistQuery = "SELECT * FROM uzytkownicy WHERE login=?";
+            String userExistQuery = "SELECT * FROM users WHERE login=?";
             PreparedStatement userExistStatement = con.prepareStatement(userExistQuery);
             userExistStatement.setString(1, username);
             ResultSet result = userExistStatement.executeQuery();
@@ -94,7 +94,7 @@ public class DatabaseModelImpl implements DatabaseModel {
         if (password == null)
             return false;
         try {
-            String checkPasswordQuery = "SELECT haslo FROM uzytkownicy WHERE login=?";
+            String checkPasswordQuery = "SELECT password FROM users WHERE login=?";
             PreparedStatement checkPasswordStatement = con.prepareStatement(checkPasswordQuery);
             checkPasswordStatement.setString(1, password);
 
@@ -113,8 +113,8 @@ public class DatabaseModelImpl implements DatabaseModel {
     @Override
     public boolean registerUser(ArrayList<String> data) {
         try {
-            // Insert into 'uzytkownicy' table
-            String insertUzytkownicyQuery = "INSERT INTO `uzytkownicy` (`id_uzytkownika`, `login`, `haslo`) VALUES (NULL, ?, ?)";
+            // Insert into 'users' table
+            String insertUzytkownicyQuery = "INSERT INTO `users` (`id_user`, `login`, `password`) VALUES (NULL, ?, ?)";
             PreparedStatement insertUzytkownicyStatement = con.prepareStatement(insertUzytkownicyQuery, Statement.RETURN_GENERATED_KEYS);
             insertUzytkownicyStatement.setString(1, data.get(USER_LOGIN));
             insertUzytkownicyStatement.setString(2, data.get(USER_PASSWORD));
@@ -126,8 +126,8 @@ public class DatabaseModelImpl implements DatabaseModel {
                 idUser = resultSet.getInt(1);
             }
 
-            // Insert into 'dane_uzytkownika' table
-            String insertDaneQuery = "INSERT INTO `dane_uzytkownika` (`id_uzytkownika`, `imie`, `nazwisko`, `email`) VALUES (?, ?, ?, ?)";
+            // Insert into 'user_data' table
+            String insertDaneQuery = "INSERT INTO `user_data` (`id_user`, `first_name`, `last_name`, `email`) VALUES (?, ?, ?, ?)";
             PreparedStatement insertDaneStatement = con.prepareStatement(insertDaneQuery);
             insertDaneStatement.setInt(1, idUser);
             insertDaneStatement.setString(2, data.get(FIRST_NAME));
@@ -135,8 +135,8 @@ public class DatabaseModelImpl implements DatabaseModel {
             insertDaneStatement.setString(4, data.get(EMAIL));
             insertDaneStatement.executeUpdate();
 
-            // Insert into 'adres' table
-            String insertAdresQuery = "INSERT INTO `adres` (`id_uzytkownika`, `region`, `adres`, `kodPocztowy`) VALUES (?, ?, ?, ?)";
+            // Insert into 'address' table
+            String insertAdresQuery = "INSERT INTO `address` (`id_user`, `region`, `address`, `zip_code`) VALUES (?, ?, ?, ?)";
             PreparedStatement insertAdresStatement = con.prepareStatement(insertAdresQuery);
             insertAdresStatement.setInt(1, idUser);
             insertAdresStatement.setString(2, data.get(REGION));
@@ -154,18 +154,18 @@ public class DatabaseModelImpl implements DatabaseModel {
     public List<Project> getProjects(User user) throws RemoteException {
         List<Project> projects = new ArrayList<>();
         try {
-            String getProjectsQuery = "SELECT projekt.* FROM projekt NATURAL JOIN uzytkownik_projekt WHERE uzytkownik_projekt.id_uzytkownika = ?";
+            String getProjectsQuery = "SELECT project.* FROM project NATURAL JOIN user_project WHERE user_project.id_user = ?";
             PreparedStatement getProjectsStatement = con.prepareStatement(getProjectsQuery);
             getProjectsStatement.setInt(1, user.getId());
 
             ResultSet result = getProjectsStatement.executeQuery();
             while (result.next()) {
-                int id_projektu = result.getInt("id_projektu");
-                String nazwa = result.getString("nazwa");
-                String opis = result.getString("opis");
-                String data = result.getString("data_utworzenia"); // Think about adding it into project info
+                int projectId = result.getInt("id_project");
+                String name = result.getString("name");
+                String description = result.getString("description");
+                String date = result.getString("date_of_creation"); // Think about adding it into project info
 
-                projects.add(new ProjectImpl(id_projektu, nazwa, opis, getContributors(id_projektu)));
+                projects.add(new ProjectImpl(projectId, name, description, getContributors(projectId)));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -174,12 +174,12 @@ public class DatabaseModelImpl implements DatabaseModel {
         return projects;
     }
 
-    private List<User> getContributors(int id_projektu) {
+    private List<User> getContributors(int id_project) {
         List<User> contributors = new ArrayList<>();
         try {
-            String getContributorsQuery = "SELECT uzytkownicy.id_uzytkownika, uzytkownicy.login FROM uzytkownik_projekt NATURAL JOIN uzytkownicy WHERE uzytkownik_projekt.id_projektu = ?";
+            String getContributorsQuery = "SELECT users.id_user, users.login FROM user_project NATURAL JOIN users WHERE user_project.id_project = ?";
             PreparedStatement getContributorsStatement = con.prepareStatement(getContributorsQuery);
-            getContributorsStatement.setInt(1, id_projektu);
+            getContributorsStatement.setInt(1, id_project);
             ResultSet resultSet = getContributorsStatement.executeQuery();
             while (resultSet.next()) {
                 contributors.add(new UserImpl(resultSet.getInt(1), resultSet.getString(2)));
@@ -193,7 +193,7 @@ public class DatabaseModelImpl implements DatabaseModel {
     @Override
     public int getUserId(String login) {
         try {
-            String getUserQuery = "SELECT * FROM `uzytkownicy` WHERE uzytkownicy.login = ?";
+            String getUserQuery = "SELECT * FROM `users` WHERE users.login = ?";
             PreparedStatement getUserStatement = con.prepareStatement(getUserQuery);
             getUserStatement.setString(1, login);
             ResultSet result = getUserStatement.executeQuery();
@@ -209,7 +209,7 @@ public class DatabaseModelImpl implements DatabaseModel {
     @Override
     public String getUserLogin(int id) {
         try {
-            String getUserQuery = "SELECT * FROM `uzytkownicy` WHERE uzytkownicy.id_uzytkownika = ?";
+            String getUserQuery = "SELECT * FROM `users` WHERE users.id_user = ?";
             PreparedStatement getUserStatement = con.prepareStatement(getUserQuery);
             getUserStatement.setInt(1, id);
             ResultSet result = getUserStatement.executeQuery();
@@ -226,7 +226,7 @@ public class DatabaseModelImpl implements DatabaseModel {
     public void removeProject(Project projectToDelete) throws RemoteException {
         try {
             //Delete contributors
-            String deleteContributorQuery = "DELETE FROM `uzytkownik_projekt` WHERE `uzytkownik_projekt`.`id_projektu` = ?";
+            String deleteContributorQuery = "DELETE FROM `user_project` WHERE `user_project`.`id_project` = ?";
             PreparedStatement deleteContributorStatement = con.prepareStatement(deleteContributorQuery);
             deleteContributorStatement.setInt(1, projectToDelete.getId());
             int result = deleteContributorStatement.executeUpdate();
@@ -235,7 +235,7 @@ public class DatabaseModelImpl implements DatabaseModel {
             }
 
             //Delete project
-            String deleteProjectQuery = "DELETE FROM `projekt` WHERE `projekt`.`id_projektu` = ?";
+            String deleteProjectQuery = "DELETE FROM `project` WHERE `project`.`id_project` = ?";
             PreparedStatement deleteProjectStatement = con.prepareStatement(deleteProjectQuery);
             deleteProjectStatement.setInt(1, projectToDelete.getId());
             result = deleteProjectStatement.executeUpdate();
@@ -252,7 +252,7 @@ public class DatabaseModelImpl implements DatabaseModel {
     public void addProject(Project project) throws RemoteException {
         try {
             // Inserting project into database
-            String insertProjectQuery = "INSERT INTO `projekt` (`id_projektu`, `nazwa`, `opis`, `data_utworzenia`) VALUES (NULL, ?, ?, ?)";
+            String insertProjectQuery = "INSERT INTO `project` (`id_project`, `name`, `description`, `date_of_creation`) VALUES (NULL, ?, ?, ?)";
             PreparedStatement insertProjectStatement = con.prepareStatement(insertProjectQuery, Statement.RETURN_GENERATED_KEYS);
 
             DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -276,7 +276,7 @@ public class DatabaseModelImpl implements DatabaseModel {
             }
 
             //Inserting contributors into database
-            String insertContributorQuery = "INSERT INTO `uzytkownik_projekt` (`id_uzytkownika`, `id_projektu`) VALUES (?, ?)";
+            String insertContributorQuery = "INSERT INTO `user_project` (`id_user`, `id_project`) VALUES (?, ?)";
 
             for (User contributor : project.getContributors()) {
                 PreparedStatement insertContributorStatement = con.prepareStatement(insertContributorQuery);
@@ -292,7 +292,7 @@ public class DatabaseModelImpl implements DatabaseModel {
     @Override
     public void editProject(Project editedProject) {
         try {
-            String editProjectQuery = "UPDATE `projekt` SET `nazwa` = ?, `opis` = ? WHERE `projekt`.`id_projektu` = ?";
+            String editProjectQuery = "UPDATE `project` SET `name` = ?, `description` = ? WHERE `project`.`id_project` = ?";
             PreparedStatement editProjectStatement = con.prepareStatement(editProjectQuery);
 
             editProjectStatement.setString(1, editedProject.getTitle());
@@ -301,11 +301,11 @@ public class DatabaseModelImpl implements DatabaseModel {
 
             editProjectStatement.executeUpdate();
 
-            String deleteContributorsQuery = "DELETE FROM `uzytkownik_projekt` WHERE `uzytkownik_projekt`.`id_projektu` = ?";
+            String deleteContributorsQuery = "DELETE FROM `user_project` WHERE `user_project`.`id_project` = ?";
             PreparedStatement deleteContributorsStatement = con.prepareStatement(deleteContributorsQuery);
             deleteContributorsStatement.setInt(1, editedProject.getId());
             deleteContributorsStatement.executeUpdate();
-            String insertContributorsQuery = "INSERT INTO `uzytkownik_projekt` (`id_uzytkownika`, `id_projektu`) VALUES (?,?)";
+            String insertContributorsQuery = "INSERT INTO `user_project` (`id_user`, `id_project`) VALUES (?,?)";
             for (User contributor : editedProject.getContributors()) {
                 if (contributor.getId() != -1) {
                     PreparedStatement insertContributorsStatement = con.prepareStatement(insertContributorsQuery);
@@ -323,14 +323,14 @@ public class DatabaseModelImpl implements DatabaseModel {
     public List<User> getFriends(User user) throws RemoteException {
         List<User> friends = new ArrayList<>();
         try {
-            String getProjectsQuery = "SELECT lista_znajomych.* FROM lista_znajomych WHERE id_uzytkownika = ?";
+            String getProjectsQuery = "SELECT friend_list.* FROM friend_list WHERE id_user = ?";
             PreparedStatement getProjectsStatement = con.prepareStatement(getProjectsQuery);
             getProjectsStatement.setInt(1, user.getId());
 
             ResultSet result = getProjectsStatement.executeQuery();
             while (result.next()) {
-                int id_uzytkownika = result.getInt("id_znajomego");
-                User friend = new UserImpl(id_uzytkownika, getUserLogin(id_uzytkownika));
+                int id_user = result.getInt("id_friend");
+                User friend = new UserImpl(id_user, getUserLogin(id_user));
 
                 friends.add(friend);
             }
@@ -345,7 +345,7 @@ public class DatabaseModelImpl implements DatabaseModel {
     public void addFriend(User user, User friend) throws RemoteException {
         try {
             // Inserting project into database
-            String insertUserQuery = "INSERT INTO `lista_znajomych` (`id_uzytkownika`, `id_znajomego`) VALUES (?, ?)";
+            String insertUserQuery = "INSERT INTO `friend_list` (`id_user`, `id_friend`) VALUES (?, ?)";
             PreparedStatement statement = con.prepareStatement(insertUserQuery, Statement.RETURN_GENERATED_KEYS);
 
             statement.setInt(1, user.getId());
@@ -364,7 +364,7 @@ public class DatabaseModelImpl implements DatabaseModel {
     public void removeFriend(User user, User friend) throws RemoteException {
         try {
             //Delete project
-            String deleteProjectQuery = "DELETE FROM `lista_znajomych` WHERE `id_uzytkownika`=? AND `id_znajomego`=?";
+            String deleteProjectQuery = "DELETE FROM `friend_list` WHERE `id_user`=? AND `id_friend`=?";
             PreparedStatement deleteProjectStatement = con.prepareStatement(deleteProjectQuery);
             deleteProjectStatement.setInt(1, user.getId());
             deleteProjectStatement.setInt(2, friend.getId());
