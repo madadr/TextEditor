@@ -44,13 +44,11 @@ public class EditProjectController implements Initializable, UserInjectionTarget
     public void applyClicked(ActionEvent actionEvent) {
         try {
             List contributors = Arrays.asList(contributorsField.getCheckModel().getCheckedItems().toArray());
-            if(contributors.isEmpty())
-            {
+            if (contributors.isEmpty()) {
                 setInformation("Project can't exist without users!");
                 return;
             }
-            if(projectNameField.getText().isEmpty())
-            {
+            if (projectNameField.getText().isEmpty()) {
                 setInformation("You need to fill project name");
                 return;
             }
@@ -67,8 +65,7 @@ public class EditProjectController implements Initializable, UserInjectionTarget
         }
     }
 
-    private void setInformation(String text)
-    {
+    private void setInformation(String text) {
         information.setVisible(true);
         information.setTextFill(Color.RED);
         information.setText(text);
@@ -85,16 +82,14 @@ public class EditProjectController implements Initializable, UserInjectionTarget
             //Add contributors and friends
             contributorsField.getItems().addAll(project.getContributors());
             databaseModel.getFriends(user).forEach(user -> {
-                if(!contributorsField.getItems().contains(user))
-                {
+                if (!contributorsField.getItems().contains(user)) {
                     contributorsField.getItems().add(user);
                 }
             });
 
             //Check all contributors
             project.getContributors().forEach(user -> {
-                if(contributorsField.getItems().contains(user))
-                {
+                if (contributorsField.getItems().contains(user)) {
                     contributorsField.getCheckModel().check(user);
                 }
             });
@@ -103,7 +98,7 @@ public class EditProjectController implements Initializable, UserInjectionTarget
         }
     }
 
-        @Override
+    @Override
     public void injectClient(RMIClient client) {
         this.rmiClient = client;
     }

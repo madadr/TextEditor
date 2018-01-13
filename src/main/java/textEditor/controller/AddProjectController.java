@@ -22,13 +22,13 @@ import java.util.ResourceBundle;
 
 public class AddProjectController implements Initializable, ClientInjectionTarget, WindowSwitcherInjectionTarget, UserInjectionTarget {
     @FXML
-    public TextField projectNameField;
+    private TextField projectNameField;
     @FXML
-    public CheckComboBox contributorsField;
+    private CheckComboBox contributorsField;
     @FXML
-    public TextArea projectDescriptionField;
+    private TextArea projectDescriptionField;
     @FXML
-    public Label information;
+    private Label information;
 
 
     private RMIClient rmiClient;
@@ -68,13 +68,11 @@ public class AddProjectController implements Initializable, ClientInjectionTarge
     public void addButtonClicked(ActionEvent actionEvent) {
         try {
             List contributors = Arrays.asList(contributorsField.getCheckModel().getCheckedItems().toArray());
-            if(!contributors.contains(user))
-            {
+            if (!contributors.contains(user)) {
                 setInformation("You can't create a project without participating in it!");
                 return;
             }
-            if(projectNameField.getText().isEmpty())
-            {
+            if (projectNameField.getText().isEmpty()) {
                 setInformation("You need to fill project name");
                 return;
             }
@@ -86,8 +84,7 @@ public class AddProjectController implements Initializable, ClientInjectionTarge
         }
     }
 
-    private void setInformation(String text)
-    {
+    private void setInformation(String text) {
         information.setVisible(true);
         information.setTextFill(Color.RED);
         information.setText(text);
