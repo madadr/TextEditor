@@ -1,6 +1,6 @@
 package textEditor.model.interfaces;
 
-import textEditor.model.StyleSpansWrapper;
+import textEditor.model.StylesHolder;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
@@ -12,9 +12,9 @@ public interface EditorModel extends Remote, RemoteObservable {
 
     String getTextString() throws RemoteException;
 
-    void setTextStyle(StyleSpansWrapper styleSpans) throws RemoteException;
+    void setTextStyle(StylesHolder styleSpans) throws RemoteException;
 
-    void setTextStyle(StyleSpansWrapper styleSpans, RemoteObserver source) throws RemoteException;
+    void setTextStyle(StylesHolder styleSpans, RemoteObserver source) throws RemoteException;
 
-    StyleSpansWrapper getTextStyle() throws RemoteException;
+    StylesHolder getTextStyle() throws RemoteException;
 }

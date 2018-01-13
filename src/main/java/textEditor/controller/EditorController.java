@@ -18,7 +18,7 @@ import textEditor.controller.inject.UserInjectionTarget;
 import textEditor.controller.inject.WindowSwitcherInjectionTarget;
 import textEditor.model.EditorControllerObserver;
 import textEditor.model.RemoteObserverImpl;
-import textEditor.model.StyleSpansWrapper;
+import textEditor.model.StylesHolder;
 import textEditor.model.interfaces.*;
 import textEditor.utils.RMIClient;
 import textEditor.utils.ReadOnlyBoolean;
@@ -178,7 +178,7 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
             try {
                 if (!isThisClientUpdatingText.getValue()) {
                     editorModel.setTextString(newValue, observer);
-                    editorModel.setTextStyle(new StyleSpansWrapper(0, mainTextArea.getStyleSpans(0, mainTextArea.getText().length())), observer);
+                    notifyOthers();
                 }
             } catch (RemoteException e) {
                 System.out.println(e.getMessage());
@@ -296,7 +296,7 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
 
     private void notifyOthers() {
         try {
-            editorModel.setTextStyle(new StyleSpansWrapper(0, mainTextArea.getStyleSpans(0, mainTextArea.getText().length())), observer);
+            editorModel.setTextStyle(new StylesHolder(0, mainTextArea.getStyleSpans(0, mainTextArea.getText().length())), observer);
         } catch (RemoteException e) {
             e.printStackTrace();
         }

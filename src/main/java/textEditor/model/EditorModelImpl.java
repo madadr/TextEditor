@@ -10,7 +10,7 @@ import java.util.List;
 
 public class EditorModelImpl implements EditorModel, RemoteObservable {
     private String text = "";
-    private StyleSpansWrapper styleSpans;
+    private StylesHolder styleSpans;
 
     private ArrayList<RemoteObserver> observers;
 
@@ -50,7 +50,7 @@ public class EditorModelImpl implements EditorModel, RemoteObservable {
     }
 
     @Override
-    public synchronized void setTextStyle(StyleSpansWrapper styleSpans, RemoteObserver source) throws RemoteException {
+    public synchronized void setTextStyle(StylesHolder styleSpans, RemoteObserver source) throws RemoteException {
         if (styleSpans != null) {
             RemoteObserver skippedObserver = source;
             this.deleteObserver(skippedObserver);
@@ -65,12 +65,12 @@ public class EditorModelImpl implements EditorModel, RemoteObservable {
     }
 
     @Override
-    public synchronized StyleSpansWrapper getTextStyle() throws RemoteException {
+    public synchronized StylesHolder getTextStyle() throws RemoteException {
         return this.styleSpans;
     }
 
     @Override
-    public synchronized void setTextStyle(StyleSpansWrapper styleSpans) throws RemoteException {
+    public synchronized void setTextStyle(StylesHolder styleSpans) throws RemoteException {
         if (styleSpans != null) {
             System.out.println("Updating style to:");
             System.out.println("\t" + styleSpans);

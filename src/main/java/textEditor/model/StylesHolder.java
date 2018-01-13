@@ -10,11 +10,11 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class StyleSpansWrapper implements Serializable {
+public class StylesHolder implements Serializable {
     private ArrayList<Pair<Integer, ArrayList<String>>> pairsOfLengthAndStyle;
     private int stylesStart;
 
-    public StyleSpansWrapper(int from, StyleSpans<Collection<String>> styleSpans) {
+    public StylesHolder(int from, StyleSpans<Collection<String>> styleSpans) {
         this.stylesStart = from;
         this.pairsOfLengthAndStyle = new ArrayList<>(styleSpans.length());
 
