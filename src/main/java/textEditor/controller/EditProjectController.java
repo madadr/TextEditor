@@ -15,7 +15,7 @@ import java.rmi.RemoteException;
 import java.util.Arrays;
 import java.util.ResourceBundle;
 
-public class EditProjectController implements Initializable, UserInjectionTarget, ClientInjectionTarget, WindowSwitcherInjectionTarget, SelectedProjectInjectionTarget {
+public class EditProjectController implements Initializable, UserInjectionTarget, ClientInjectionTarget, WindowSwitcherInjectionTarget, ProjectInjectionTarget{
     public TextField projectNameField;
     public TextArea projectDescriptionField;
     public TextField contributorsField;
@@ -36,7 +36,7 @@ public class EditProjectController implements Initializable, UserInjectionTarget
 
     }
 
-    public void applyClicked(ActionEvent actionEvent) {
+    public void applyClicked() {
         try {
             Project editedProject = new ProjectImpl(project.getId(), projectNameField.getText(), projectDescriptionField.getText(), Arrays.asList(contributorsField.getText().split(",")));
             if (editedProject == project) {
@@ -70,7 +70,7 @@ public class EditProjectController implements Initializable, UserInjectionTarget
     }
 
     @Override
-    public void injectSelectedProject(Project project) {
+    public void injectProject(Project project) {
         this.project = project;
     }
 

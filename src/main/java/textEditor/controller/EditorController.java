@@ -139,11 +139,15 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     }
 
     private void handleUserInProject() {
-        System.out.println("IM IN HANDLE USER IN PROJECT");
+        try {
+            activeUserHandler.addUserToProject(project.getId(), user.getUsername());
+        } catch (RemoteException e) {
+            System.err.println("USER HAVE SOME BAD NAME, I DONT LIKE HIM....");
+        }
         switcher.getMainStage().setOnCloseRequest(event -> {
-            System.out.println("SETTING WHAT HAPPEND ON CLOSE BEFORE");
+            event.consume();
             try {
-                System.out.println("SETTING WHAT HAPPEND ON CLOSE");
+                System.out.println("Set remove define");
                 activeUserHandler.removeUserToProject(project.getId(), user.getUsername());
             } catch (RemoteException e) {
                 System.err.println("USER HAVE SOME BAD NAME, I DONT LIKE HIM....");
@@ -250,11 +254,6 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     private void editActiveUsers()
     {
         handleUserInProject();
-        try {
-            activeUserHandler.addUserToProject(project.getId(), user.getUsername());
-        } catch (RemoteException e) {
-            System.err.println("USER HAVE SOME BAD NAME, I DONT LIKE HIM....");
-        }
         try {
             switcher.loadWindow(POPUP_ACTIVE_USERS);
         } catch (IOException e) {

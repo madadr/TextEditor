@@ -31,10 +31,10 @@ public class WindowSwitcher {
         controllerFactory = new ControllerFactory(rmiClient, this, user,project);
     }
 
-    public final Stage getMainStage() {
+    public  Stage getMainStage() {
         return this.stage;
     }
-    public final Stage getPopupStage(){
+    public  Stage getPopupStage(){
         return this.popupStage;
     }
 
@@ -54,22 +54,25 @@ public class WindowSwitcher {
                 break;
             case CHOOSE_ACTION:
                 loadChooseActionWindow();
-		break;
+                reinitializeCloseHandler();
+		        break;
 	    case EDITOR:
                 loadEditorWindow();
-                reinitializeCloseHandler();
                 break;
             case POPUP_ACTIVE_USERS:
                 loadActiveUsersPopup();
                 break;
             case ADD_PROJECT:
                 loadAddProjectWindow();
+                reinitializeCloseHandler();
                 break;
             case EDIT_PROJECT:
                 loadEditProjectWindow();
+                reinitializeCloseHandler();
                 break;
             case FRIENDS_LIST:
                 loadFriendsWindow();
+                reinitializeCloseHandler();
                 break;
             default:
                 System.err.println("Invalid window!");
@@ -138,6 +141,7 @@ public class WindowSwitcher {
 
     private void reinitializeCloseHandler() {
         this.stage.setOnCloseRequest(event -> {
+            event.consume();
             Platform.exit();
             System.exit(0);
         });
