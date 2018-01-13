@@ -360,6 +360,13 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
                 AlertManager.displayAlert(Alert.AlertType.CONFIRMATION,"Printer information","Printing end with result: SUCCESS");
                 printerJob.endJob();
             }
+            else{
+                AlertManager.displayAlert(Alert.AlertType.WARNING,"Printer information","Printing end with result: FAILED");
+            }
+        }
+        else
+        {
+            AlertManager.displayAlert(Alert.AlertType.WARNING,"Printer information","Job Canceled");
         }
     }
     @FXML
