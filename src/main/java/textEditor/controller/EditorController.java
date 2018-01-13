@@ -4,7 +4,10 @@ import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.*;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.IndexRange;
+import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.HBox;
 import javafx.stage.FileChooser;
 import org.fxmisc.richtext.StyleClassedTextArea;
@@ -19,7 +22,9 @@ import java.io.IOException;
 import java.net.URL;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.ResourceBundle;
 
 import static textEditor.utils.ConstValues.*;
 import static textEditor.view.WindowSwitcher.Window.POPUP_ACTIVE_USERS;
@@ -99,6 +104,8 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
         loadCssStyleSheet();
 
         initTextSelection();
+
+        handleUserInProject();
     }
 
     private void setListeners() {
@@ -250,16 +257,16 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     private void editUndoClicked() {
         mainTextArea.undo();
     }
+
     @FXML
-    private void editActiveUsers()
-    {
-        handleUserInProject();
+    private void editActiveUsers() {
         try {
             switcher.loadWindow(POPUP_ACTIVE_USERS);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+
     @FXML
     private void editRedoClicked() {
         mainTextArea.redo();
