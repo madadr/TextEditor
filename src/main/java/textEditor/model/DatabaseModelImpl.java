@@ -23,10 +23,7 @@ public class DatabaseModelImpl implements DatabaseModel {
 
     public DatabaseModelImpl() throws SQLException, ClassNotFoundException {
         Class.forName("com.mysql.jdbc.Driver");
-        con = DriverManager.getConnection(
-                "jdbc:mysql://localhost/",
-                "root",
-                "");
+        con = DriverManager.getConnection("jdbc:mysql://localhost/", "root", "");
         System.out.println("We are connected");
         init();
     }
@@ -194,7 +191,7 @@ public class DatabaseModelImpl implements DatabaseModel {
     }
 
     @Override
-    public int getUserId(String login) throws RemoteException {
+    public int getUserId(String login) {
         try {
             String getUserQuery = "SELECT * FROM `uzytkownicy` WHERE uzytkownicy.login = ?";
             PreparedStatement getUserStatement = con.prepareStatement(getUserQuery);
@@ -281,7 +278,7 @@ public class DatabaseModelImpl implements DatabaseModel {
             //Inserting contributors into database
             String insertContributorQuery = "INSERT INTO `uzytkownik_projekt` (`id_uzytkownika`, `id_projektu`) VALUES (?, ?)";
 
-            for (String contributor: project.getContributors()) {
+            for (String contributor : project.getContributors()) {
                 PreparedStatement insertContributorStatement = con.prepareStatement(insertContributorQuery);
                 insertContributorStatement.setInt(1, getUserId(contributor));
                 insertContributorStatement.setInt(2, idProject);
@@ -308,24 +305,21 @@ public class DatabaseModelImpl implements DatabaseModel {
             PreparedStatement deleteContributorsStatement = con.prepareStatement(deleteContributorsQuery);
             deleteContributorsStatement.setInt(1, editedProject.getId());
             deleteContributorsStatement.executeUpdate();
-            System.out.println(editedProject.getContributors());
             String insertContributorsQuery = "INSERT INTO `uzytkownik_projekt` (`id_uzytkownika`, `id_projektu`) VALUES (?,?)";
             for (String contributor : editedProject.getContributors()) {
                 Integer userId = getUserId(contributor);
-                if(userId != -1)
-                {
+                if (userId != -1) {
                     PreparedStatement insertContributorsStatement = con.prepareStatement(insertContributorsQuery);
                     insertContributorsStatement.setInt(1, getUserId(contributor));
                     insertContributorsStatement.setInt(2, editedProject.getId());
                     insertContributorsStatement.executeUpdate();
                 }
             }
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
-  
+
     @Override
     public List<User> getFriends(User user) throws RemoteException {
         List<User> friends = new ArrayList<>();

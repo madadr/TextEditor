@@ -67,8 +67,6 @@ public class ProjectController implements Initializable, UserInjectionTarget, Cl
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        System.out.println("user=" + user);
-
         try {
             dbService = (DatabaseModel) client.getModel("DatabaseModel");
         } catch (RemoteException | NotBoundException e) {

@@ -81,7 +81,6 @@ public class FriendsController implements Initializable, UserInjectionTarget, Cl
     }
 
     private void fetchFriendsListFromDatabase() {
-        // get all projects data from database
         try {
             friends = dbService.getFriends(user);
         } catch (RemoteException e) {
@@ -114,6 +113,7 @@ public class FriendsController implements Initializable, UserInjectionTarget, Cl
             try {
                 if (this.user.getUsername().equals(friendUsername)) {
                     AlertManager.displayAlert(Alert.AlertType.INFORMATION, "You cannot add yourself to friends list!");
+                    return;
                 }
 
                 if (dbService.userExist(friendUsername)) {
