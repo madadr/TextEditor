@@ -19,7 +19,6 @@ import static textEditor.controller.RegistrationFields.*;
 public class DatabaseModelImpl implements DatabaseModel {
 
     Connection con;
-    private Statement stmt;
 
     public DatabaseModelImpl() throws SQLException, ClassNotFoundException {
         Class.forName("com.mysql.jdbc.Driver");
@@ -268,8 +267,7 @@ public class DatabaseModelImpl implements DatabaseModel {
 
             //Inserting contributors into database
             String insertContributorQuery = "INSERT INTO `uzytkownik_projekt` (`id_uzytkownika`, `id_projektu`) VALUES (?, ?)";
-            for (String contributor:
-                 project.getContributors()) {
+            for (String contributor: project.getContributors()) {
                 PreparedStatement insertContributorStatement = con.prepareStatement(insertContributorQuery);
                 insertContributorStatement.setInt(1, getUserId(contributor));
                 insertContributorStatement.setInt(2, idProject);
@@ -278,6 +276,41 @@ public class DatabaseModelImpl implements DatabaseModel {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void editProject(Project editedProject) {
+        try {
+            String editProjectQuery = "UPDATE `projekt` SET `nazwa` = ?, `opis` = ? WHERE `projekt`.`id_projektu` = ?";
+            PreparedStatement editProjectStatement = con.prepareStatement(editProjectQuery);
+
+            editProjectStatement.setString(1, editedProject.getTitle());
+            editProjectStatement.setString(2, editedProject.getDescription());
+            editProjectStatement.setInt(3, editedProject.getId());
+
+            editProjectStatement.executeUpdate();
+
+            String deleteContributorsQuery = "DELETE FROM `uzytkownik_projekt` WHERE `uzytkownik_projekt`.`id_projektu` = ?";
+            PreparedStatement deleteContributorsStatement = con.prepareStatement(deleteContributorsQuery);
+            deleteContributorsStatement.setInt(1, editedProject.getId());
+            deleteContributorsStatement.executeUpdate();
+            System.out.println(editedProject.getContributors());
+            String insertContributorsQuery = "INSERT INTO `uzytkownik_projekt` (`id_uzytkownika`, `id_projektu`) VALUES (?,?)";
+            for (String contributor : editedProject.getContributors()) {
+                Integer userId = getUserId(contributor);
+                if(userId != -1)
+                {
+                    PreparedStatement insertContributorsStatement = con.prepareStatement(insertContributorsQuery);
+                    insertContributorsStatement.setInt(1, getUserId(contributor));
+                    insertContributorsStatement.setInt(2, editedProject.getId());
+                    insertContributorsStatement.executeUpdate();
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
     }
 }
 
