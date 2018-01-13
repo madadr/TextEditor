@@ -174,17 +174,17 @@ public class DatabaseModelImpl implements DatabaseModel {
         return projects;
     }
 
-    private List<String> getContributors(int id_projektu) {
-        List<String> contributors = new ArrayList<>();
+    private List<User> getContributors(int id_projektu) {
+        List<User> contributors = new ArrayList<>();
         try {
-            String getContributorsQuery = "SELECT uzytkownicy.login FROM uzytkownik_projekt NATURAL JOIN uzytkownicy WHERE uzytkownik_projekt.id_projektu = ?";
+            String getContributorsQuery = "SELECT uzytkownicy.id_uzytkownika, uzytkownicy.login FROM uzytkownik_projekt NATURAL JOIN uzytkownicy WHERE uzytkownik_projekt.id_projektu = ?";
             PreparedStatement getContributorsStatement = con.prepareStatement(getContributorsQuery);
             getContributorsStatement.setInt(1, id_projektu);
             ResultSet resultSet = getContributorsStatement.executeQuery();
             while (resultSet.next()) {
-                contributors.add(resultSet.getString("login"));
+                contributors.add(new UserImpl(resultSet.getInt(1), resultSet.getString(2)));
             }
-        } catch (SQLException e) {
+        } catch (SQLException | RemoteException e) {
             e.printStackTrace();
         }
         return contributors;
@@ -278,9 +278,9 @@ public class DatabaseModelImpl implements DatabaseModel {
             //Inserting contributors into database
             String insertContributorQuery = "INSERT INTO `uzytkownik_projekt` (`id_uzytkownika`, `id_projektu`) VALUES (?, ?)";
 
-            for (String contributor : project.getContributors()) {
+            for (User contributor : project.getContributors()) {
                 PreparedStatement insertContributorStatement = con.prepareStatement(insertContributorQuery);
-                insertContributorStatement.setInt(1, getUserId(contributor));
+                insertContributorStatement.setInt(1, contributor.getId());
                 insertContributorStatement.setInt(2, idProject);
                 insertContributorStatement.executeUpdate();
             }
@@ -306,16 +306,15 @@ public class DatabaseModelImpl implements DatabaseModel {
             deleteContributorsStatement.setInt(1, editedProject.getId());
             deleteContributorsStatement.executeUpdate();
             String insertContributorsQuery = "INSERT INTO `uzytkownik_projekt` (`id_uzytkownika`, `id_projektu`) VALUES (?,?)";
-            for (String contributor : editedProject.getContributors()) {
-                Integer userId = getUserId(contributor);
-                if (userId != -1) {
+            for (User contributor : editedProject.getContributors()) {
+                if (contributor.getId() != -1) {
                     PreparedStatement insertContributorsStatement = con.prepareStatement(insertContributorsQuery);
-                    insertContributorsStatement.setInt(1, getUserId(contributor));
+                    insertContributorsStatement.setInt(1, contributor.getId());
                     insertContributorsStatement.setInt(2, editedProject.getId());
                     insertContributorsStatement.executeUpdate();
                 }
             }
-        } catch (SQLException e) {
+        } catch (SQLException | RemoteException e) {
             e.printStackTrace();
         }
     }
