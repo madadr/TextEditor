@@ -21,7 +21,7 @@ import java.util.concurrent.ScheduledFuture;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
 
-public class PopupActiveUsersController implements WindowSwitcherInjectionTarget, Initializable, ClientInjectionTarget,ProjectInjectionTarget {
+public class PopupActiveUsersController implements WindowSwitcherInjectionTarget, Initializable, ClientInjectionTarget, ProjectInjectionTarget {
 
     private WindowSwitcher window;
     private RMIClient rmiClient;
@@ -34,6 +34,7 @@ public class PopupActiveUsersController implements WindowSwitcherInjectionTarget
     private ScheduledFuture<?> updateHandler;
     private ArrayList<String> activeUsers;
     private Runnable updater;
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         try {
@@ -44,6 +45,7 @@ public class PopupActiveUsersController implements WindowSwitcherInjectionTarget
         establishUpdater();
 
     }
+
     @Override
     public void injectWindowSwitcher(WindowSwitcher switcher) {
         this.window = switcher;
@@ -55,7 +57,7 @@ public class PopupActiveUsersController implements WindowSwitcherInjectionTarget
     }
 
     @FXML
-    private void onClickClose(){
+    private void onClickClose() {
         updateHandler.cancel(false);
         scheduler.shutdownNow();
         window.getPopupStage().close();
@@ -66,24 +68,28 @@ public class PopupActiveUsersController implements WindowSwitcherInjectionTarget
         this.project = project;
     }
 
-    private void updateActiveUserList(){
-        Platform.runLater(updater = () -> {
-            try {
-                activeUsers = activeUserHandler.getActiveUserInProject(project.getId());
-                authorsListView.setItems(FXCollections.observableArrayList(activeUsers));
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
-        });
+    private void updateActiveUserList() {
+        updater = () -> {
+            Platform.runLater(() -> {
+                try {
+                    activeUsers = activeUserHandler.getActiveUserInProject(project.getId());
+                    authorsListView.setItems(FXCollections.observableArrayList(activeUsers));
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+            });
+        };
     }
-    private void establishUpdater(){
+
+    private void establishUpdater() {
         updateActiveUserList();
         scheduler = Executors.newScheduledThreadPool(1);
         updateHandler = scheduler.scheduleAtFixedRate(updater, 0, 5, SECONDS);
         defineClosing();
 
     }
-    private void defineClosing(){
+
+    private void defineClosing() {
         window.getPopupStage().setOnCloseRequest(event -> {
             System.out.println("POPUP ");
             event.consume();
