@@ -2,9 +2,8 @@ package textEditor.controller;
 
 import java.io.Serializable;
 import java.rmi.RemoteException;
-import java.rmi.server.UnicastRemoteObject;
 
-public class UserImpl extends UnicastRemoteObject implements User, Serializable {
+public class UserImpl implements User, Serializable {
     private int id;
     private String username;
 
@@ -35,9 +34,24 @@ public class UserImpl extends UnicastRemoteObject implements User, Serializable 
 
     @Override
     public String toString() {
-        return "UserImpl{" +
-                "id=" + id +
-                ", username='" + username + '\'' +
-                '}';
+        return this.username;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        UserImpl user = (UserImpl) o;
+
+        if (id != user.id) return false;
+        return username != null ? username.equals(user.username) : user.username == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id;
+        result = 31 * result + (username != null ? username.hashCode() : 0);
+        return result;
     }
 }

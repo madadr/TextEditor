@@ -1,6 +1,5 @@
 package textEditor.model;
 
-import javafx.scene.control.TextField;
 import textEditor.controller.Project;
 import textEditor.controller.User;
 
@@ -10,8 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public interface DatabaseModel extends Remote {
-    void init() throws RemoteException;
-
     boolean userExist(String username) throws RemoteException;
 
     boolean checkPassword(String userName, String password) throws RemoteException;
@@ -22,5 +19,17 @@ public interface DatabaseModel extends Remote {
 
     int getUserId(String login) throws RemoteException;
 
+    String getUserLogin(int id) throws RemoteException;
+
     void removeProject(Project projectToDelete) throws RemoteException;
+
+    void addProject(Project project) throws RemoteException;
+
+    void editProject(Project editedProject) throws RemoteException;
+
+    List<User> getFriends(User user) throws RemoteException;
+
+    void addFriend(User user, User friend) throws RemoteException;
+
+    void removeFriend(User user, User friend) throws RemoteException;
 }

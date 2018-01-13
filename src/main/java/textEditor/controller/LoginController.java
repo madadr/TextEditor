@@ -1,7 +1,6 @@
 package textEditor.controller;
 
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -33,7 +32,7 @@ public class LoginController implements Initializable, ClientInjectionTarget, Wi
 
     private WindowSwitcher switcher;
     private DatabaseModel databaseModel;
-    private UserImpl user;
+    private User user;
 
     public LoginController() {
     }
@@ -44,7 +43,7 @@ public class LoginController implements Initializable, ClientInjectionTarget, Wi
     }
 
     @Override
-    public void injectUser(UserImpl user) {
+    public void injectUser(User user) {
         this.user = user;
     }
 
@@ -75,17 +74,17 @@ public class LoginController implements Initializable, ClientInjectionTarget, Wi
 
     private void runEnableKeyEventHandler() {
         Platform.runLater(() -> {
-            while (this.switcher.getStage().getScene() == null) {
+            while (this.switcher.getMainStage().getScene() == null) {
             }
             enableKeyEventHandler();
         });
     }
 
     private void enableKeyEventHandler() {
-        this.switcher.getStage().getScene().setOnKeyPressed((keyEvent) -> {
+        this.switcher.getMainStage().getScene().setOnKeyPressed((keyEvent) -> {
             if (keyEvent.getCode() == KeyCode.ENTER) {
                 try {
-                    onClickSubmit(null);
+                    onClickSubmit();
                 } catch (IOException ignored) {
 
                 }
@@ -103,7 +102,7 @@ public class LoginController implements Initializable, ClientInjectionTarget, Wi
         }
     }
 
-    public void onClickSubmit(ActionEvent actionEvent) throws IOException {
+    public void onClickSubmit() throws IOException {
         String login = userLoginField.getText();
         String password = userPasswordField.getText();
 
@@ -113,7 +112,7 @@ public class LoginController implements Initializable, ClientInjectionTarget, Wi
                 this.user.setUsername(login);
                 this.user.setId(userId);
                 setResultText("Authorization success", true);
-                switcher.loadWindow(WindowSwitcher.Window.PICKPROJECT);
+                switcher.loadWindow(WindowSwitcher.Window.CHOOSE_ACTION);
             } else {
                 setResultText("Password is incorrect", false);
             }
@@ -124,12 +123,9 @@ public class LoginController implements Initializable, ClientInjectionTarget, Wi
 
     public void setResultText(String resultText, boolean isValid) {
         resultOfAuthorization.setText(resultText);
-        if(isValid)
-        {
+        if (isValid) {
             resultOfAuthorization.setTextFill(Color.web("#2eb82e"));
-        }
-        else
-        {
+        } else {
             resultOfAuthorization.setTextFill(Color.web("#ff3300"));
         }
         resultOfAuthorization.setVisible(true);

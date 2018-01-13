@@ -11,10 +11,6 @@ public class ProjectImpl implements Project, Serializable {
     private String description;
     private List<String> contributors;
 
-    // these two will be available via dbService query
-//    private String text;
-//    private StyleSpansWrapper styleSpansWrapper;
-
     public ProjectImpl() throws RemoteException {
         this.id = -1;
         this.title = "";
@@ -27,6 +23,19 @@ public class ProjectImpl implements Project, Serializable {
         this.title = title;
         this.description = description;
         this.contributors = contributors;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        ProjectImpl project = (ProjectImpl) o;
+
+        if (id != null ? !id.equals(project.id) : project.id != null) return false;
+        if (title != null ? !title.equals(project.title) : project.title != null) return false;
+        if (description != null ? !description.equals(project.description) : project.description != null) return false;
+        return contributors != null ? contributors.equals(project.contributors) : project.contributors == null;
     }
 
     public String getTitle() {
@@ -53,9 +62,13 @@ public class ProjectImpl implements Project, Serializable {
         this.contributors = contributors;
     }
 
-    public void setId(Integer id) { this.id = id; }
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
-    public Integer getId() { return id; }
+    public Integer getId() {
+        return id;
+    }
 
     @Override
     public String toString() {

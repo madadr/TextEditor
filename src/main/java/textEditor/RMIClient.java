@@ -17,7 +17,7 @@ public class RMIClient {
         }
     }
 
-    public Remote getModel(String modelName) throws  RemoteException, NotBoundException{
+    public Remote getModel(String modelName) throws RemoteException, NotBoundException {
 
         return registry.lookup(modelName);
     }

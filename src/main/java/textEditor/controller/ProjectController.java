@@ -8,10 +8,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
 import textEditor.RMIClient;
-import textEditor.controller.projectManagerPopups.ProjectPopupViewFactory;
 import textEditor.model.DatabaseModel;
 import textEditor.view.WindowSwitcher;
 
@@ -23,7 +20,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 
-public class ProjectController implements Initializable, UserInjectionTarget, ClientInjectionTarget, WindowSwitcherInjectionTarget {
+public class ProjectController implements Initializable, UserInjectionTarget, ClientInjectionTarget, WindowSwitcherInjectionTarget, ProjectInjectionTarget {
     @FXML
     private Label description;
 
@@ -50,16 +47,19 @@ public class ProjectController implements Initializable, UserInjectionTarget, Cl
 
     @FXML
     private Button exportButton;
+    @FXML
+    private Button backButton;
 
     private WindowSwitcher switcher;
     private DatabaseModel dbService;
     private RMIClient client;
-    private UserImpl user;
+    private User user;
 
     private List<Project> projects;
+    private Project project;
 
     @Override
-    public void injectUser(UserImpl user) {
+    public void injectUser(User user) {
         this.user = user;
     }
 
@@ -75,19 +75,10 @@ public class ProjectController implements Initializable, UserInjectionTarget, Cl
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        System.out.println("user=" + user);
-
-        // get database service object
         try {
             dbService = (DatabaseModel) client.getModel("DatabaseModel");
         } catch (RemoteException | NotBoundException e) {
             e.printStackTrace();
-        }
-
-        if (dbService == null) {
-            System.out.println("null");
-        } else {
-            System.out.println(dbService);
         }
 
         fetchUserProjectsFromDatabase();
@@ -98,7 +89,6 @@ public class ProjectController implements Initializable, UserInjectionTarget, Cl
     }
 
     private void fetchUserProjectsFromDatabase() {
-        // get all projects data from database
         try {
             projects = dbService.getProjects(user);
         } catch (RemoteException e) {
@@ -109,14 +99,11 @@ public class ProjectController implements Initializable, UserInjectionTarget, Cl
     private void setupProjectsListView() {
         projectListView.setItems(FXCollections.observableArrayList(this.projects));
         projectListView.getSelectionModel().getSelectedItems().addListener((ListChangeListener<? super Project>) (e) -> {
-            Project selectedProject = projectListView.getSelectionModel().getSelectedItem();
-            if(selectedProject != null)
-            {
-                description.setText(selectedProject.getDescription());
-                contributors.setText(selectedProject.getContributors().toString());
-            }
-            else
-            {
+            Project project = projectListView.getSelectionModel().getSelectedItem();
+            if (project != null) {
+                description.setText(project.getDescription());
+                contributors.setText(project.getContributors().toString());
+            } else {
                 description.setText("");
                 contributors.setText("");
             }
@@ -126,22 +113,41 @@ public class ProjectController implements Initializable, UserInjectionTarget, Cl
 
     private void initButtonsActions() {
         newButton.setOnAction(event -> {
-            final Stage popup = ProjectPopupViewFactory.createNewProjectView();
-
-            popup.initModality(Modality.APPLICATION_MODAL);
-            popup.show();
+            try {
+                switcher.loadWindow(WindowSwitcher.Window.ADD_PROJECT);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         });
 
-        // TODO: Remove code duplication. Find better solution to avoid another fxml file and another controller.
         editButton.setOnAction(event -> {
-            final Stage popup = ProjectPopupViewFactory.createEditProjectView();
-
-            popup.show();
+            try {
+                Project project = projectListView.getSelectionModel().getSelectedItem();
+                final int selectedIdx = projectListView.getSelectionModel().getSelectedIndex();
+                if (selectedIdx != -1) {
+                    project.setId(project.getId());
+                    project.setTitle(project.getTitle());
+                    project.setDescription(project.getDescription());
+                    project.setContributors(project.getContributors());
+                    switcher.loadWindow(WindowSwitcher.Window.EDIT_PROJECT);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         });
 
         openButton.setOnAction(event -> {
             try {
                 switcher.loadWindow(WindowSwitcher.Window.EDITOR);
+            } catch (IOException ignored) {
+
+            }
+        });
+
+
+        backButton.setOnAction(event -> {
+            try {
+                switcher.loadWindow(WindowSwitcher.Window.CHOOSE_ACTION);
             } catch (IOException ignored) {
 
             }
@@ -152,8 +158,7 @@ public class ProjectController implements Initializable, UserInjectionTarget, Cl
     public void onClickRemove(ActionEvent actionEvent) {
         Project projectToDelete = projectListView.getSelectionModel().getSelectedItem();
         final int selectedIdx = projectListView.getSelectionModel().getSelectedIndex();
-        if(selectedIdx != -1)
-        {
+        if (selectedIdx != -1) {
             try {
                 dbService.removeProject(projectToDelete);
             } catch (RemoteException e) {
@@ -162,5 +167,10 @@ public class ProjectController implements Initializable, UserInjectionTarget, Cl
             projectListView.getItems().remove(selectedIdx);
         }
 
+    }
+
+    @Override
+    public void injectProject(Project project) {
+        this.project = project;
     }
 }

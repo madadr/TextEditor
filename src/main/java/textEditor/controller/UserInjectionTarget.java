@@ -1,5 +1,5 @@
 package textEditor.controller;
 
 public interface UserInjectionTarget {
-    void injectUser(UserImpl user);
+    void injectUser(User user);
 }
