@@ -10,6 +10,7 @@ import textEditor.utils.ReadOnlyBoolean;
 
 import java.io.Serializable;
 import java.rmi.RemoteException;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class EditorControllerObserver implements Serializable, RemoteObserver {
@@ -40,7 +41,6 @@ public class EditorControllerObserver implements Serializable, RemoteObserver {
         }
     }
 
-    // issues when using redo/undo actions as clients can undo another client operations
     private int calculateNewCaretPosition(int oldCaretPosition, String oldText, String newText) {
         if (newText.length() == 0) {
             return 0;
@@ -109,16 +109,27 @@ public class EditorControllerObserver implements Serializable, RemoteObserver {
 
         @Override
         public void run() {
+            StylesHolder newStyle = null;
             try {
-                StylesHolder newStyle = ((EditorModel) observable).getTextStyle();
+                newStyle = ((EditorModel) observable).getTextStyle();
                 if (newStyle != null && newStyle.getStyleSpans() != null) {
-                    textArea.setStyleSpans(newStyle.getStylesStart(), newStyle.getStyleSpans());
+                    updateStyleSpans(newStyle);
+                    updateParagraphs(newStyle);
                 }
             } catch (RemoteException e) {
                 e.printStackTrace();
-            } catch (IndexOutOfBoundsException e) {
-                System.out.println("CRASH");
             }
+        }
+
+        private void updateParagraphs(StylesHolder newStyle) {
+            List<List<String>> paragraphStyles = newStyle.getParagraphStyles();
+            for (int i = 0; i < paragraphStyles.size(); ++i) {
+                textArea.setParagraphStyle(i, paragraphStyles.get(i));
+            }
+        }
+
+        private void updateStyleSpans(StylesHolder newStyle) {
+            textArea.setStyleSpans(newStyle.getStylesStart(), newStyle.getStyleSpans());
         }
     }
 }
