@@ -108,31 +108,16 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
         initModels();
 
         initListeners();
-        System.out.println("1 INITIALIZED");
 
         initialTextSettings();
-        System.out.println("2 INITIALIZED");
 
         initTextArea();
-        System.out.println("3 INITIALIZED");
 
         loadCssStyleSheet();
-        System.out.println("4 INITIALIZED");
 
         initTextSelection();
-        System.out.println("5 INITIALIZED");
 
         handleUserInProject();
-        System.out.println("6 INITIALIZED");
-
-//        try {
-//            if(editorModel.getTextStyle().getStyleSpans() == null) {
-//                System.out.println("editorModel INITIALIZED");
-//                editorModel.setTextStyle(new StylesHolder(0, mainTextArea.getStyleSpans(0, 0), mainTextArea.getParagraphs()));
-//            }
-//        } catch (RemoteException e) {
-//            e.printStackTrace();
-//        }
     }
 
     private void initListeners() {
@@ -165,19 +150,8 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     private void initModels() {
         try {
             projectManager = (ProjectManager) rmiClient.getModel("ProjectManager");
-//            editorModel = (EditorModel) rmiClient.getModel("EditorModel");
-//            activeUserHandler = (ActiveUserHandler) rmiClient.getModel("ActiveUserHandler");
-            System.out.println("1");
             this.editorModel = (EditorModel) rmiClient.getModel(projectManager.getEditorModelId(this.project));
-
-            System.out.println("editorModel " + this.editorModel);
-            System.out.println("editorModel.getTextString() " + this.editorModel.getTextString());
-            System.out.println("editorModel.getTextStyle() " + this.editorModel.getTextStyle());
-
-
-            System.out.println("2");
-            this.activeUserHandler = projectManager.getActiveUserHandler(this.project);
-            System.out.println("3");
+            this.activeUserHandler = (ActiveUserHandler) rmiClient.getModel(projectManager.getActiveUserHandlerId(this.project));
         } catch (RemoteException | NotBoundException e) {
             e.printStackTrace();
         }
@@ -207,12 +181,7 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
         mainTextArea.textProperty().addListener((observable, oldValue, newValue) -> {
             try {
                 if (!isThisClientUpdatingText.getValue()) {
-                    System.out.println("Here");
-
-                    System.out.println(observer == null ? "Null observer " : "NOT null observer");
-
                     editorModel.setTextString(newValue, observer);
-                    System.out.println("I am");
                     notifyOthers();
                 }
             } catch (RemoteException e) {

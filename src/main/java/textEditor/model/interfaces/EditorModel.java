@@ -18,7 +18,4 @@ public interface EditorModel extends RemoteObservable {
     StylesHolder getTextStyle() throws RemoteException;
 
     EditorModelData getData() throws RemoteException;
-
-//    void initObserverList() throws RemoteException;
-
 }

@@ -79,7 +79,6 @@ public class EditorControllerObserver implements Serializable, RemoteObserver {
         private RemoteObservable observable;
 
         public UpdateTextWrapper(RemoteObservable observable) {
-            System.out.println("UpdateTextWrapper ctro");
             this.observable = observable;
         }
 
@@ -114,11 +113,7 @@ public class EditorControllerObserver implements Serializable, RemoteObserver {
             try {
                 newStyle = ((EditorModel) observable).getTextStyle();
 
-                System.out.println(newStyle.getStyleSpans() == null ? "TO TU JEST PROBLEM " : "TO NIE TU JEST PROBLEM ");
-
                 if (newStyle != null && newStyle.getStyleSpans() != null) {
-                    System.out.println("not null");
-                    System.out.println("\t\t\t newStyle" + newStyle);
                     updateStyleSpans(newStyle);
                     updateParagraphs(newStyle);
                 }

@@ -5,5 +5,6 @@ import java.rmi.RemoteException;
 
 public interface ProjectManager extends Remote {
     String getEditorModelId(Project project) throws RemoteException;
-    ActiveUserHandler getActiveUserHandler(Project project) throws RemoteException;
+
+    String getActiveUserHandlerId(Project project) throws RemoteException;
 }

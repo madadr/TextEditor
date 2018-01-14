@@ -18,21 +18,15 @@ public class Server {
             registry = LocateRegistry.createRegistry(4321);
 
             //Creating models implementation of our classes
-//            EditorModel editorModel = new EditorModelImpl();
             DatabaseModel databaseModel = new DatabaseModelImpl();
             ProjectManager projectManager = new ProjectManagerImpl(registry);
-//            ActiveUserHandler activeUsersHandler = new ActiveUsersHandlerImpl();
 
             //Exporting models interface to client
-//            EditorModel editorModelExport = (EditorModel) UnicastRemoteObject.exportObject(editorModel, 0);
-            DatabaseModel databaseModelExport = (DatabaseModel) UnicastRemoteObject.exportObject(databaseModel, 0);
-//            ActiveUserHandler activeUserHandlerExport = (ActiveUserHandler) UnicastRemoteObject.exportObject(activeUsersHandler, 0);
+           DatabaseModel databaseModelExport = (DatabaseModel) UnicastRemoteObject.exportObject(databaseModel, 0);
             ProjectManager projectManagerExport = (ProjectManager) UnicastRemoteObject.exportObject(projectManager, 0);
 
             //Binding names and models interfaces
-//            registry.rebind("EditorModel", editorModelExport);
             registry.rebind("DatabaseModel", databaseModelExport);
-//            registry.rebind("ActiveUserHandler", activeUserHandlerExport);
             registry.rebind("ProjectManager", projectManagerExport);
 
         } catch (RemoteException | SQLException | ClassNotFoundException e) {

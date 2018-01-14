@@ -10,6 +10,7 @@ import textEditor.controller.inject.ProjectInjectionTarget;
 import textEditor.controller.inject.WindowSwitcherInjectionTarget;
 import textEditor.model.interfaces.ActiveUserHandler;
 import textEditor.model.interfaces.Project;
+import textEditor.model.interfaces.ProjectManager;
 import textEditor.utils.RMIClient;
 import textEditor.view.WindowSwitcher;
 
@@ -42,6 +43,8 @@ public class PopupActiveUsersController implements WindowSwitcherInjectionTarget
     private ArrayList<String> activeUsers;
     private Runnable updater;
 
+    private ProjectManager projectManager;
+
     @Override
     public void injectProject(Project project) {
         this.project = project;
@@ -60,7 +63,8 @@ public class PopupActiveUsersController implements WindowSwitcherInjectionTarget
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         try {
-            activeUserHandler = (ActiveUserHandler) rmiClient.getModel("ActiveUserHandler");
+            projectManager = (ProjectManager) rmiClient.getModel("ProjectManager");
+            activeUserHandler = (ActiveUserHandler) rmiClient.getModel(projectManager.getActiveUserHandlerId(this.project));
         } catch (RemoteException | NotBoundException e) {
             e.printStackTrace();
         }

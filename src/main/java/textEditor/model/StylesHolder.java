@@ -51,8 +51,6 @@ public class StylesHolder implements Serializable {
     public StyleSpans<Collection<String>> getStyleSpans() {
         StyleSpansBuilder<Collection<String>> builder = new StyleSpansBuilder<>(pairsOfLengthAndStyle.size());
 
-        System.out.println(pairsOfLengthAndStyle);
-
         this.pairsOfLengthAndStyle.forEach(pair -> {
             builder.add(pair.getValue(), pair.getKey());
         });

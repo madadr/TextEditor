@@ -15,7 +15,6 @@ public class ProjectImpl implements Project, Serializable {
     private List<User> contributors;
 
     public ProjectImpl() throws RemoteException {
-        System.out.println("ProjectImpl::ctor ");
         this.id = -1;
         this.title = "";
         this.description = "";
@@ -23,7 +22,6 @@ public class ProjectImpl implements Project, Serializable {
     }
 
     public ProjectImpl(Integer id, String title, String description, List<User> contributors) throws RemoteException {
-        System.out.println("ProjectImpl::ctor with args");
         this.id = id;
         this.title = title;
         this.description = description;
