@@ -38,22 +38,22 @@
                                         <Insets />
                                     </opaqueInsets>
                                 </TextField>
-                                <Button fx:id="searchButton" minHeight="23.0" minWidth="44.0" mnemonicParsing="false" onAction="#searchButtonClicked" prefHeight="19.0" prefWidth="44.0" text="Search" textAlignment="CENTER">
+                                <Button minHeight="23.0" minWidth="44.0" mnemonicParsing="false" onAction="#searchButtonClicked" prefHeight="19.0" prefWidth="44.0" text="Search" textAlignment="CENTER">
                                     <font>
                                         <Font size="10.0" />
                                     </font>
                                 </Button>
-                                <Button fx:id="nextSearchButton" minHeight="23.0" minWidth="44.0" mnemonicParsing="false" onAction="#nextSearchButtonClicked" prefHeight="19.0" prefWidth="44.0" text="Next" textAlignment="CENTER">
+                                <Button minHeight="23.0" minWidth="44.0" mnemonicParsing="false" onAction="#nextSearchButtonClicked" prefHeight="19.0" prefWidth="44.0" text="Next" textAlignment="CENTER">
                                     <font>
                                         <Font size="10.0" />
                                     </font>
                                 </Button>
-                                <Button fx:id="previousSearchButton" minHeight="23.0" minWidth="44.0" mnemonicParsing="false" onAction="#previousSearchButtonClicked" prefHeight="23.0" prefWidth="53.0" text="Previous" textAlignment="CENTER">
+                                <Button minHeight="23.0" minWidth="44.0" mnemonicParsing="false" onAction="#previousSearchButtonClicked" prefHeight="23.0" prefWidth="53.0" text="Previous" textAlignment="CENTER">
                                     <font>
                                         <Font size="10.0" />
                                     </font>
                                 </Button>
-                                <Button fx:id="closeSearchBox" minHeight="23.0" minWidth="44.0" mnemonicParsing="false" onAction="#closeSearchBoxClicked" prefHeight="18.0" prefWidth="38.0" text="X">
+                                <Button minHeight="23.0" minWidth="44.0" mnemonicParsing="false" onAction="#closeSearchBoxClicked" prefHeight="18.0" prefWidth="38.0" text="X">
                                     <font>
                                         <Font size="10.0" />
                                     </font>
@@ -76,12 +76,12 @@
                                         <Insets />
                                     </opaqueInsets>
                                 </TextField>
-                                <Button fx:id="replaceButton" minHeight="23.0" minWidth="44.0" mnemonicParsing="false" onAction="#replaceButtonClicked" prefHeight="23.0" prefWidth="52.0" text="Replace" textAlignment="CENTER">
+                                <Button minHeight="23.0" minWidth="44.0" mnemonicParsing="false" onAction="#replaceButtonClicked" prefHeight="23.0" prefWidth="52.0" text="Replace" textAlignment="CENTER">
                                     <font>
                                         <Font size="10.0" />
                                     </font>
                                 </Button>
-                                <Button fx:id="replaceAllButton" minHeight="23.0" minWidth="44.0" mnemonicParsing="false" onAction="#replaceAllButtonClicked" prefHeight="23.0" prefWidth="67.0" text="Replace All" textAlignment="CENTER">
+                                <Button minHeight="23.0" minWidth="44.0" mnemonicParsing="false" onAction="#replaceAllButtonClicked" prefHeight="23.0" prefWidth="67.0" text="Replace All" textAlignment="CENTER">
                                     <font>
                                         <Font size="10.0" />
                                     </font>
@@ -106,16 +106,16 @@
                      <children>
                           <MenuBar AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
                               <menus>
-                                  <Menu fx:id="FileMenu" mnemonicParsing="false" text="File">
+                                  <Menu mnemonicParsing="false" text="File">
                                       <items>
-                                          <MenuItem mnemonicParsing="false" onAction="#fileNewClicked" text="Open Project Manager" />
+                                          <MenuItem mnemonicParsing="false" onAction="#openProjectManagerClicked" text="Open Project Manager" />
                                           <MenuItem mnemonicParsing="false" onAction="#fileOpenClicked" text="Open" />
                                           <MenuItem mnemonicParsing="false" onAction="#fileSaveClicked" text="Save" />
                                           <MenuItem mnemonicParsing="false" onAction="#filePrintClicked" text="Print" />
                                           <MenuItem mnemonicParsing="false" onAction="#fileCloseClicked" text="Close" />
                                       </items>
                                   </Menu>
-                                  <Menu fx:id="editMenu" mnemonicParsing="false" text="Edit">
+                                  <Menu mnemonicParsing="false" text="Edit">
                                       <items>
                                           <MenuItem mnemonicParsing="false" onAction="#editUndoClicked" text="Undo" />
                                           <MenuItem mnemonicParsing="false" onAction="#editRedoClicked" text="Redo" />
@@ -127,7 +127,7 @@
                                           <MenuItem mnemonicParsing="false" onAction="#editPasteClicked" text="Paste" />
                                       </items>
                                   </Menu>
-                                  <Menu fx:id="helpMenu" mnemonicParsing="false" text="Help">
+                                  <Menu mnemonicParsing="false" text="Help">
                                       <items>
                                           <MenuItem mnemonicParsing="false" onAction="#helpHelpClicked" text="Help" />
                                       </items>

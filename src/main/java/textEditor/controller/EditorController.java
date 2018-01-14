@@ -38,6 +38,7 @@ import java.util.Collection;
 import java.util.ResourceBundle;
 
 import static textEditor.utils.Const.Format.*;
+import static textEditor.view.WindowSwitcher.Window.PICK_PROJECT;
 import static textEditor.view.WindowSwitcher.Window.POPUP_ACTIVE_USERS;
 
 public class EditorController implements Initializable, ClientInjectionTarget, WindowSwitcherInjectionTarget, UserInjectionTarget, ProjectInjectionTarget {
@@ -323,12 +324,6 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     }
 
     @FXML
-    private void fileNewClicked() {
-        System.out.println("New file will be created");
-        //TODO: how this should look like ?
-    }
-
-    @FXML
     private void fileOpenClicked() {
         System.out.println("File will be open");
         FileChooser fileChooser = new FileChooser();
@@ -489,4 +484,11 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
         }
     }
 
+    public void openProjectManagerClicked() {
+        try {
+            switcher.loadWindow(PICK_PROJECT);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }

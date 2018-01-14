@@ -7,14 +7,12 @@ import javafx.scene.control.Label;
 import textEditor.controller.inject.ClientInjectionTarget;
 import textEditor.controller.inject.UserInjectionTarget;
 import textEditor.controller.inject.WindowSwitcherInjectionTarget;
-import textEditor.model.interfaces.DatabaseModel;
 import textEditor.model.interfaces.User;
 import textEditor.utils.RMIClient;
 import textEditor.view.WindowSwitcher;
 
 import java.io.IOException;
 import java.net.URL;
-import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.util.ResourceBundle;
 
@@ -29,7 +27,6 @@ public class ActionController implements Initializable, UserInjectionTarget, Cli
     private Button closeButton;
 
     private WindowSwitcher switcher;
-    private DatabaseModel dbService;
     private RMIClient client;
     private User user;
 
@@ -54,12 +51,6 @@ public class ActionController implements Initializable, UserInjectionTarget, Cli
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        try {
-            DatabaseModel databaseModel = (DatabaseModel) client.getModel("DatabaseModel");
-        } catch (RemoteException | NotBoundException e) {
-            e.printStackTrace();
-        }
-
         initButtons();
         initHelloLabel();
     }
