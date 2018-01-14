@@ -80,16 +80,14 @@ public class PopupActiveUsersController implements WindowSwitcherInjectionTarget
 
 
     private void updateActiveUserList() {
-        updater = () -> {
-            Platform.runLater(() -> {
-                try {
-                    activeUsers = activeUserHandler.getActiveUserInProject(project.getId());
-                    authorsListView.setItems(FXCollections.observableArrayList(activeUsers));
-                } catch (RemoteException e) {
-                    e.printStackTrace();
-                }
-            });
-        };
+        updater = () -> Platform.runLater(() -> {
+            try {
+                activeUsers = activeUserHandler.getActiveUserInProject(project.getId());
+                authorsListView.setItems(FXCollections.observableArrayList(activeUsers));
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     private void establishUpdater() {

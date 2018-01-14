@@ -19,6 +19,7 @@ public class ProjectManagerImpl implements ProjectManager {
     private HashMap<Project, Pair<String, EditorModel>> projectEditorModelBinding;
     private Pair<String, ActiveUserHandler> activeUserHandlerBinding;
 
+
     public ProjectManagerImpl(Registry registry) {
         this.registry = registry;
 
@@ -34,7 +35,7 @@ public class ProjectManagerImpl implements ProjectManager {
 
             EditorModel modelExport = (EditorModel) UnicastRemoteObject.exportObject(model, 0);
             registry.rebind(modelId, modelExport);
-            this.projectEditorModelBinding.put(project, new Pair<String, EditorModel>(modelId, model));
+            this.projectEditorModelBinding.put(project, new Pair<>(modelId, model));
         }
 
         Pair<String, EditorModel> model = this.projectEditorModelBinding.get(project);
@@ -66,9 +67,6 @@ public class ProjectManagerImpl implements ProjectManager {
         return Paths.get(PROJECTS_DIR, project.getId() + ".model").toUri();
     }
 
-    private void createProjectDirIfNotExists() {
-    }
-
     @Override
     public String getActiveUserHandlerId(Project project) throws RemoteException {
         if (this.activeUserHandlerBinding == null) {
@@ -77,7 +75,7 @@ public class ProjectManagerImpl implements ProjectManager {
 
             ActiveUserHandler handlerExport = (ActiveUserHandler) UnicastRemoteObject.exportObject(handler, 0);
             registry.rebind(handlerId, handlerExport);
-            this.activeUserHandlerBinding = new Pair<String, ActiveUserHandler>(handlerId, handler);
+            this.activeUserHandlerBinding = new Pair<>(handlerId, handler);
         }
 
         return activeUserHandlerBinding.getKey();

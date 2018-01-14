@@ -53,15 +53,14 @@ public class EditorModelImpl implements EditorModel, Serializable {
     @Override
     public synchronized void setTextStyle(StylesHolder stylesHolder, RemoteObserver source) throws RemoteException {
         if (stylesHolder != null) {
-            RemoteObserver skippedObserver = source;
-            this.deleteObserver(skippedObserver);
+            this.deleteObserver(source);
 
             System.out.println("Updating style to:");
             System.out.println("\t" + stylesHolder);
             this.stylesHolder = stylesHolder;
             notifyObservers(UpdateTarget.ONLY_STYLE);
 
-            this.addObserver(skippedObserver);
+            this.addObserver(source);
         }
     }
 
