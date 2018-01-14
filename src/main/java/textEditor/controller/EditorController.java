@@ -2,6 +2,7 @@ package textEditor.controller;
 
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.print.*;
@@ -36,7 +37,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.ResourceBundle;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static textEditor.utils.Const.Format.*;
 import static textEditor.view.WindowSwitcher.Window.POPUP_ACTIVE_USERS;
 
@@ -78,6 +83,11 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
 
     private IndexRange searchTextIndex;
 
+    //Update thread
+    private ScheduledExecutorService scheduler;
+    private ScheduledFuture<?> updateHandler;
+    private Runnable updater;
+
     @Override
     public void injectClient(RMIClient client) {
         this.rmiClient = client;
@@ -117,6 +127,8 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
         initTextSelection();
 
         handleUserInProject();
+
+        preformAutoSave();
     }
 
     private void initListeners() {
@@ -169,6 +181,7 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
             } catch (RemoteException e) {
                 System.err.println("Error when getting user name");
             }
+            scheduler.shutdownNow();
             Platform.exit();
             System.exit(0);
         });
@@ -343,6 +356,7 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     @FXML
     private void fileSaveClicked() throws RemoteException {
         this.projectManager.saveProject(project);
+        AlertManager.displayAlert(Alert.AlertType.INFORMATION,"File was manually Saved");
     }
 
     @FXML
@@ -488,5 +502,16 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
 
         }
     }
-
+    private void preformAutoSave(){
+        updater = () -> Platform.runLater(() -> {
+            try {
+                System.out.println("Saving file");
+                this.projectManager.saveProject(project);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        });
+        scheduler = Executors.newScheduledThreadPool(1);
+        updateHandler = scheduler.scheduleAtFixedRate(updater, 60, 60, SECONDS);
+    }
 }
