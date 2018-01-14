@@ -6,10 +6,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.rmi.Remote;
 import java.rmi.RemoteException;
 
-public interface EditorModel extends Remote, RemoteObservable {
+public interface EditorModel extends RemoteObservable {
     void setTextString(String value) throws RemoteException;
 
     void setTextString(String value, RemoteObserver source) throws RemoteException;
@@ -24,6 +23,9 @@ public interface EditorModel extends Remote, RemoteObservable {
 
     EditorModelData getData() throws RemoteException;
 
+//    void initObserverList() throws RemoteException;
+
+    // TODO: find better place for that method
     static EditorModelData getEditorModelData(File modelFile) {
         ObjectInputStream ois = null;
         try {

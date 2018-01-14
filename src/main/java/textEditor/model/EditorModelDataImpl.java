@@ -38,4 +38,12 @@ public class EditorModelDataImpl implements Serializable, EditorModelData {
     public void setStylesHolder(StylesHolder stylesHolder) {
         this.stylesHolder = stylesHolder;
     }
+
+    @Override
+    public String toString() {
+        return "EditorModelDataImpl{" +
+                "text='" + text + '\'' +
+                ", stylesHolder=" + stylesHolder +
+                '}';
+    }
 }

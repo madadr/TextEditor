@@ -2,17 +2,17 @@ package textEditor.model;
 
 import textEditor.model.interfaces.EditorModel;
 import textEditor.model.interfaces.EditorModelData;
-import textEditor.model.interfaces.RemoteObservable;
 import textEditor.model.interfaces.RemoteObserver;
 
+import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EditorModelImpl implements EditorModel, RemoteObservable {
+public class EditorModelImpl implements EditorModel, Serializable {
     private String text = "";
     private StylesHolder stylesHolder;
-    private ArrayList<RemoteObserver> observers;
+    private List<RemoteObserver> observers;
 
     public EditorModelImpl() throws RemoteException {
         System.out.println("EditorModelImpl::ctor");
@@ -28,6 +28,7 @@ public class EditorModelImpl implements EditorModel, RemoteObservable {
 
     @Override
     public synchronized void setTextString(String text, RemoteObserver source) throws RemoteException {
+        System.out.println(this);
         if (text != null) {
             RemoteObserver skippedObserver = source;
             this.deleteObserver(skippedObserver);
@@ -93,6 +94,11 @@ public class EditorModelImpl implements EditorModel, RemoteObservable {
             return;
         }
 
+//        if(observers == null) {
+//            System.out.println("init");
+//            initObserverList();
+//        }
+
         if (observers.contains(observer)) {
             System.out.println("addObserver: observer already added");
         }
@@ -147,4 +153,11 @@ public class EditorModelImpl implements EditorModel, RemoteObservable {
     public EditorModelData getData() throws RemoteException {
         return new EditorModelDataImpl(this.text, this.stylesHolder);
     }
+
+//    @Override
+//    public void initObserverList() throws RemoteException {
+//        if(observers == null) {
+//            observers = new ArrayList<>();
+//        }
+//    }
 }

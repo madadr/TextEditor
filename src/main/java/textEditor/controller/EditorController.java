@@ -91,15 +91,11 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
 
     @Override
     public void injectProject(Project project) {
-        System.out.println("injecting project " + project);
-        System.out.println("\tproject id " + project.getId());
-        System.out.println("\tproject getTitle " + project.getTitle());
         this.project = project;
     }
 
     @Override
     public void injectUser(User user) {
-        System.out.println("Injecting user=" + user);
         this.user = user;
     }
 
@@ -112,16 +108,31 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
         setModels();
 
         setListeners();
+        System.out.println("1 INITIALIZED");
 
         initialTextSettings();
+        System.out.println("2 INITIALIZED");
 
         initTextArea();
+        System.out.println("3 INITIALIZED");
 
         loadCssStyleSheet();
+        System.out.println("4 INITIALIZED");
 
         initTextSelection();
+        System.out.println("5 INITIALIZED");
 
         handleUserInProject();
+        System.out.println("6 INITIALIZED");
+
+//        try {
+//            if(editorModel.getTextStyle().getStyleSpans() == null) {
+//                System.out.println("editorModel INITIALIZED");
+//                editorModel.setTextStyle(new StylesHolder(0, mainTextArea.getStyleSpans(0, 0), mainTextArea.getParagraphs()));
+//            }
+//        } catch (RemoteException e) {
+//            e.printStackTrace();
+//        }
     }
 
     private void setListeners() {
@@ -208,6 +219,7 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
             observer = new RemoteObserverImpl(ecObserver);
 
             editorModel.addObserver(observer);
+            //editorModel.initObserverList();
 
             observer.update(editorModel);
         } catch (RemoteException e) {

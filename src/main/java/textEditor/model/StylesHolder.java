@@ -20,7 +20,9 @@ public class StylesHolder implements Serializable {
     public StylesHolder() {
         this.stylesStart = 0;
         this.pairsOfLengthAndStyle = new ArrayList<>();
+        this.pairsOfLengthAndStyle.add(new Pair<>(0, new ArrayList<>()));
         this.paragraphStyles = new ArrayList<>();
+        this.paragraphStyles.add(new ArrayList<>());
     }
 
     public StylesHolder(int from, StyleSpans<Collection<String>> styleSpans,
@@ -32,6 +34,14 @@ public class StylesHolder implements Serializable {
         setStyleSpans(from, styleSpans);
 
         setParagraphStyles(paragraphs);
+
+        if (this.pairsOfLengthAndStyle.size() == 0) {
+            this.pairsOfLengthAndStyle.add(new Pair<>(0, new ArrayList<>()));
+        }
+
+        if (this.paragraphStyles.size() == 0) {
+            this.paragraphStyles.add(new ArrayList<>());
+        }
     }
 
     public int getStylesStart() {
@@ -41,11 +51,18 @@ public class StylesHolder implements Serializable {
     public StyleSpans<Collection<String>> getStyleSpans() {
         StyleSpansBuilder<Collection<String>> builder = new StyleSpansBuilder<>(pairsOfLengthAndStyle.size());
 
+        System.out.println(pairsOfLengthAndStyle);
+
         this.pairsOfLengthAndStyle.forEach(pair -> {
             builder.add(pair.getValue(), pair.getKey());
         });
 
-        return builder.create();
+        try {
+            return builder.create();
+        } catch (IllegalStateException e) {
+            // IllegalStateException can be thrown at init
+            return null;
+        }
     }
 
     public void setStyleSpans(int from, StyleSpans<Collection<String>> styleSpans) {
@@ -69,5 +86,14 @@ public class StylesHolder implements Serializable {
         paragraphStyles.forEach(paragraph -> {
             this.paragraphStyles.add(new ArrayList<>(paragraph.getParagraphStyle()));
         });
+    }
+
+    @Override
+    public String toString() {
+        return "StylesHolder{" +
+                "stylesStart=" + stylesStart +
+                ", pairsOfLengthAndStyle=" + pairsOfLengthAndStyle +
+                ", paragraphStyles=" + paragraphStyles +
+                '}';
     }
 }
