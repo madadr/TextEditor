@@ -89,11 +89,17 @@ public class ProjectManagerImpl implements ProjectManager {
         EditorModel model = projectEditorModelBinding.get(project).getValue();
         EditorModelData data = model.getData();
 
+        saveProject(project, data);
+    }
+
+    @Override
+    public void saveProject(Project project, EditorModelData data) {
         FileOutputStream fout = null;
         ObjectOutputStream oos = null;
         try {
             File file = new File(buildProjectUri(project));
             file.createNewFile();
+
 
             fout = new FileOutputStream(file, false);
             oos = new ObjectOutputStream(fout);
@@ -120,7 +126,8 @@ public class ProjectManagerImpl implements ProjectManager {
     }
 
 
-    private EditorModelData getEditorModelData(File modelFile) {
+    @Override
+    public EditorModelData getEditorModelData(File modelFile) {
         ObjectInputStream ois = null;
         try {
             FileInputStream inputStream = new FileInputStream(modelFile);

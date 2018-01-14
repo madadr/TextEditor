@@ -161,7 +161,7 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
 
     private void initModels() {
         try {
-            projectManager = (ProjectManager) rmiClient.getModel("ProjectManager");
+            this.projectManager = (ProjectManager) rmiClient.getModel("ProjectManager");
             this.editorModel = (EditorModel) rmiClient.getModel(projectManager.getEditorModelId(this.project));
             this.activeUserHandler = (ActiveUserHandler) rmiClient.getModel(projectManager.getActiveUserHandlerId(this.project));
         } catch (RemoteException | NotBoundException e) {

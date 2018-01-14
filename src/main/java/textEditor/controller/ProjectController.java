@@ -6,20 +6,24 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.stage.FileChooser;
 import textEditor.controller.inject.ClientInjectionTarget;
 import textEditor.controller.inject.ProjectInjectionTarget;
 import textEditor.controller.inject.UserInjectionTarget;
 import textEditor.controller.inject.WindowSwitcherInjectionTarget;
-import textEditor.model.interfaces.DatabaseModel;
-import textEditor.model.interfaces.Project;
-import textEditor.model.interfaces.User;
+import textEditor.model.ProjectImpl;
+import textEditor.model.interfaces.*;
 import textEditor.utils.RMIClient;
 import textEditor.view.WindowSwitcher;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.net.URL;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -39,6 +43,8 @@ public class ProjectController implements Initializable, UserInjectionTarget, Cl
 
     private List<Project> projects;
     private Project project;
+
+    private ProjectManager projectManager;
 
     @Override
     public void injectUser(User user) {
@@ -67,7 +73,13 @@ public class ProjectController implements Initializable, UserInjectionTarget, Cl
         } catch (RemoteException | NotBoundException e) {
             e.printStackTrace();
         }
+        refreshProjectsList();
+        initProjectManager();
+    }
+
+    private void refreshProjectsList() {
         fetchUserProjectsFromDatabase();
+
         setupProjectsListView();
     }
 
@@ -93,7 +105,14 @@ public class ProjectController implements Initializable, UserInjectionTarget, Cl
         });
     }
 
-    @FXML
+    private void initProjectManager() {
+        try {
+            this.projectManager = (ProjectManager) client.getModel("ProjectManager");
+        } catch (RemoteException | NotBoundException e) {
+            e.printStackTrace();
+        }
+    }
+@FXML
     public void onClickRemove() {
         Project projectToDelete = projectListView.getSelectionModel().getSelectedItem();
         final int selectedIdx = projectListView.getSelectionModel().getSelectedIndex();
@@ -128,6 +147,40 @@ public class ProjectController implements Initializable, UserInjectionTarget, Cl
     }
 
     public void onClickImport() {
+        importButton.setOnAction(event -> {
+            Project newProject = null;
+            try {
+                newProject = new ProjectImpl(0, "ImportedProject", "", new ArrayList<>(Arrays.asList(this.user)));
+                dbService.addProject(newProject);
+                refreshProjectsList();
+                newProject = this.projects.get(this.projects.size() - 1); // required to update id
+
+                ObjectInputStream ois = null;
+                FileChooser fileChooser = new FileChooser();
+                fileChooser.setTitle("Choose model file");
+
+                FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Model files (*.model)", "*.model");
+                fileChooser.getExtensionFilters().add(extFilter);
+
+                File file = fileChooser.showOpenDialog(switcher.getMainStage());
+
+                if (file != null) {
+                    EditorModelData data = projectManager.getEditorModelData(file);
+                    projectManager.saveProject(newProject, data);
+                } else {
+                    throw new IOException("Couldn't import project.");
+                }
+            } catch (IOException e) {
+                try {
+                    if (newProject != null) {
+                        dbService.removeProject(newProject);
+                        refreshProjectsList();
+                    }
+                } catch (RemoteException e1) {
+                    e1.printStackTrace();
+                }
+            }
+        });
     }
 
     public void onClickEdit() {
@@ -153,7 +206,6 @@ public class ProjectController implements Initializable, UserInjectionTarget, Cl
             e.printStackTrace();
         }
     }
-
     public void onClickBack() {
         try {
             switcher.loadWindow(WindowSwitcher.Window.CHOOSE_ACTION);
