@@ -19,28 +19,28 @@ import static textEditor.utils.Const.Files.PROJECTS_PATH;
 public class ProjectManagerImpl implements ProjectManager {
     private Registry registry;
 
-    private HashMap<Project, Pair<String, EditorModel>> projectEditor;
-    private HashMap<Project, Pair<String, ActiveUserHandler>> projectActive;
+    private HashMap<Project, Pair<String, EditorModel>> projectEditorModelBinding;
+    private Pair<String, ActiveUserHandler> activeUserHandlerBinding;
 
     public ProjectManagerImpl(Registry registry) {
         this.registry = registry;
 
-        projectEditor = new HashMap<>();
-        projectActive = new HashMap<>();
+        projectEditorModelBinding = new HashMap<>();
+        activeUserHandlerBinding = null;
     }
 
     @Override
     public String getEditorModelId(Project project) throws RemoteException {
-        if (!this.projectEditor.containsKey(project)) {
+        if (!this.projectEditorModelBinding.containsKey(project)) {
             EditorModel model = createEditorModel(project);
             String modelId = "EditorModel" + project.getId();
 
             EditorModel modelExport = (EditorModel) UnicastRemoteObject.exportObject(model, 0);
             registry.rebind(modelId, modelExport);
-            this.projectEditor.put(project, new Pair<String, EditorModel>(modelId, model));
+            this.projectEditorModelBinding.put(project, new Pair<String, EditorModel>(modelId, model));
         }
 
-        Pair<String, EditorModel> model = this.projectEditor.get(project);
+        Pair<String, EditorModel> model = this.projectEditorModelBinding.get(project);
 
         return model.getKey();
     }
@@ -66,18 +66,16 @@ public class ProjectManagerImpl implements ProjectManager {
 
     @Override
     public String getActiveUserHandlerId(Project project) throws RemoteException {
-        if (!this.projectActive.containsKey(project)) {
+        if (this.activeUserHandlerBinding == null) {
             ActiveUserHandler handler = new ActiveUsersHandlerImpl();
-            String handlerId = "ActiveHandler" + project.getId();
+            String handlerId = "ActiveHandler";
 
             ActiveUserHandler handlerExport = (ActiveUserHandler) UnicastRemoteObject.exportObject(handler, 0);
             registry.rebind(handlerId, handlerExport);
-            this.projectActive.put(project, new Pair<String, ActiveUserHandler>(handlerId, handler));
+            this.activeUserHandlerBinding = new Pair<String, ActiveUserHandler>(handlerId, handler);
         }
 
-        Pair<String, ActiveUserHandler> handler = this.projectActive.get(project);
-
-        return handler.getKey();
+        return activeUserHandlerBinding.getKey();
     }
 
     // TODO: find better place for that method

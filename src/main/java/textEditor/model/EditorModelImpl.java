@@ -125,7 +125,6 @@ public class EditorModelImpl implements EditorModel, Serializable {
     public synchronized void notifyObservers(UpdateTarget target) throws RemoteException {
         List<RemoteObserver> invalidObservers = new ArrayList<>();
         for (RemoteObserver observer : observers) {
-            System.out.println("observer update: " + observer);
             try {
                 observer.update(this, target);
             } catch (RemoteException e) {
