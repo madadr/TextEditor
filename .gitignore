@@ -4,6 +4,7 @@
 .idea/**/tasks.xml
 .idea/dictionaries
 .idea/
+project_model/*
 
 # Sensitive or high-churn files:
 .idea/**/dataSources/

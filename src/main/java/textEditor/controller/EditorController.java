@@ -341,8 +341,8 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     }
 
     @FXML
-    private void fileSaveClicked() {
-        System.out.println("file will be save");
+    private void fileSaveClicked() throws RemoteException {
+        this.projectManager.saveProject(project);
     }
 
     @FXML
