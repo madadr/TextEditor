@@ -67,6 +67,9 @@ public class ProjectManagerImpl implements ProjectManager {
         return Paths.get(PROJECTS_DIR, project.getId() + ".model").toUri();
     }
 
+    private void createProjectDirIfNotExists() {
+    }
+
     @Override
     public String getActiveUserHandlerId(Project project) throws RemoteException {
         if (this.activeUserHandlerBinding == null) {
@@ -115,6 +118,7 @@ public class ProjectManagerImpl implements ProjectManager {
             }
         }
     }
+
 
     private EditorModelData getEditorModelData(File modelFile) {
         ObjectInputStream ois = null;
