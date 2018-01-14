@@ -13,6 +13,7 @@ import java.util.HashMap;
 
 public class ProjectManagerImpl implements ProjectManager {
     public final static String PROJECTS_DIR = "project_model";
+    public final static String PROJECTS_EXTENSION = ".txtfile";
 
     private Registry registry;
 
@@ -64,7 +65,7 @@ public class ProjectManagerImpl implements ProjectManager {
             System.out.println("Created main directory");
         }
 
-        return Paths.get(PROJECTS_DIR, project.getId() + ".model").toUri();
+        return Paths.get(PROJECTS_DIR, project.getId() + PROJECTS_EXTENSION).toUri();
     }
 
     private void createProjectDirIfNotExists() {
