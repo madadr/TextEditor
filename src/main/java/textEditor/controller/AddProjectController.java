@@ -96,7 +96,7 @@ public class AddProjectController implements Initializable, ClientInjectionTarge
         information.setText(text);
     }
 
-    public void cancelButtonClicked(ActionEvent actionEvent) {
+    public void cancelButtonClicked() {
         try {
             windowSwitcher.loadWindow(WindowSwitcher.Window.PICK_PROJECT);
         } catch (IOException e) {

@@ -2,10 +2,8 @@ package textEditor.controller;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import textEditor.controller.inject.ClientInjectionTarget;
@@ -33,20 +31,6 @@ public class ProjectController implements Initializable, UserInjectionTarget, Cl
     private Label contributors;
     @FXML
     private ListView<Project> projectListView;
-    @FXML
-    private Button newButton;
-    @FXML
-    private Button editButton;
-    @FXML
-    private Button removeButton;
-    @FXML
-    private Button openButton;
-    @FXML
-    private Button importButton;
-    @FXML
-    private Button exportButton;
-    @FXML
-    private Button backButton;
 
     private WindowSwitcher switcher;
     private DatabaseModel dbService;
@@ -83,12 +67,8 @@ public class ProjectController implements Initializable, UserInjectionTarget, Cl
         } catch (RemoteException | NotBoundException e) {
             e.printStackTrace();
         }
-
         fetchUserProjectsFromDatabase();
-
         setupProjectsListView();
-
-        initButtonsActions();
     }
 
     private void fetchUserProjectsFromDatabase() {
@@ -113,60 +93,8 @@ public class ProjectController implements Initializable, UserInjectionTarget, Cl
         });
     }
 
-
-    private void initButtonsActions() {
-        newButton.setOnAction(event -> {
-            try {
-                switcher.loadWindow(WindowSwitcher.Window.ADD_PROJECT);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
-
-        editButton.setOnAction(event -> {
-            try {
-                Project selectedProject = projectListView.getSelectionModel().getSelectedItem();
-                final int selectedIdx = projectListView.getSelectionModel().getSelectedIndex();
-                if (selectedIdx != -1) {
-                    project.setId(selectedProject.getId());
-                    project.setTitle(selectedProject.getTitle());
-                    project.setDescription(selectedProject.getDescription());
-                    project.setContributors(selectedProject.getContributors());
-                    switcher.loadWindow(WindowSwitcher.Window.EDIT_PROJECT);
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
-
-        openButton.setOnAction(event -> {
-            try {
-                Project selectedProject = projectListView.getSelectionModel().getSelectedItem();
-                final int selectedIdx = projectListView.getSelectionModel().getSelectedIndex();
-                if (selectedIdx != -1) {
-                    this.project.setId(selectedProject.getId());
-                    this.project.setTitle(selectedProject.getTitle());
-                    this.project.setDescription(selectedProject.getDescription());
-                    this.project.setContributors(selectedProject.getContributors());
-                    switcher.loadWindow(WindowSwitcher.Window.EDITOR);
-                }
-            } catch (IOException ignored) {
-
-            }
-        });
-
-
-        backButton.setOnAction(event -> {
-            try {
-                switcher.loadWindow(WindowSwitcher.Window.CHOOSE_ACTION);
-            } catch (IOException ignored) {
-
-            }
-        });
-    }
-
     @FXML
-    public void onClickRemove(ActionEvent actionEvent) {
+    public void onClickRemove() {
         Project projectToDelete = projectListView.getSelectionModel().getSelectedItem();
         final int selectedIdx = projectListView.getSelectionModel().getSelectedIndex();
         if (selectedIdx != -1) {
@@ -178,5 +106,59 @@ public class ProjectController implements Initializable, UserInjectionTarget, Cl
             projectListView.getItems().remove(selectedIdx);
         }
 
+    }
+
+    public void onClickOpen() {
+        try {
+            Project selectedProject = projectListView.getSelectionModel().getSelectedItem();
+            final int selectedIdx = projectListView.getSelectionModel().getSelectedIndex();
+            if (selectedIdx != -1) {
+                this.project.setId(selectedProject.getId());
+                this.project.setTitle(selectedProject.getTitle());
+                this.project.setDescription(selectedProject.getDescription());
+                this.project.setContributors(selectedProject.getContributors());
+                switcher.loadWindow(WindowSwitcher.Window.EDITOR);
+            }
+        } catch (IOException ignored) {
+
+        }
+    }
+
+    public void onClickExport() {
+    }
+
+    public void onClickImport() {
+    }
+
+    public void onClickEdit() {
+        try {
+            Project selectedProject = projectListView.getSelectionModel().getSelectedItem();
+            final int selectedIdx = projectListView.getSelectionModel().getSelectedIndex();
+            if (selectedIdx != -1) {
+                project.setId(selectedProject.getId());
+                project.setTitle(selectedProject.getTitle());
+                project.setDescription(selectedProject.getDescription());
+                project.setContributors(selectedProject.getContributors());
+                switcher.loadWindow(WindowSwitcher.Window.EDIT_PROJECT);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void onClickAdd() {
+        try {
+            switcher.loadWindow(WindowSwitcher.Window.ADD_PROJECT);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void onClickBack() {
+        try {
+            switcher.loadWindow(WindowSwitcher.Window.CHOOSE_ACTION);
+        } catch (IOException ignored) {
+
+        }
     }
 }

@@ -1,6 +1,5 @@
 package textEditor.controller;
 
-import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
@@ -39,7 +38,7 @@ public class EditProjectController implements Initializable, UserInjectionTarget
     private DatabaseModel databaseModel;
 
 
-    public void cancelClicked(ActionEvent actionEvent) {
+    public void cancelClicked() {
         try {
             windowSwitcher.loadWindow(WindowSwitcher.Window.PICK_PROJECT);
         } catch (IOException e) {
