@@ -20,7 +20,7 @@ public class Server {
             //Creating models implementation of our classes
 //            EditorModel editorModel = new EditorModelImpl();
             DatabaseModel databaseModel = new DatabaseModelImpl();
-            ProjectManager projectManager = new ProjectManagerImpl();
+            ProjectManager projectManager = new ProjectManagerImpl(registry);
 //            ActiveUserHandler activeUsersHandler = new ActiveUsersHandlerImpl();
 
             //Exporting models interface to client

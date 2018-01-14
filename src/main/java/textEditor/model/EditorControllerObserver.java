@@ -33,7 +33,9 @@ public class EditorControllerObserver implements Serializable, RemoteObserver {
     @Override
     public synchronized void update(RemoteObservable observable, RemoteObservable.UpdateTarget target) throws RemoteException {
         if (target == RemoteObservable.UpdateTarget.ONLY_TEXT) {
+            System.out.println("LOG LOG ");
             Platform.runLater(new UpdateTextWrapper(observable));
+            System.out.println("LOG LOG 123213312312123");
         }
 
         if (target == RemoteObservable.UpdateTarget.ONLY_STYLE) {
@@ -89,6 +91,7 @@ public class EditorControllerObserver implements Serializable, RemoteObserver {
             String oldText = textArea.getText();
             try {
                 String newText = ((EditorModel) observable).getTextString();
+                System.out.println("newText " + newText);
                 textArea.replaceText(newText);
                 int newCaretPosition = calculateNewCaretPosition(oldCaretPosition, oldText, newText);
                 textArea.moveTo(newCaretPosition);

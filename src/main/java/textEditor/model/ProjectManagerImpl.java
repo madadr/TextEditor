@@ -1,40 +1,65 @@
 package textEditor.model;
 
+import javafx.util.Pair;
 import textEditor.model.interfaces.*;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.net.URI;
 import java.nio.file.Paths;
 import java.rmi.RemoteException;
+import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.HashMap;
 
 import static textEditor.utils.Const.Files.PROJECTS_PATH;
 
 public class ProjectManagerImpl implements ProjectManager {
-    private HashMap<Project, EditorModel> projectEditor;
+    private Registry registry;
+
+    private HashMap<Project, Pair<String, EditorModel>> projectEditor;
     private HashMap<Project, ActiveUserHandler> projectActive;
 
-    public ProjectManagerImpl() {
+    public ProjectManagerImpl(Registry registry) {
+        this.registry = registry;
+
         projectEditor = new HashMap<>();
         projectActive = new HashMap<>();
     }
 
     @Override
-    public EditorModel getEditorModel(Project project) throws RemoteException {
-        System.out.println("getEditorModel");
+    public String getEditorModelId(Project project) throws RemoteException {
+        System.out.println("getEditorModelId");
         if (!this.projectEditor.containsKey(project)) {
             System.out.println("Project " + project.getId() + " isn't in editorMap!");
-            this.projectEditor.put(project, createEditorModel(project));
+            EditorModel model = createEditorModel(project);
+            String modelId = "EditorModel" + project.getId();
+
+            System.out.println("\tmodel " + model);
+            System.out.println("\tmodelId " + modelId);
+
+            EditorModel modelExport = (EditorModel) UnicastRemoteObject.exportObject(model, 0);
+            System.out.println("exported");
+            registry.rebind(modelId, modelExport);
+            System.out.println("bound");
+
+//            registry.rebind(modelId, model);
+
+
+            this.projectEditor.put(project, new Pair<String, EditorModel>(modelId, model));
         } else {
             System.out.println("Project " + project.getId() + " IS in editorMap!");
         }
 
-        EditorModel model = this.projectEditor.get(project);
-        System.out.println(model.getTextString());
-        System.out.println(model.getTextStyle());
-        System.out.println(model.getData());
+        Pair<String, EditorModel> model = this.projectEditor.get(project);
 
-        return model;
+        System.out.println("\tmodel " + model.getValue());
+        System.out.println("\t\tmodel.getTextString() " + model.getValue().getTextString());
+        System.out.println("\tmodelId " + model.getKey());
+
+        return model.getKey();
     }
 
     private EditorModel createEditorModel(Project project) throws RemoteException {
@@ -47,7 +72,7 @@ public class ProjectManagerImpl implements ProjectManager {
         System.out.println("\tchecked if exists");
         if (editorModelFile) {
             System.out.println("\tgetting new data");
-            data = EditorModel.getEditorModelData(modelFile);
+            data = getEditorModelData(modelFile);
         } else {
             System.out.println("\tcreating new data");
             data = new EditorModelDataImpl();
@@ -67,5 +92,26 @@ public class ProjectManagerImpl implements ProjectManager {
         }
 
         return projectActive.get(project);
+    }
+
+    // TODO: find better place for that method
+    private EditorModelData getEditorModelData(File modelFile) {
+        ObjectInputStream ois = null;
+        try {
+            FileInputStream inputStream = new FileInputStream(modelFile);
+            ois = new ObjectInputStream(inputStream);
+            return (EditorModelData) ois.readObject();
+        } catch (IOException | ClassNotFoundException e) {
+            System.out.println("Failed");
+            return null;
+        } finally {
+            if (ois != null) {
+                try {
+                    ois.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 }

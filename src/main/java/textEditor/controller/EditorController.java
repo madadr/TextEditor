@@ -105,9 +105,9 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
 
         searchTextIndex = new IndexRange(-1, -1);
 
-        setModels();
+        initModels();
 
-        setListeners();
+        initListeners();
         System.out.println("1 INITIALIZED");
 
         initialTextSettings();
@@ -135,7 +135,7 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
 //        }
     }
 
-    private void setListeners() {
+    private void initListeners() {
         fontSizeListener = (observable, oldValue, newValue) -> {
             textFormatter.styleSelectedArea(newValue, FONTSIZE_PATTERN_KEY);
             notifyOthers();
@@ -162,13 +162,19 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
         };
     }
 
-    private void setModels() {
+    private void initModels() {
         try {
             projectManager = (ProjectManager) rmiClient.getModel("ProjectManager");
 //            editorModel = (EditorModel) rmiClient.getModel("EditorModel");
 //            activeUserHandler = (ActiveUserHandler) rmiClient.getModel("ActiveUserHandler");
             System.out.println("1");
-            this.editorModel = projectManager.getEditorModel(this.project);
+            this.editorModel = (EditorModel) rmiClient.getModel(projectManager.getEditorModelId(this.project));
+
+            System.out.println("editorModel " + this.editorModel);
+            System.out.println("editorModel.getTextString() " + this.editorModel.getTextString());
+            System.out.println("editorModel.getTextStyle() " + this.editorModel.getTextStyle());
+
+
             System.out.println("2");
             this.activeUserHandler = projectManager.getActiveUserHandler(this.project);
             System.out.println("3");
@@ -201,7 +207,12 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
         mainTextArea.textProperty().addListener((observable, oldValue, newValue) -> {
             try {
                 if (!isThisClientUpdatingText.getValue()) {
+                    System.out.println("Here");
+
+                    System.out.println(observer == null ? "Null observer " : "NOT null observer");
+
                     editorModel.setTextString(newValue, observer);
+                    System.out.println("I am");
                     notifyOthers();
                 }
             } catch (RemoteException e) {
