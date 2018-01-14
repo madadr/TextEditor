@@ -36,6 +36,7 @@ public class Const {
         public final static int LAST_NAME = 5;
         public final static int FIRST_NAME = 6;
     }
+
     public class Files {
         public final static String PROJECTS_PATH = "project_model";
     }

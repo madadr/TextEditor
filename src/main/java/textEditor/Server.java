@@ -4,8 +4,6 @@ import textEditor.model.DatabaseModelImpl;
 import textEditor.model.ProjectManagerImpl;
 import textEditor.model.interfaces.DatabaseModel;
 import textEditor.model.interfaces.ProjectManager;
-import textEditor.model.interfaces.DatabaseModel;
-import textEditor.model.interfaces.EditorModel;
 
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -24,7 +22,7 @@ public class Server {
             ProjectManager projectManager = new ProjectManagerImpl(registry);
 
             //Exporting models interface to client
-           DatabaseModel databaseModelExport = (DatabaseModel) UnicastRemoteObject.exportObject(databaseModel, 0);
+            DatabaseModel databaseModelExport = (DatabaseModel) UnicastRemoteObject.exportObject(databaseModel, 0);
             ProjectManager projectManagerExport = (ProjectManager) UnicastRemoteObject.exportObject(projectManager, 0);
 
             //Binding names and models interfaces

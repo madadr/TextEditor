@@ -1,7 +1,6 @@
 package textEditor.model;
 
 import textEditor.model.interfaces.EditorModel;
-import textEditor.model.interfaces.RemoteObservable;
 import textEditor.model.interfaces.EditorModelData;
 import textEditor.model.interfaces.RemoteObserver;
 
@@ -25,6 +24,8 @@ public class EditorModelImpl implements EditorModel, Serializable {
         this.text = editorModelData.getText();
         this.stylesHolder = editorModelData.getStylesHolder();
         this.observers = new ArrayList<>();
+    }
+
     public synchronized void setTextString(String text, RemoteObserver source) throws RemoteException {
         if (text != null) {
             RemoteObserver skippedObserver = source;
