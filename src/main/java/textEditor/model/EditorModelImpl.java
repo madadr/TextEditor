@@ -28,9 +28,7 @@ public class EditorModelImpl implements EditorModel, Serializable {
 
     @Override
     public synchronized void setTextString(String text, RemoteObserver source) throws RemoteException {
-        System.out.println(this);
         if (text != null) {
-            System.out.println(source == null ? "Null source " : "NOT null source");
             RemoteObserver skippedObserver = source;
             this.deleteObserver(skippedObserver);
 
@@ -45,7 +43,6 @@ public class EditorModelImpl implements EditorModel, Serializable {
 
     @Override
     public String getTextString() throws RemoteException {
-        System.out.println("getTextString");
         return this.text;
     }
 
@@ -94,11 +91,6 @@ public class EditorModelImpl implements EditorModel, Serializable {
         if (observer == null) {
             System.out.println("addObserver: arg observer is null");
             return;
-        }
-
-        if(observers == null) {
-            System.out.println("observers == null");
-//            initObserverList();
         }
 
         if (observers.contains(observer)) {
@@ -155,11 +147,4 @@ public class EditorModelImpl implements EditorModel, Serializable {
     public EditorModelData getData() throws RemoteException {
         return new EditorModelDataImpl(this.text, this.stylesHolder);
     }
-
-//    @Override
-//    public void initObserverList() throws RemoteException {
-//        if(observers == null) {
-//            observers = new ArrayList<>();
-//        }
-//    }
 }

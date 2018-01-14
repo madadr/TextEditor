@@ -64,25 +64,9 @@ public class ProjectManagerImpl implements ProjectManager {
         return Paths.get(PROJECTS_PATH, project.getId() + ".model").toUri();
     }
 
-//    @Override
-//    public ActiveUserHandler getActiveUserHandler(Project project) {
-//        if (!projectActive.containsKey(project)) {
-//            projectActive.put(project, new ActiveUsersHandlerImpl());
-//        }
-//
-//        return projectActive.get(project);
-//    }
-
     @Override
     public String getActiveUserHandlerId(Project project) throws RemoteException {
-//        if (!projectActive.containsKey(project)) {
-//            projectActive.put(project, new ActiveUsersHandlerImpl());
-//        }
-//
-//        return projectActive.get(project);
-
         if (!this.projectActive.containsKey(project)) {
-//            EditorModel model = createEditorModel(project);
             ActiveUserHandler handler = new ActiveUsersHandlerImpl();
             String handlerId = "ActiveHandler" + project.getId();
 

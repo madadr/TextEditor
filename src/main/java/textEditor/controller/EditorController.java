@@ -199,7 +199,6 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
             observer = new RemoteObserverImpl(ecObserver);
 
             editorModel.addObserver(observer);
-            //editorModel.initObserverList();
 
             observer.update(editorModel);
         } catch (RemoteException e) {
