@@ -498,18 +498,18 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
         }
     }
 
-  private void preformAutoSave(){
-        updater = () -> Platform.runLater(() -> {
-            try {
-                System.out.println("Saving file");
-                this.projectManager.saveProject(project);
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
-        });
-        scheduler = Executors.newScheduledThreadPool(1);
-        updateHandler = scheduler.scheduleAtFixedRate(updater, 60, 60, SECONDS);
-
+  private void preformAutoSave() {
+      updater = () -> Platform.runLater(() -> {
+          try {
+              System.out.println("Saving file");
+              this.projectManager.saveProject(project);
+          } catch (RemoteException e) {
+              e.printStackTrace();
+          }
+      });
+      scheduler = Executors.newScheduledThreadPool(1);
+      updateHandler = scheduler.scheduleAtFixedRate(updater, 60, 60, SECONDS);
+  }
 
     public void openProjectManagerClicked() {
         try {
