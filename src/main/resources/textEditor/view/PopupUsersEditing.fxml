@@ -1,29 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
-<?import java.lang.*?>
-<?import javafx.scene.text.*?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-
-<AnchorPane prefHeight="238.0" prefWidth="240.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="textEditor.controller.PopupActiveUsersController">
+<?import javafx.scene.text.Font?>
+<AnchorPane prefHeight="238.0" prefWidth="240.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="textEditor.controller.PopupActiveUsersController">
     <children>
-        <VBox layoutX="76.0" layoutY="-15.0" prefHeight="238.0" prefWidth="240.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <VBox layoutX="76.0" layoutY="-15.0" prefHeight="238.0" prefWidth="240.0" AnchorPane.bottomAnchor="0.0"
+              AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <children>
-                <Label alignment="CENTER" prefHeight="55.0" prefWidth="240.0" text="Currently editing:" textAlignment="CENTER">
+                <Label alignment="CENTER" prefHeight="55.0" prefWidth="240.0" text="Currently editing:"
+                       textAlignment="CENTER">
                     <font>
-                        <Font size="24.0" />
+                        <Font size="24.0"/>
                     </font>
                 </Label>
-                <ListView fx:id="authorsListView" prefHeight="155.0" prefWidth="240.0" />
-                <Separator prefWidth="200.0" />
-                <Button mnemonicParsing="false" onAction="#onClickClose" prefHeight="3.0" prefWidth="240.0" text="Close currently editing window">
+                <ListView fx:id="authorsListView" prefHeight="155.0" prefWidth="240.0"/>
+                <Separator prefWidth="200.0"/>
+                <Button mnemonicParsing="false" onAction="#onClickClose" prefHeight="3.0" prefWidth="240.0"
+                        text="Close currently editing window">
                     <VBox.margin>
-                        <Insets top="5.0" />
+                        <Insets top="5.0"/>
                     </VBox.margin>
                 </Button>
             </children>
         </VBox>
-        <Separator layoutY="239.0" prefWidth="200.0" />
+        <Separator layoutY="239.0" prefWidth="200.0"/>
     </children>
 </AnchorPane>

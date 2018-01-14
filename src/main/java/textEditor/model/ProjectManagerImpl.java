@@ -68,9 +68,6 @@ public class ProjectManagerImpl implements ProjectManager {
         return Paths.get(PROJECTS_DIR, project.getId() + PROJECTS_EXTENSION).toUri();
     }
 
-    private void createProjectDirIfNotExists() {
-    }
-
     @Override
     public String getActiveUserHandlerId(Project project) throws RemoteException {
         if (this.activeUserHandlerBinding == null) {

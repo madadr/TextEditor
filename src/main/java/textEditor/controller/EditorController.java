@@ -2,7 +2,6 @@ package textEditor.controller;
 
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
-import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.print.*;
@@ -351,7 +350,7 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     @FXML
     private void fileSaveClicked() throws RemoteException {
         this.projectManager.saveProject(project);
-        AlertManager.displayAlert(Alert.AlertType.INFORMATION,"File was manually Saved");
+        AlertManager.displayAlert(Alert.AlertType.INFORMATION, "File was manually Saved");
     }
 
     @FXML
@@ -498,18 +497,18 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
         }
     }
 
-  private void preformAutoSave() {
-      updater = () -> Platform.runLater(() -> {
-          try {
-              System.out.println("Saving file");
-              this.projectManager.saveProject(project);
-          } catch (RemoteException e) {
-              e.printStackTrace();
-          }
-      });
-      scheduler = Executors.newScheduledThreadPool(1);
-      updateHandler = scheduler.scheduleAtFixedRate(updater, 60, 60, SECONDS);
-  }
+    private void preformAutoSave() {
+        updater = () -> Platform.runLater(() -> {
+            try {
+                System.out.println("Saving file");
+                this.projectManager.saveProject(project);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        });
+        scheduler = Executors.newScheduledThreadPool(1);
+        updateHandler = scheduler.scheduleAtFixedRate(updater, 60, 60, SECONDS);
+    }
 
     public void openProjectManagerClicked() {
         try {
