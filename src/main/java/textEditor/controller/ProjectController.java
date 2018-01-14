@@ -2,8 +2,10 @@ package textEditor.controller;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.stage.FileChooser;
@@ -16,9 +18,7 @@ import textEditor.model.interfaces.*;
 import textEditor.utils.RMIClient;
 import textEditor.view.WindowSwitcher;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.ObjectInputStream;
+import java.io.*;
 import java.net.URL;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
@@ -26,6 +26,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.ResourceBundle;
+
+import static textEditor.model.ProjectManagerImpl.PROJECTS_EXTENSION;
 
 
 public class ProjectController implements Initializable, UserInjectionTarget, ClientInjectionTarget, WindowSwitcherInjectionTarget, ProjectInjectionTarget {
@@ -35,6 +37,20 @@ public class ProjectController implements Initializable, UserInjectionTarget, Cl
     private Label contributors;
     @FXML
     private ListView<Project> projectListView;
+    @FXML
+    private Button newButton;
+    @FXML
+    private Button editButton;
+    @FXML
+    private Button removeButton;
+    @FXML
+    private Button openButton;
+    @FXML
+    private Button importButton;
+    @FXML
+    private Button exportButton;
+    @FXML
+    private Button backButton;
 
     private WindowSwitcher switcher;
     private DatabaseModel dbService;
@@ -73,8 +89,12 @@ public class ProjectController implements Initializable, UserInjectionTarget, Cl
         } catch (RemoteException | NotBoundException e) {
             e.printStackTrace();
         }
+
         refreshProjectsList();
+
         initProjectManager();
+
+        initButtonsActions();
     }
 
     private void refreshProjectsList() {
@@ -112,41 +132,74 @@ public class ProjectController implements Initializable, UserInjectionTarget, Cl
             e.printStackTrace();
         }
     }
-@FXML
-    public void onClickRemove() {
-        Project projectToDelete = projectListView.getSelectionModel().getSelectedItem();
-        final int selectedIdx = projectListView.getSelectionModel().getSelectedIndex();
-        if (selectedIdx != -1) {
+
+
+    private void initButtonsActions() {
+        initNewButton();
+        initEditButton();
+        initBackButton();
+        initOpenButton();
+        initImportButton();
+        initExportButton();
+    }
+
+    private void initNewButton() {
+        newButton.setOnAction(event -> {
             try {
-                dbService.removeProject(projectToDelete);
-            } catch (RemoteException e) {
+                switcher.loadWindow(WindowSwitcher.Window.ADD_PROJECT);
+            } catch (IOException e) {
                 e.printStackTrace();
             }
-            projectListView.getItems().remove(selectedIdx);
-        }
-
+        });
     }
 
-    public void onClickOpen() {
-        try {
-            Project selectedProject = projectListView.getSelectionModel().getSelectedItem();
-            final int selectedIdx = projectListView.getSelectionModel().getSelectedIndex();
-            if (selectedIdx != -1) {
-                this.project.setId(selectedProject.getId());
-                this.project.setTitle(selectedProject.getTitle());
-                this.project.setDescription(selectedProject.getDescription());
-                this.project.setContributors(selectedProject.getContributors());
-                switcher.loadWindow(WindowSwitcher.Window.EDITOR);
+    private void initEditButton() {
+        editButton.setOnAction(event -> {
+            try {
+                Project selectedProject = projectListView.getSelectionModel().getSelectedItem();
+                final int selectedIdx = projectListView.getSelectionModel().getSelectedIndex();
+                if (selectedIdx != -1) {
+                    project.setId(selectedProject.getId());
+                    project.setTitle(selectedProject.getTitle());
+                    project.setDescription(selectedProject.getDescription());
+                    project.setContributors(selectedProject.getContributors());
+                    switcher.loadWindow(WindowSwitcher.Window.EDIT_PROJECT);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        } catch (IOException ignored) {
-
-        }
+        });
     }
 
-    public void onClickExport() {
+    private void initOpenButton() {
+        openButton.setOnAction(event -> {
+            try {
+                Project selectedProject = projectListView.getSelectionModel().getSelectedItem();
+                final int selectedIdx = projectListView.getSelectionModel().getSelectedIndex();
+                if (selectedIdx != -1) {
+                    this.project.setId(selectedProject.getId());
+                    this.project.setTitle(selectedProject.getTitle());
+                    this.project.setDescription(selectedProject.getDescription());
+                    this.project.setContributors(selectedProject.getContributors());
+                    switcher.loadWindow(WindowSwitcher.Window.EDITOR);
+                }
+            } catch (IOException ignored) {
+
+            }
+        });
     }
 
-    public void onClickImport() {
+    private void initBackButton() {
+        backButton.setOnAction(event -> {
+            try {
+                switcher.loadWindow(WindowSwitcher.Window.CHOOSE_ACTION);
+            } catch (IOException ignored) {
+
+            }
+        });
+    }
+
+    private void initImportButton() {
         importButton.setOnAction(event -> {
             Project newProject = null;
             try {
@@ -157,9 +210,9 @@ public class ProjectController implements Initializable, UserInjectionTarget, Cl
 
                 ObjectInputStream ois = null;
                 FileChooser fileChooser = new FileChooser();
-                fileChooser.setTitle("Choose model file");
+                fileChooser.setTitle("Choose TextFile file");
 
-                FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Model files (*.model)", "*.model");
+                FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("TextFile files (*" + PROJECTS_EXTENSION + ")", "*" + PROJECTS_EXTENSION);
                 fileChooser.getExtensionFilters().add(extFilter);
 
                 File file = fileChooser.showOpenDialog(switcher.getMainStage());
@@ -183,34 +236,66 @@ public class ProjectController implements Initializable, UserInjectionTarget, Cl
         });
     }
 
-    public void onClickEdit() {
-        try {
+    private void initExportButton() {
+        exportButton.setOnAction(event -> {
+            FileOutputStream fout = null;
+            ObjectOutputStream oos = null;
+
             Project selectedProject = projectListView.getSelectionModel().getSelectedItem();
-            final int selectedIdx = projectListView.getSelectionModel().getSelectedIndex();
-            if (selectedIdx != -1) {
-                project.setId(selectedProject.getId());
-                project.setTitle(selectedProject.getTitle());
-                project.setDescription(selectedProject.getDescription());
-                project.setContributors(selectedProject.getContributors());
-                switcher.loadWindow(WindowSwitcher.Window.EDIT_PROJECT);
+            try {
+                ObjectInputStream ois = null;
+                FileChooser fileChooser = new FileChooser();
+                fileChooser.setTitle("Save Textfile file");
+
+                FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("TextFile files (*" + PROJECTS_EXTENSION + ")", "*" + PROJECTS_EXTENSION);
+                fileChooser.getExtensionFilters().add(extFilter);
+
+                File file = fileChooser.showSaveDialog(switcher.getMainStage());
+
+                if (file != null) {
+                    EditorModel model = (EditorModel) client.getModel(projectManager.getEditorModelId(selectedProject));
+                    EditorModelData data = model.getData();
+
+                    fout = new FileOutputStream(file, false);
+                    oos = new ObjectOutputStream(fout);
+                    oos.writeObject(data);
+                } else {
+                    throw new IOException("Couldn't export project.");
+                }
+            } catch (IOException | NotBoundException e) {
+                e.printStackTrace();
+            } finally {
+                if (fout != null) {
+                    try {
+                        fout.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                if (oos != null) {
+                    try {
+                        oos.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        });
     }
 
-    public void onClickAdd() {
-        try {
-            switcher.loadWindow(WindowSwitcher.Window.ADD_PROJECT);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-    public void onClickBack() {
-        try {
-            switcher.loadWindow(WindowSwitcher.Window.CHOOSE_ACTION);
-        } catch (IOException ignored) {
-
+    @FXML
+    public void onClickRemove(ActionEvent actionEvent) {
+        Project projectToDelete = projectListView.getSelectionModel().getSelectedItem();
+        final int selectedIdx = projectListView.getSelectionModel().getSelectedIndex();
+        if (selectedIdx != -1) {
+            try {
+                dbService.removeProject(projectToDelete);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+            projectListView.getItems().remove(selectedIdx);
         }
     }
 }
+
