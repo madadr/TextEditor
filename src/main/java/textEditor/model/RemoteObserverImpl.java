@@ -3,10 +3,10 @@ package textEditor.model;
 import textEditor.model.interfaces.RemoteObservable;
 import textEditor.model.interfaces.RemoteObserver;
 
-import java.io.Serializable;
 import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 
-public class RemoteObserverImpl implements RemoteObserver, Serializable {
+public class RemoteObserverImpl extends UnicastRemoteObject implements RemoteObserver {
     private RemoteObserver observer;
 
     public RemoteObserverImpl(EditorControllerObserver controller) throws RemoteException {
