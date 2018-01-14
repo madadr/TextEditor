@@ -17,7 +17,7 @@
                 </Label>
                 <ListView fx:id="authorsListView" prefHeight="155.0" prefWidth="240.0" />
                 <Separator prefWidth="200.0" />
-                <Button fx:id="closePopUp" mnemonicParsing="false" onAction="#onClickClose" prefHeight="3.0" prefWidth="240.0" text="Close currently editing window">
+                <Button mnemonicParsing="false" onAction="#onClickClose" prefHeight="3.0" prefWidth="240.0" text="Close currently editing window">
                     <VBox.margin>
                         <Insets top="5.0" />
                     </VBox.margin>
