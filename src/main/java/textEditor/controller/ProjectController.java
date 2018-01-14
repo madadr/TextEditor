@@ -37,20 +37,7 @@ public class ProjectController implements Initializable, UserInjectionTarget, Cl
     private Label contributors;
     @FXML
     private ListView<Project> projectListView;
-    @FXML
-    private Button newButton;
-    @FXML
-    private Button editButton;
-    @FXML
-    private Button removeButton;
-    @FXML
-    private Button openButton;
-    @FXML
-    private Button importButton;
-    @FXML
-    private Button exportButton;
-    @FXML
-    private Button backButton;
+
 
     private WindowSwitcher switcher;
     private DatabaseModel dbService;
@@ -91,10 +78,8 @@ public class ProjectController implements Initializable, UserInjectionTarget, Cl
         }
 
         refreshProjectsList();
-
         initProjectManager();
 
-        initButtonsActions();
     }
 
     private void refreshProjectsList() {
@@ -133,157 +118,6 @@ public class ProjectController implements Initializable, UserInjectionTarget, Cl
         }
     }
 
-
-    private void initButtonsActions() {
-        initNewButton();
-        initEditButton();
-        initBackButton();
-        initOpenButton();
-        initImportButton();
-        initExportButton();
-    }
-
-    private void initNewButton() {
-        newButton.setOnAction(event -> {
-            try {
-                switcher.loadWindow(WindowSwitcher.Window.ADD_PROJECT);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
-    }
-
-    private void initEditButton() {
-        editButton.setOnAction(event -> {
-            try {
-                Project selectedProject = projectListView.getSelectionModel().getSelectedItem();
-                final int selectedIdx = projectListView.getSelectionModel().getSelectedIndex();
-                if (selectedIdx != -1) {
-                    project.setId(selectedProject.getId());
-                    project.setTitle(selectedProject.getTitle());
-                    project.setDescription(selectedProject.getDescription());
-                    project.setContributors(selectedProject.getContributors());
-                    switcher.loadWindow(WindowSwitcher.Window.EDIT_PROJECT);
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
-    }
-
-    private void initOpenButton() {
-        openButton.setOnAction(event -> {
-            try {
-                Project selectedProject = projectListView.getSelectionModel().getSelectedItem();
-                final int selectedIdx = projectListView.getSelectionModel().getSelectedIndex();
-                if (selectedIdx != -1) {
-                    this.project.setId(selectedProject.getId());
-                    this.project.setTitle(selectedProject.getTitle());
-                    this.project.setDescription(selectedProject.getDescription());
-                    this.project.setContributors(selectedProject.getContributors());
-                    switcher.loadWindow(WindowSwitcher.Window.EDITOR);
-                }
-            } catch (IOException ignored) {
-
-            }
-        });
-    }
-
-    private void initBackButton() {
-        backButton.setOnAction(event -> {
-            try {
-                switcher.loadWindow(WindowSwitcher.Window.CHOOSE_ACTION);
-            } catch (IOException ignored) {
-
-            }
-        });
-    }
-
-    private void initImportButton() {
-        importButton.setOnAction(event -> {
-            Project newProject = null;
-            try {
-                newProject = new ProjectImpl(0, "ImportedProject", "", new ArrayList<>(Arrays.asList(this.user)));
-                dbService.addProject(newProject);
-                refreshProjectsList();
-                newProject = this.projects.get(this.projects.size() - 1); // required to update id
-
-                ObjectInputStream ois = null;
-                FileChooser fileChooser = new FileChooser();
-                fileChooser.setTitle("Choose TextFile file");
-
-                FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("TextFile files (*" + PROJECTS_EXTENSION + ")", "*" + PROJECTS_EXTENSION);
-                fileChooser.getExtensionFilters().add(extFilter);
-
-                File file = fileChooser.showOpenDialog(switcher.getMainStage());
-
-                if (file != null) {
-                    EditorModelData data = projectManager.getEditorModelData(file);
-                    projectManager.saveProject(newProject, data);
-                } else {
-                    throw new IOException("Couldn't import project.");
-                }
-            } catch (IOException e) {
-                try {
-                    if (newProject != null) {
-                        dbService.removeProject(newProject);
-                        refreshProjectsList();
-                    }
-                } catch (RemoteException e1) {
-                    e1.printStackTrace();
-                }
-            }
-        });
-    }
-
-    private void initExportButton() {
-        exportButton.setOnAction(event -> {
-            FileOutputStream fout = null;
-            ObjectOutputStream oos = null;
-
-            Project selectedProject = projectListView.getSelectionModel().getSelectedItem();
-            try {
-                ObjectInputStream ois = null;
-                FileChooser fileChooser = new FileChooser();
-                fileChooser.setTitle("Save Textfile file");
-
-                FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("TextFile files (*" + PROJECTS_EXTENSION + ")", "*" + PROJECTS_EXTENSION);
-                fileChooser.getExtensionFilters().add(extFilter);
-
-                File file = fileChooser.showSaveDialog(switcher.getMainStage());
-
-                if (file != null) {
-                    EditorModel model = (EditorModel) client.getModel(projectManager.getEditorModelId(selectedProject));
-                    EditorModelData data = model.getData();
-
-                    fout = new FileOutputStream(file, false);
-                    oos = new ObjectOutputStream(fout);
-                    oos.writeObject(data);
-                } else {
-                    throw new IOException("Couldn't export project.");
-                }
-            } catch (IOException | NotBoundException e) {
-                e.printStackTrace();
-            } finally {
-                if (fout != null) {
-                    try {
-                        fout.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-
-                if (oos != null) {
-                    try {
-                        oos.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        });
-    }
-
     @FXML
     public void onClickRemove(ActionEvent actionEvent) {
         Project projectToDelete = projectListView.getSelectionModel().getSelectedItem();
@@ -295,6 +129,136 @@ public class ProjectController implements Initializable, UserInjectionTarget, Cl
                 e.printStackTrace();
             }
             projectListView.getItems().remove(selectedIdx);
+        }
+    }
+
+    public void onClickBack() {
+        try {
+            switcher.loadWindow(WindowSwitcher.Window.CHOOSE_ACTION);
+        } catch (IOException ignored) {
+
+        }
+    }
+
+    public void onClickOpen() {
+        try {
+            Project selectedProject = projectListView.getSelectionModel().getSelectedItem();
+            final int selectedIdx = projectListView.getSelectionModel().getSelectedIndex();
+            if (selectedIdx != -1) {
+                this.project.setId(selectedProject.getId());
+                this.project.setTitle(selectedProject.getTitle());
+                this.project.setDescription(selectedProject.getDescription());
+                this.project.setContributors(selectedProject.getContributors());
+                switcher.loadWindow(WindowSwitcher.Window.EDITOR);
+            }
+        } catch (IOException ignored) {
+
+        }
+    }
+
+    public void onClickExport() {
+
+        FileOutputStream fout = null;
+        ObjectOutputStream oos = null;
+
+        Project selectedProject = projectListView.getSelectionModel().getSelectedItem();
+        try {
+            ObjectInputStream ois = null;
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Save Textfile file");
+
+            FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("TextFile files (*" + PROJECTS_EXTENSION + ")", "*" + PROJECTS_EXTENSION);
+            fileChooser.getExtensionFilters().add(extFilter);
+
+            File file = fileChooser.showSaveDialog(switcher.getMainStage());
+
+            if (file != null) {
+                EditorModel model = (EditorModel) client.getModel(projectManager.getEditorModelId(selectedProject));
+                EditorModelData data = model.getData();
+
+                fout = new FileOutputStream(file, false);
+                oos = new ObjectOutputStream(fout);
+                oos.writeObject(data);
+            } else {
+                throw new IOException("Couldn't export project.");
+            }
+        } catch (IOException | NotBoundException e) {
+            e.printStackTrace();
+        } finally {
+            if (fout != null) {
+                try {
+                    fout.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            if (oos != null) {
+                try {
+                    oos.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    public void onClickImport() {
+        Project newProject = null;
+        try {
+            newProject = new ProjectImpl(0, "ImportedProject", "", new ArrayList<>(Arrays.asList(this.user)));
+            dbService.addProject(newProject);
+            refreshProjectsList();
+            newProject = this.projects.get(this.projects.size() - 1); // required to update id
+
+            ObjectInputStream ois = null;
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Choose TextFile file");
+
+            FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("TextFile files (*" + PROJECTS_EXTENSION + ")", "*" + PROJECTS_EXTENSION);
+            fileChooser.getExtensionFilters().add(extFilter);
+
+            File file = fileChooser.showOpenDialog(switcher.getMainStage());
+
+            if (file != null) {
+                EditorModelData data = projectManager.getEditorModelData(file);
+                projectManager.saveProject(newProject, data);
+            } else {
+                throw new IOException("Couldn't import project.");
+            }
+        } catch (IOException e) {
+            try {
+                if (newProject != null) {
+                    dbService.removeProject(newProject);
+                    refreshProjectsList();
+                }
+            } catch (RemoteException e1) {
+                e1.printStackTrace();
+            }
+        }
+    }
+
+    public void onClickEdit() {
+        try {
+            Project selectedProject = projectListView.getSelectionModel().getSelectedItem();
+            final int selectedIdx = projectListView.getSelectionModel().getSelectedIndex();
+            if (selectedIdx != -1) {
+                project.setId(selectedProject.getId());
+                project.setTitle(selectedProject.getTitle());
+                project.setDescription(selectedProject.getDescription());
+                project.setContributors(selectedProject.getContributors());
+                switcher.loadWindow(WindowSwitcher.Window.EDIT_PROJECT);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void onClickAdd() {
+        try {
+            switcher.loadWindow(WindowSwitcher.Window.ADD_PROJECT);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }
