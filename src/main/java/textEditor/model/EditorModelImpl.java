@@ -15,7 +15,6 @@ public class EditorModelImpl implements EditorModel, Serializable {
     private List<RemoteObserver> observers;
 
     public EditorModelImpl(EditorModelData editorModelData) throws RemoteException {
-        System.out.println("EditorModelImpl::ctor editorModelData");
         this.text = editorModelData.getText();
         this.stylesHolder = editorModelData.getStylesHolder();
         this.observers = new ArrayList<>();

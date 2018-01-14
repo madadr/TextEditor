@@ -13,6 +13,7 @@ import java.util.HashMap;
 
 public class ProjectManagerImpl implements ProjectManager {
     public final static String PROJECTS_DIR = "project_model";
+    public final static String PROJECTS_EXTENSION = ".txtfile";
 
     private Registry registry;
 
@@ -64,7 +65,7 @@ public class ProjectManagerImpl implements ProjectManager {
             System.out.println("Created main directory");
         }
 
-        return Paths.get(PROJECTS_DIR, project.getId() + ".model").toUri();
+        return Paths.get(PROJECTS_DIR, project.getId() + PROJECTS_EXTENSION).toUri();
     }
 
     @Override
@@ -86,11 +87,17 @@ public class ProjectManagerImpl implements ProjectManager {
         EditorModel model = projectEditorModelBinding.get(project).getValue();
         EditorModelData data = model.getData();
 
+        saveProject(project, data);
+    }
+
+    @Override
+    public void saveProject(Project project, EditorModelData data) {
         FileOutputStream fout = null;
         ObjectOutputStream oos = null;
         try {
             File file = new File(buildProjectUri(project));
             file.createNewFile();
+
 
             fout = new FileOutputStream(file, false);
             oos = new ObjectOutputStream(fout);
@@ -116,7 +123,9 @@ public class ProjectManagerImpl implements ProjectManager {
         }
     }
 
-    private EditorModelData getEditorModelData(File modelFile) {
+
+    @Override
+    public EditorModelData getEditorModelData(File modelFile) {
         ObjectInputStream ois = null;
         try {
             FileInputStream inputStream = new FileInputStream(modelFile);

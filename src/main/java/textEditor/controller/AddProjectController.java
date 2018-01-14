@@ -30,7 +30,7 @@ public class AddProjectController implements Initializable, ClientInjectionTarge
     @FXML
     private TextField projectNameField;
     @FXML
-    private CheckComboBox contributorsField;
+    private CheckComboBox<User> contributorsField;
     @FXML
     private TextArea projectDescriptionField;
     @FXML

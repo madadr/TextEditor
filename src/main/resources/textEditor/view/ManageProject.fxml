@@ -1,17 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import javafx.geometry.*?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
-
-<BorderPane maxHeight="400.0" maxWidth="600.0" minHeight="400.0" minWidth="600.0" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="textEditor.controller.ProjectController">
+<BorderPane maxHeight="400.0" maxWidth="600.0" minHeight="400.0" minWidth="600.0" prefHeight="400.0" prefWidth="600.0"
+            xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="textEditor.controller.ProjectController">
     <top>
         <Label text="Manage projects" textAlignment="CENTER" BorderPane.alignment="CENTER">
             <font>
-                <Font name="System Bold" size="20.0" />
+                <Font name="System Bold" size="20.0"/>
             </font>
         </Label>
     </top>
@@ -20,48 +19,48 @@
             <children>
                 <Button onAction="#onClickAdd" mnemonicParsing="false" text="New">
                     <font>
-                        <Font size="15.0" />
+                        <Font size="15.0"/>
                     </font>
                 </Button>
                 <Button onAction="#onClickEdit" mnemonicParsing="false" text="Edit">
                     <font>
-                        <Font size="15.0" />
+                        <Font size="15.0"/>
                     </font>
                 </Button>
                 <Button mnemonicParsing="false" onAction="#onClickRemove" text="Remove">
                     <font>
-                        <Font size="15.0" />
+                        <Font size="15.0"/>
                     </font>
                 </Button>
-                <Separator orientation="VERTICAL" />
+                <Separator orientation="VERTICAL"/>
                 <Button onAction="#onClickImport" mnemonicParsing="false" text="Import">
                     <font>
-                        <Font size="15.0" />
+                        <Font size="15.0"/>
                     </font>
                 </Button>
                 <Button onAction="#onClickExport" mnemonicParsing="false" text="Export">
                     <font>
-                        <Font size="15.0" />
+                        <Font size="15.0"/>
                     </font>
                 </Button>
-                <Separator orientation="VERTICAL" />
+                <Separator orientation="VERTICAL"/>
                 <Button onAction="#onClickOpen" mnemonicParsing="false" text="Open">
                     <font>
-                        <Font name="System Bold" size="15.0" />
+                        <Font name="System Bold" size="15.0"/>
                     </font>
                 </Button>
-            <Region prefHeight="0.0" prefWidth="70.0" />
-            <Button onAction="#onClickBack" mnemonicParsing="false" text="Back">
-               <font>
-                  <Font size="15.0" />
-               </font>
-            </Button>
+                <Region prefHeight="0.0" prefWidth="70.0"/>
+                <Button onAction="#onClickBack" mnemonicParsing="false" text="Back">
+                    <font>
+                        <Font size="15.0"/>
+                    </font>
+                </Button>
             </children>
             <opaqueInsets>
-                <Insets />
+                <Insets/>
             </opaqueInsets>
             <padding>
-                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
             </padding>
         </HBox>
     </bottom>
@@ -74,33 +73,33 @@
                             <children>
                                 <Label text="Description:">
                                     <font>
-                                        <Font size="18.0" />
+                                        <Font size="18.0"/>
                                     </font>
                                 </Label>
-                                <Separator />
+                                <Separator/>
                                 <ScrollPane prefHeight="299.0" prefWidth="250.0">
                                     <content>
-                                        <Label fx:id="description" alignment="TOP_LEFT" prefWidth="245.0" />
+                                        <Label fx:id="description" alignment="TOP_LEFT" prefWidth="245.0"/>
                                     </content>
                                 </ScrollPane>
                             </children>
                         </VBox>
                         <Separator prefWidth="200.0" visible="false">
                             <padding>
-                                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
                             </padding>
                         </Separator>
                         <VBox>
                             <children>
                                 <Label text="Contributors">
                                     <font>
-                                        <Font size="18.0" />
+                                        <Font size="18.0"/>
                                     </font>
                                 </Label>
-                                <Separator />
+                                <Separator/>
                                 <ScrollPane prefHeight="299.0" prefWidth="250.0">
                                     <content>
-                                        <Label fx:id="contributors" alignment="TOP_LEFT" prefWidth="245.0" />
+                                        <Label fx:id="contributors" alignment="TOP_LEFT" prefWidth="245.0"/>
                                     </content>
                                 </ScrollPane>
                             </children>
@@ -109,12 +108,13 @@
                 </VBox>
                 <VBox alignment="CENTER">
                     <children>
-                        <ListView fx:id="projectListView" maxWidth="320.0" minWidth="250.0" prefHeight="305.0" prefWidth="320.0" />
+                        <ListView fx:id="projectListView" maxWidth="320.0" minWidth="250.0" prefHeight="305.0"
+                                  prefWidth="320.0"/>
                     </children>
                 </VBox>
             </children>
             <padding>
-                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
             </padding>
         </HBox>
     </center>
