@@ -57,6 +57,7 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     @FXML
     private StyleClassedTextArea mainTextArea;
 
+    private ProjectManager projectManager;
     private EditorModel editorModel;
     private ActiveUserHandler activeUserHandler;
     private User user;
@@ -94,7 +95,6 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
 
     @Override
     public void injectUser(User user) {
-        System.out.println("Injecting user=" + user);
         this.user = user;
     }
 
@@ -104,9 +104,9 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
 
         searchTextIndex = new IndexRange(-1, -1);
 
-        setModels();
+        initModels();
 
-        setListeners();
+        initListeners();
 
         initialTextSettings();
 
@@ -119,7 +119,7 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
         handleUserInProject();
     }
 
-    private void setListeners() {
+    private void initListeners() {
         fontSizeListener = (observable, oldValue, newValue) -> {
             textFormatter.styleSelectedArea(newValue, FONTSIZE_PATTERN_KEY);
             notifyOthers();
@@ -146,14 +146,14 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
         };
     }
 
-    private void setModels() {
+    private void initModels() {
         try {
-            editorModel = (EditorModel) rmiClient.getModel("EditorModel");
-            activeUserHandler = (ActiveUserHandler) rmiClient.getModel("ActiveUserHandler");
+            projectManager = (ProjectManager) rmiClient.getModel("ProjectManager");
+            this.editorModel = (EditorModel) rmiClient.getModel(projectManager.getEditorModelId(this.project));
+            this.activeUserHandler = (ActiveUserHandler) rmiClient.getModel(projectManager.getActiveUserHandlerId(this.project));
         } catch (RemoteException | NotBoundException e) {
             e.printStackTrace();
         }
-
     }
 
     private void handleUserInProject() {
@@ -344,31 +344,28 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     private void fileSaveClicked() {
         System.out.println("file will be save");
     }
+
     @FXML
-    private void filePrintClicked(){
+    private void filePrintClicked() {
         PrinterJob printerJob = PrinterJob.createPrinterJob();
 
         boolean successOnPrinting = printerJob.showPrintDialog(switcher.getMainStage());
 
-        if(successOnPrinting)
-        {
-            PageLayout pageLayout = Printer.getDefaultPrinter().createPageLayout(Paper.A4, PageOrientation.PORTRAIT,Printer.MarginType.HARDWARE_MINIMUM);
+        if (successOnPrinting) {
+            PageLayout pageLayout = Printer.getDefaultPrinter().createPageLayout(Paper.A4, PageOrientation.PORTRAIT, Printer.MarginType.HARDWARE_MINIMUM);
             printerJob.getJobSettings().setPageLayout(pageLayout);
-            successOnPrinting = printerJob.printPage(pageLayout,mainTextArea);
-            if(successOnPrinting)
-            {
-                AlertManager.displayAlert(Alert.AlertType.CONFIRMATION,"Printer information","Printing end with result: SUCCESS");
+            successOnPrinting = printerJob.printPage(pageLayout, mainTextArea);
+            if (successOnPrinting) {
+                AlertManager.displayAlert(Alert.AlertType.CONFIRMATION, "Printer information", "Printing end with result: SUCCESS");
                 printerJob.endJob();
+            } else {
+                AlertManager.displayAlert(Alert.AlertType.WARNING, "Printer information", "Printing end with result: FAILED");
             }
-            else{
-                AlertManager.displayAlert(Alert.AlertType.WARNING,"Printer information","Printing end with result: FAILED");
-            }
-        }
-        else
-        {
-            AlertManager.displayAlert(Alert.AlertType.WARNING,"Printer information","Job Canceled");
+        } else {
+            AlertManager.displayAlert(Alert.AlertType.WARNING, "Printer information", "Job Canceled");
         }
     }
+
     @FXML
     private void fileCloseClicked() {
         try {

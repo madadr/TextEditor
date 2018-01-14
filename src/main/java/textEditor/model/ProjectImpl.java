@@ -36,10 +36,12 @@ public class ProjectImpl implements Project, Serializable {
 
         ProjectImpl project = (ProjectImpl) o;
 
-        if (id != null ? !id.equals(project.id) : project.id != null) return false;
-        if (title != null ? !title.equals(project.title) : project.title != null) return false;
-        if (description != null ? !description.equals(project.description) : project.description != null) return false;
-        return contributors != null ? contributors.equals(project.contributors) : project.contributors == null;
+        return id != null ? id.equals(project.id) : project.id == null;
+    }
+
+    @Override
+    public int hashCode() {
+        return id != null ? id.hashCode() : 0;
     }
 
     public String getTitle() {

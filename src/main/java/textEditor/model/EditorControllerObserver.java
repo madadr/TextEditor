@@ -112,6 +112,7 @@ public class EditorControllerObserver implements Serializable, RemoteObserver {
             StylesHolder newStyle = null;
             try {
                 newStyle = ((EditorModel) observable).getTextStyle();
+
                 if (newStyle != null && newStyle.getStyleSpans() != null) {
                     updateStyleSpans(newStyle);
                     updateParagraphs(newStyle);

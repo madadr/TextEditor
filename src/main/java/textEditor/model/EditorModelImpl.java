@@ -1,25 +1,31 @@
 package textEditor.model;
 
 import textEditor.model.interfaces.EditorModel;
-import textEditor.model.interfaces.RemoteObservable;
+import textEditor.model.interfaces.EditorModelData;
 import textEditor.model.interfaces.RemoteObserver;
 
+import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EditorModelImpl implements EditorModel, RemoteObservable {
+public class EditorModelImpl implements EditorModel, Serializable {
     private String text = "";
-    private StylesHolder styleSpans;
-
-    private ArrayList<RemoteObserver> observers;
+    private StylesHolder stylesHolder;
+    private List<RemoteObserver> observers;
 
     public EditorModelImpl() throws RemoteException {
         System.out.println("EditorModelImpl::ctor");
         this.observers = new ArrayList<>();
     }
 
-    @Override
+    public EditorModelImpl(EditorModelData editorModelData) throws RemoteException {
+        System.out.println("EditorModelImpl::ctor editorModelData");
+        this.text = editorModelData.getText();
+        this.stylesHolder = editorModelData.getStylesHolder();
+        this.observers = new ArrayList<>();
+    }
+
     public synchronized void setTextString(String text, RemoteObserver source) throws RemoteException {
         if (text != null) {
             RemoteObserver skippedObserver = source;
@@ -50,14 +56,14 @@ public class EditorModelImpl implements EditorModel, RemoteObservable {
     }
 
     @Override
-    public synchronized void setTextStyle(StylesHolder styleSpans, RemoteObserver source) throws RemoteException {
-        if (styleSpans != null) {
+    public synchronized void setTextStyle(StylesHolder stylesHolder, RemoteObserver source) throws RemoteException {
+        if (stylesHolder != null) {
             RemoteObserver skippedObserver = source;
             this.deleteObserver(skippedObserver);
 
             System.out.println("Updating style to:");
-            System.out.println("\t" + styleSpans);
-            this.styleSpans = styleSpans;
+            System.out.println("\t" + stylesHolder);
+            this.stylesHolder = stylesHolder;
             notifyObservers(UpdateTarget.ONLY_STYLE);
 
             this.addObserver(skippedObserver);
@@ -66,15 +72,15 @@ public class EditorModelImpl implements EditorModel, RemoteObservable {
 
     @Override
     public synchronized StylesHolder getTextStyle() throws RemoteException {
-        return this.styleSpans;
+        return this.stylesHolder;
     }
 
     @Override
-    public synchronized void setTextStyle(StylesHolder styleSpans) throws RemoteException {
-        if (styleSpans != null) {
+    public synchronized void setTextStyle(StylesHolder stylesHolder) throws RemoteException {
+        if (stylesHolder != null) {
             System.out.println("Updating style to:");
-            System.out.println("\t" + styleSpans);
-            this.styleSpans = styleSpans;
+            System.out.println("\t" + stylesHolder);
+            this.stylesHolder = stylesHolder;
             notifyObservers(UpdateTarget.ONLY_STYLE);
         }
     }
@@ -118,7 +124,6 @@ public class EditorModelImpl implements EditorModel, RemoteObservable {
     public synchronized void notifyObservers(UpdateTarget target) throws RemoteException {
         List<RemoteObserver> invalidObservers = new ArrayList<>();
         for (RemoteObserver observer : observers) {
-            System.out.println("observer update: " + observer);
             try {
                 observer.update(this, target);
             } catch (RemoteException e) {
@@ -134,5 +139,10 @@ public class EditorModelImpl implements EditorModel, RemoteObservable {
                 // cannot remove observer but nothing to do here?
             }
         });
+    }
+
+    @Override
+    public EditorModelData getData() throws RemoteException {
+        return new EditorModelDataImpl(this.text, this.stylesHolder);
     }
 }
