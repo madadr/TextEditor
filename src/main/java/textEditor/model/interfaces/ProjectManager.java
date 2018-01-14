@@ -7,4 +7,6 @@ public interface ProjectManager extends Remote {
     String getEditorModelId(Project project) throws RemoteException;
 
     String getActiveUserHandlerId(Project project) throws RemoteException;
+
+    void saveProject(Project project) throws RemoteException;
 }

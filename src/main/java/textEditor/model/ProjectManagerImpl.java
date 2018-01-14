@@ -3,10 +3,7 @@ package textEditor.model;
 import javafx.util.Pair;
 import textEditor.model.interfaces.*;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
+import java.io.*;
 import java.net.URI;
 import java.nio.file.Paths;
 import java.rmi.RemoteException;
@@ -14,9 +11,9 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.HashMap;
 
-import static textEditor.utils.Const.Files.PROJECTS_PATH;
-
 public class ProjectManagerImpl implements ProjectManager {
+    public final static String PROJECTS_DIR = "project_model";
+
     private Registry registry;
 
     private HashMap<Project, Pair<String, EditorModel>> projectEditorModelBinding;
@@ -61,7 +58,15 @@ public class ProjectManagerImpl implements ProjectManager {
     }
 
     private URI buildProjectUri(Project project) {
-        return Paths.get(PROJECTS_PATH, project.getId() + ".model").toUri();
+        File file = new File(Paths.get(PROJECTS_DIR).toUri());
+        if (file.mkdirs()) {
+            System.out.println("Created main directory");
+        }
+
+        return Paths.get(PROJECTS_DIR, project.getId() + ".model").toUri();
+    }
+
+    private void createProjectDirIfNotExists() {
     }
 
     @Override
@@ -78,7 +83,41 @@ public class ProjectManagerImpl implements ProjectManager {
         return activeUserHandlerBinding.getKey();
     }
 
-    // TODO: find better place for that method
+    @Override
+    public void saveProject(Project project) throws RemoteException {
+        EditorModel model = projectEditorModelBinding.get(project).getValue();
+        EditorModelData data = model.getData();
+
+        FileOutputStream fout = null;
+        ObjectOutputStream oos = null;
+        try {
+            File file = new File(buildProjectUri(project));
+            file.createNewFile();
+
+            fout = new FileOutputStream(file, false);
+            oos = new ObjectOutputStream(fout);
+            oos.writeObject(data);
+        } catch (IOException e) {
+            System.err.println("Failed during saving file.");
+        } finally {
+            if (fout != null) {
+                try {
+                    fout.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            if (oos != null) {
+                try {
+                    oos.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
     private EditorModelData getEditorModelData(File modelFile) {
         ObjectInputStream ois = null;
         try {
