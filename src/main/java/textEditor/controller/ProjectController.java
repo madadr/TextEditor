@@ -29,28 +29,20 @@ import java.util.ResourceBundle;
 public class ProjectController implements Initializable, UserInjectionTarget, ClientInjectionTarget, WindowSwitcherInjectionTarget, ProjectInjectionTarget {
     @FXML
     private Label description;
-
     @FXML
     private Label contributors;
-
     @FXML
     private ListView<Project> projectListView;
-
     @FXML
     private Button newButton;
-
     @FXML
     private Button editButton;
-
     @FXML
     private Button removeButton;
-
     @FXML
     private Button openButton;
-
     @FXML
     private Button importButton;
-
     @FXML
     private Button exportButton;
     @FXML
@@ -77,6 +69,11 @@ public class ProjectController implements Initializable, UserInjectionTarget, Cl
     @Override
     public void injectClient(RMIClient client) {
         this.client = client;
+    }
+
+    @Override
+    public void injectProject(Project project) {
+        this.project = project;
     }
 
     @Override
@@ -144,7 +141,15 @@ public class ProjectController implements Initializable, UserInjectionTarget, Cl
 
         openButton.setOnAction(event -> {
             try {
-                switcher.loadWindow(WindowSwitcher.Window.EDITOR);
+                Project selectedProject = projectListView.getSelectionModel().getSelectedItem();
+                final int selectedIdx = projectListView.getSelectionModel().getSelectedIndex();
+                if (selectedIdx != -1) {
+                    this.project.setId(selectedProject.getId());
+                    this.project.setTitle(selectedProject.getTitle());
+                    this.project.setDescription(selectedProject.getDescription());
+                    this.project.setContributors(selectedProject.getContributors());
+                    switcher.loadWindow(WindowSwitcher.Window.EDITOR);
+                }
             } catch (IOException ignored) {
 
             }
@@ -173,10 +178,5 @@ public class ProjectController implements Initializable, UserInjectionTarget, Cl
             projectListView.getItems().remove(selectedIdx);
         }
 
-    }
-
-    @Override
-    public void injectProject(Project project) {
-        this.project = project;
     }
 }

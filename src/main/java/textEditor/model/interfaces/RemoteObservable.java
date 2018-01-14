@@ -1,8 +1,9 @@
 package textEditor.model.interfaces;
 
+import java.rmi.Remote;
 import java.rmi.RemoteException;
 
-public interface RemoteObservable {
+public interface RemoteObservable extends Remote {
     // TODO: consider adding ONLY_PARAGRAPH
     public enum UpdateTarget {
         ONLY_TEXT, ONLY_STYLE

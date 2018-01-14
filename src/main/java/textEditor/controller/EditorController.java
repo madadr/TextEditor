@@ -5,7 +5,10 @@ import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.print.*;
-import javafx.scene.control.*;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.IndexRange;
+import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.HBox;
 import javafx.stage.FileChooser;
 import org.fxmisc.richtext.StyleClassedTextArea;
@@ -57,6 +60,7 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     @FXML
     private StyleClassedTextArea mainTextArea;
 
+    private ProjectManager projectManager;
     private EditorModel editorModel;
     private ActiveUserHandler activeUserHandler;
     private User user;
@@ -94,7 +98,6 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
 
     @Override
     public void injectUser(User user) {
-        System.out.println("Injecting user=" + user);
         this.user = user;
     }
 
@@ -104,9 +107,9 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
 
         searchTextIndex = new IndexRange(-1, -1);
 
-        setModels();
+        initModels();
 
-        setListeners();
+        initListeners();
 
         initialTextSettings();
 
@@ -119,7 +122,7 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
         handleUserInProject();
     }
 
-    private void setListeners() {
+    private void initListeners() {
         fontSizeListener = (observable, oldValue, newValue) -> {
             textFormatter.styleSelectedArea(newValue, FONTSIZE_PATTERN_KEY);
             notifyOthers();
@@ -146,14 +149,14 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
         };
     }
 
-    private void setModels() {
+    private void initModels() {
         try {
-            editorModel = (EditorModel) rmiClient.getModel("EditorModel");
-            activeUserHandler = (ActiveUserHandler) rmiClient.getModel("ActiveUserHandler");
+            projectManager = (ProjectManager) rmiClient.getModel("ProjectManager");
+            this.editorModel = (EditorModel) rmiClient.getModel(projectManager.getEditorModelId(this.project));
+            this.activeUserHandler = (ActiveUserHandler) rmiClient.getModel(projectManager.getActiveUserHandlerId(this.project));
         } catch (RemoteException | NotBoundException e) {
             e.printStackTrace();
         }
-
     }
 
     private void handleUserInProject() {
