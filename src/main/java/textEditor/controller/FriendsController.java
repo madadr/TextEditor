@@ -135,7 +135,6 @@ public class FriendsController implements Initializable, UserInjectionTarget, Cl
                     AlertManager.displayAlert(Alert.AlertType.WARNING, "User doesn't exist!");
                 }
             } catch (RemoteException e1) {
-                // TODO
             }
         });
     }
@@ -153,7 +152,6 @@ public class FriendsController implements Initializable, UserInjectionTarget, Cl
 
                 updateFriendsList();
             } catch (RemoteException e1) {
-                // TODO
             }
         });
     }

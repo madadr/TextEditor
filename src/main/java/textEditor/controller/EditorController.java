@@ -326,7 +326,6 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
 
     @FXML
     private void helpHelpClicked() {
-        //TODO:  implement javafx stage appear with help content
     }
 
     @FXML
@@ -342,7 +341,6 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
         fileChooser.setTitle("Choose resource");
         File file = fileChooser.showOpenDialog(switcher.getMainStage());
         if (file != null) {
-            //TODO: handle this
             //openFile(file);
         }
     }
