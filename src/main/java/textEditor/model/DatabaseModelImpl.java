@@ -23,7 +23,6 @@ public class DatabaseModelImpl implements DatabaseModel {
     public DatabaseModelImpl() throws SQLException, ClassNotFoundException {
         Class.forName("com.mysql.jdbc.Driver");
         con = DriverManager.getConnection("jdbc:mysql://localhost/", "root", "");
-        System.out.println("We are connected");
         init();
     }
 

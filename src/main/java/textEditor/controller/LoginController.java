@@ -69,7 +69,7 @@ public class LoginController implements Initializable, ClientInjectionTarget, Wi
     }
 
     private void setNotConnected() {
-        setResultText("Brak połączenia z bazą danych", false);
+        setResultText("Connection failed.", false);
         submitLogin.setDisable(true);
         registrationButton.setDisable(true);
         userLoginField.setDisable(true);
