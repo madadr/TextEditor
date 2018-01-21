@@ -339,6 +339,12 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     }
 
     @FXML
+    private void fileSaveClicked() throws RemoteException {
+        this.projectManager.saveProject(project);
+        AlertManager.displayAlert(Alert.AlertType.INFORMATION, "File was manually Saved");
+    }
+
+    @FXML
     private void filePrintClicked() {
         PrinterJob printerJob = PrinterJob.createPrinterJob();
 

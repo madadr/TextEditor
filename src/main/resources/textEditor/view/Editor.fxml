@@ -112,6 +112,8 @@
                                             <items>
                                                 <MenuItem mnemonicParsing="false" onAction="#openProjectManagerClicked"
                                                           text="Open Project Manager"/>
+                                                <MenuItem mnemonicParsing="false" onAction="#fileSaveClicked"
+                                                          text="Save"/>
                                                 <MenuItem mnemonicParsing="false" onAction="#filePrintClicked"
                                                           text="Print"/>
                                                 <MenuItem mnemonicParsing="false" onAction="#fileCloseClicked"
