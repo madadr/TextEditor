@@ -28,7 +28,6 @@ import textEditor.utils.TextFormatter;
 import textEditor.view.AlertManager;
 import textEditor.view.WindowSwitcher;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.rmi.NotBoundException;
@@ -325,24 +324,17 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
 
     @FXML
     private void helpHelpClicked() {
-        //TODO:  implement javafx stage appear with help content
+        AlertManager.displayAlert(Alert.AlertType.INFORMATION, "" +
+                "Text editor - 2018\n" +
+                "Created by:\n" +
+                "Adrian Madej\n" +
+                "Arkadiusz Jastrzębski\n" +
+                "Kamil Majerczyk");
     }
 
     @FXML
     private void editSearchClicked() {
         searchBox.setVisible(true);
-    }
-
-    @FXML
-    private void fileOpenClicked() {
-        System.out.println("File will be open");
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Choose resource");
-        File file = fileChooser.showOpenDialog(switcher.getMainStage());
-        if (file != null) {
-            //TODO: handle this
-            //openFile(file);
-        }
     }
 
     @FXML

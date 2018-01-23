@@ -28,7 +28,6 @@ public class ProjectImpl implements Project, Serializable {
         this.contributors = contributors;
     }
 
-    //TODO : GENERATE HERE METHOD EQUALS
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
