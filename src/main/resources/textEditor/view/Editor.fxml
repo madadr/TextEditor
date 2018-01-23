@@ -4,105 +4,14 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
+
 <?import org.fxmisc.richtext.StyleClassedTextArea?>
-<AnchorPane minHeight="-Infinity" prefHeight="500.0" xmlns="http://javafx.com/javafx/8.0.141"
-            xmlns:fx="http://javafx.com/fxml/1" fx:controller="textEditor.controller.EditorController">
+
+<AnchorPane minHeight="-Infinity" prefHeight="500.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="textEditor.controller.EditorController">
     <children>
-        <SplitPane orientation="VERTICAL" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
-                   AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="25.0">
-            <items>
-                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
-                    <children>
-                        <HBox fx:id="searchBox" alignment="CENTER_LEFT" spacing="1.0" visible="false"
-                              AnchorPane.rightAnchor="0.0">
-                            <children>
-                                <TextField fx:id="searchTextField" minHeight="23.0" minWidth="149.0" prefHeight="23.0"
-                                           prefWidth="153.0" promptText="Type search string...">
-                                    <font>
-                                        <Font size="10.0"/>
-                                    </font>
-                                    <opaqueInsets>
-                                        <Insets/>
-                                    </opaqueInsets>
-                                </TextField>
-                                <Button minHeight="23.0" minWidth="44.0" mnemonicParsing="false"
-                                        onAction="#searchButtonClicked" prefHeight="19.0" prefWidth="44.0" text="Search"
-                                        textAlignment="CENTER">
-                                    <font>
-                                        <Font size="10.0"/>
-                                    </font>
-                                </Button>
-                                <Button minHeight="23.0" minWidth="44.0" mnemonicParsing="false"
-                                        onAction="#nextSearchButtonClicked" prefHeight="19.0" prefWidth="44.0"
-                                        text="Next" textAlignment="CENTER">
-                                    <font>
-                                        <Font size="10.0"/>
-                                    </font>
-                                </Button>
-                                <Button minHeight="23.0" minWidth="44.0" mnemonicParsing="false"
-                                        onAction="#previousSearchButtonClicked" prefHeight="23.0" prefWidth="53.0"
-                                        text="Previous" textAlignment="CENTER">
-                                    <font>
-                                        <Font size="10.0"/>
-                                    </font>
-                                </Button>
-                                <Button minHeight="23.0" minWidth="44.0" mnemonicParsing="false"
-                                        onAction="#closeSearchBoxClicked" prefHeight="18.0" prefWidth="38.0" text="X">
-                                    <font>
-                                        <Font size="10.0"/>
-                                    </font>
-                                </Button>
-                            </children>
-                            <opaqueInsets>
-                                <Insets/>
-                            </opaqueInsets>
-                            <padding>
-                                <Insets right="10.0"/>
-                            </padding>
-                        </HBox>
-                        <HBox fx:id="replaceBox" alignment="CENTER_LEFT" layoutY="28.0" spacing="1.0" visible="false"
-                              AnchorPane.rightAnchor="68.0">
-                            <children>
-                                <TextField fx:id="replaceTextField" minHeight="23.0" minWidth="149.0" prefHeight="23.0"
-                                           prefWidth="153.0" promptText="Type replace string...">
-                                    <font>
-                                        <Font size="10.0"/>
-                                    </font>
-                                    <opaqueInsets>
-                                        <Insets/>
-                                    </opaqueInsets>
-                                </TextField>
-                                <Button minHeight="23.0" minWidth="44.0" mnemonicParsing="false"
-                                        onAction="#replaceButtonClicked" prefHeight="23.0" prefWidth="52.0"
-                                        text="Replace" textAlignment="CENTER">
-                                    <font>
-                                        <Font size="10.0"/>
-                                    </font>
-                                </Button>
-                                <Button minHeight="23.0" minWidth="44.0" mnemonicParsing="false"
-                                        onAction="#replaceAllButtonClicked" prefHeight="23.0" prefWidth="67.0"
-                                        text="Replace All" textAlignment="CENTER">
-                                    <font>
-                                        <Font size="10.0"/>
-                                    </font>
-                                </Button>
-                            </children>
-                            <opaqueInsets>
-                                <Insets/>
-                            </opaqueInsets>
-                            <padding>
-                                <Insets right="10.0"/>
-                            </padding>
-                        </HBox>
-                    </children>
-                </AnchorPane>
-            </items>
-        </SplitPane>
-        <BorderPane layoutY="25.0" prefHeight="500.0" prefWidth="748.0" AnchorPane.bottomAnchor="0.0"
-                    AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <BorderPane layoutY="25.0" prefHeight="500.0" prefWidth="748.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <top>
-                <SplitPane dividerPositions="0.5" orientation="VERTICAL" prefHeight="94.0" prefWidth="748.0"
-                           BorderPane.alignment="CENTER">
+                <SplitPane dividerPositions="0.5" orientation="VERTICAL" prefHeight="94.0" prefWidth="748.0" BorderPane.alignment="CENTER">
                     <items>
                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="15.0" prefWidth="746.0">
                             <children>
@@ -110,103 +19,76 @@
                                     <menus>
                                         <Menu mnemonicParsing="false" text="File">
                                             <items>
-                                                <MenuItem mnemonicParsing="false" onAction="#openProjectManagerClicked"
-                                                          text="Open Project Manager"/>
-                                                <MenuItem mnemonicParsing="false" onAction="#fileOpenClicked"
-                                                          text="Open"/>
-                                                <MenuItem mnemonicParsing="false" onAction="#fileSaveClicked"
-                                                          text="Save"/>
-                                                <MenuItem mnemonicParsing="false" onAction="#filePrintClicked"
-                                                          text="Print"/>
-                                                <MenuItem mnemonicParsing="false" onAction="#fileCloseClicked"
-                                                          text="Close"/>
+                                                <MenuItem mnemonicParsing="false" onAction="#openProjectManagerClicked" text="Open Project Manager" />
+                                                <MenuItem mnemonicParsing="false" onAction="#fileOpenClicked" text="Open" />
+                                                <MenuItem mnemonicParsing="false" onAction="#fileSaveClicked" text="Save" />
+                                                <MenuItem mnemonicParsing="false" onAction="#filePrintClicked" text="Print" />
+                                                <MenuItem mnemonicParsing="false" onAction="#fileCloseClicked" text="Close" />
                                             </items>
                                         </Menu>
                                         <Menu mnemonicParsing="false" text="Edit">
                                             <items>
-                                                <MenuItem mnemonicParsing="false" onAction="#editUndoClicked"
-                                                          text="Undo"/>
-                                                <MenuItem mnemonicParsing="false" onAction="#editRedoClicked"
-                                                          text="Redo"/>
-                                                <MenuItem mnemonicParsing="false" onAction="#editSearchClicked"
-                                                          text="Search"/>
-                                                <MenuItem mnemonicParsing="false" onAction="#editActiveUsers"
-                                                          text="Active Users"/>
-                                                <SeparatorMenuItem mnemonicParsing="false"/>
-                                                <MenuItem mnemonicParsing="false" onAction="#editCopyClicked"
-                                                          text="Copy"/>
-                                                <MenuItem mnemonicParsing="false" onAction="#editCutClicked"
-                                                          text="Cut"/>
-                                                <MenuItem mnemonicParsing="false" onAction="#editPasteClicked"
-                                                          text="Paste"/>
+                                                <MenuItem mnemonicParsing="false" onAction="#editUndoClicked" text="Undo" />
+                                                <MenuItem mnemonicParsing="false" onAction="#editRedoClicked" text="Redo" />
+                                                <MenuItem mnemonicParsing="false" onAction="#editSearchClicked" text="Search" />
+                                                <MenuItem mnemonicParsing="false" onAction="#editActiveUsers" text="Active Users" />
+                                                <SeparatorMenuItem mnemonicParsing="false" />
+                                                <MenuItem mnemonicParsing="false" onAction="#editCopyClicked" text="Copy" />
+                                                <MenuItem mnemonicParsing="false" onAction="#editCutClicked" text="Cut" />
+                                                <MenuItem mnemonicParsing="false" onAction="#editPasteClicked" text="Paste" />
                                             </items>
                                         </Menu>
                                         <Menu mnemonicParsing="false" text="Help">
                                             <items>
-                                                <MenuItem mnemonicParsing="false" onAction="#helpHelpClicked"
-                                                          text="Help"/>
+                                                <MenuItem mnemonicParsing="false" onAction="#helpHelpClicked" text="Help" />
                                             </items>
                                         </Menu>
                                     </menus>
                                 </MenuBar>
                             </children>
                         </AnchorPane>
-                        <AnchorPane maxHeight="174.0" maxWidth="-Infinity" minHeight="62.0" minWidth="-Infinity"
-                                    prefHeight="141.0" prefWidth="746.0">
+                        <AnchorPane maxHeight="174.0" maxWidth="-Infinity" minHeight="62.0" minWidth="-Infinity" prefHeight="141.0" prefWidth="746.0">
                             <children>
                                 <HBox alignment="CENTER" focusTraversable="true" prefHeight="39.0" spacing="2.0">
                                     <children>
-                                        <ToggleButton fx:id="boldButton" mnemonicParsing="false"
-                                                      onAction="#boldButtonClicked" text="Bold"/>
-                                        <ToggleButton fx:id="italicButton" mnemonicParsing="false"
-                                                      onAction="#italicButtonClicked" text="Italic"/>
-                                        <ToggleButton fx:id="underscoreButton" mnemonicParsing="false"
-                                                      onAction="#underscoreButtonClicked" text="Underscore"/>
-                                        <ChoiceBox fx:id="fontType" prefWidth="150.0"/>
-                                        <ChoiceBox fx:id="fontSize" prefHeight="25.0" prefWidth="55.0"/>
-                                        <ChoiceBox fx:id="fontColor" prefWidth="85"/>
+                                        <ToggleButton fx:id="boldButton" mnemonicParsing="false" onAction="#boldButtonClicked" text="Bold" />
+                                        <ToggleButton fx:id="italicButton" mnemonicParsing="false" onAction="#italicButtonClicked" text="Italic" />
+                                        <ToggleButton fx:id="underscoreButton" mnemonicParsing="false" onAction="#underscoreButtonClicked" text="Underscore" />
+                                        <ChoiceBox fx:id="fontType" prefWidth="150.0" />
+                                        <ChoiceBox fx:id="fontSize" prefHeight="25.0" prefWidth="55.0" />
+                                        <ChoiceBox fx:id="fontColor" prefWidth="85" />
                                     </children>
                                 </HBox>
                                 <HBox alignment="TOP_CENTER" layoutX="160.0" layoutY="35.0" prefHeight="31.0">
                                     <children>
-                                        <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="19.0"
-                                               text="Font settings" textAlignment="CENTER">
+                                        <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="19.0" text="Font settings" textAlignment="CENTER">
                                             <font>
-                                                <Font size="13.0"/>
+                                                <Font size="13.0" />
                                             </font>
                                         </Label>
                                     </children>
                                 </HBox>
                                 <HBox alignment="TOP_CENTER" layoutX="473.0" layoutY="35.0" prefHeight="31.0">
                                     <children>
-                                        <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="19.0"
-                                               text="Text alignment">
+                                        <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="19.0" text="Text alignment">
                                             <font>
-                                                <Font size="13.0"/>
+                                                <Font size="13.0" />
                                             </font>
                                         </Label>
                                     </children>
                                 </HBox>
-                                <HBox alignment="CENTER" focusTraversable="true" layoutX="420.0" prefHeight="39.0"
-                                      spacing="1.0">
+                                <HBox alignment="CENTER" focusTraversable="true" layoutX="420.0" prefHeight="39.0" spacing="1.0">
                                     <children>
-                                        <ToggleButton fx:id="alignmentLeftButton" mnemonicParsing="false"
-                                                      onAction="#alignmentLeftButtonClicked" text="Left">
+                                        <ToggleButton fx:id="alignmentLeftButton" mnemonicParsing="false" onAction="#alignmentLeftButtonClicked" text="Left">
                                             <toggleGroup>
-                                                <ToggleGroup fx:id="alignment"/>
+                                                <ToggleGroup fx:id="alignment" />
                                             </toggleGroup>
                                         </ToggleButton>
-                                        <ToggleButton fx:id="alignmentCenterButton" mnemonicParsing="false"
-                                                      onAction="#alignmentCenterButtonClicked" text="Center"
-                                                      toggleGroup="$alignment"/>
-                                        <ToggleButton fx:id="alignmentRightButton" mnemonicParsing="false"
-                                                      onAction="#alignmentRightButtonClicked" text="Right"
-                                                      toggleGroup="$alignment"/>
-                                        <ToggleButton fx:id="alignmentAdjustButton" mnemonicParsing="false"
-                                                      onAction="#alignmentAdjustButtonClicked" text="Adjust"
-                                                      toggleGroup="$alignment"/>
-                                        <ChoiceBox fx:id="paragraphHeading" prefWidth="85"/>
-                                        <ChoiceBox fx:id="bulletList" prefWidth="53.0"/>
+                                        <ToggleButton fx:id="alignmentCenterButton" mnemonicParsing="false" onAction="#alignmentCenterButtonClicked" text="Center" toggleGroup="$alignment" />
+                                        <ToggleButton fx:id="alignmentRightButton" mnemonicParsing="false" onAction="#alignmentRightButtonClicked" text="Right" toggleGroup="$alignment" />
+                                        <ToggleButton fx:id="alignmentAdjustButton" mnemonicParsing="false" onAction="#alignmentAdjustButtonClicked" text="Adjust" toggleGroup="$alignment" />
+                                        <ChoiceBox fx:id="paragraphHeading" prefWidth="85" />
+                                        <ChoiceBox fx:id="bulletList" prefWidth="53.0" />
                                     </children>
                                 </HBox>
                             </children>
@@ -215,8 +97,7 @@
                 </SplitPane>
             </top>
             <center>
-                <ScrollPane hbarPolicy="NEVER" maxHeight="842.0" maxWidth="595.0" prefHeight="200.0" prefWidth="200.0"
-                            vbarPolicy="ALWAYS" BorderPane.alignment="CENTER">
+                <ScrollPane hbarPolicy="NEVER" maxHeight="842.0" maxWidth="595.0" prefHeight="200.0" prefWidth="200.0" vbarPolicy="ALWAYS" BorderPane.alignment="CENTER">
                     <content>
                         <StyleClassedTextArea fx:id="mainTextArea" maxHeight="842.0" maxWidth="595.0" minHeight="0.0"
                                               minWidth="0.0" prefHeight="842.0" prefWidth="595.0" wrapText="true"/>
@@ -224,11 +105,82 @@
                 </ScrollPane>
             </center>
             <left>
-                <Region prefHeight="406.0" prefWidth="68.0" BorderPane.alignment="CENTER"/>
+                <Region prefHeight="406.0" prefWidth="68.0" BorderPane.alignment="CENTER" />
             </left>
             <right>
-                <Region prefHeight="406.0" prefWidth="65.0" BorderPane.alignment="CENTER"/>
+                <Region prefHeight="406.0" prefWidth="65.0" BorderPane.alignment="CENTER" />
             </right>
         </BorderPane>
+      <VBox fx:id="searchBox" layoutX="392.0" layoutY="93.0" prefHeight="56.0" prefWidth="356.0" spacing="5.0" visible="false" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="93.0">
+         <children>
+                  <HBox alignment="CENTER_RIGHT" spacing="1.0">
+                      <children>
+                          <TextField fx:id="searchTextField" minHeight="23.0" minWidth="149.0" prefHeight="23.0" prefWidth="153.0" promptText="Type search string...">
+                              <font>
+                                  <Font size="10.0" />
+                              </font>
+                              <opaqueInsets>
+                                  <Insets />
+                              </opaqueInsets>
+                          </TextField>
+                          <Button minHeight="23.0" minWidth="44.0" mnemonicParsing="false" onAction="#searchButtonClicked" prefHeight="19.0" prefWidth="44.0" text="Search" textAlignment="CENTER">
+                              <font>
+                                  <Font size="10.0" />
+                              </font>
+                          </Button>
+                          <Button minHeight="23.0" minWidth="44.0" mnemonicParsing="false" onAction="#nextSearchButtonClicked" prefHeight="19.0" prefWidth="44.0" text="Next" textAlignment="CENTER">
+                              <font>
+                                  <Font size="10.0" />
+                              </font>
+                          </Button>
+                          <Button minHeight="23.0" minWidth="44.0" mnemonicParsing="false" onAction="#previousSearchButtonClicked" prefHeight="23.0" prefWidth="53.0" text="Previous" textAlignment="CENTER">
+                              <font>
+                                  <Font size="10.0" />
+                              </font>
+                          </Button>
+                          <Button minHeight="23.0" minWidth="44.0" mnemonicParsing="false" onAction="#closeSearchBoxClicked" prefHeight="18.0" prefWidth="38.0" text="X">
+                              <font>
+                                  <Font size="10.0" />
+                              </font>
+                          </Button>
+                      </children>
+                      <opaqueInsets>
+                          <Insets />
+                      </opaqueInsets>
+                      <padding>
+                          <Insets right="10.0" />
+                      </padding>
+                  </HBox>
+                  <HBox alignment="CENTER_RIGHT" spacing="1.0">
+                      <children>
+                          <TextField fx:id="replaceTextField" minHeight="23.0" minWidth="149.0" prefHeight="23.0" prefWidth="153.0" promptText="Type replace string...">
+                              <font>
+                                  <Font size="10.0" />
+                              </font>
+                              <opaqueInsets>
+                                  <Insets />
+                              </opaqueInsets>
+                          </TextField>
+                  <Region prefHeight="23.0" prefWidth="68.0" />
+                          <Button minHeight="23.0" minWidth="44.0" mnemonicParsing="false" onAction="#replaceButtonClicked" prefHeight="23.0" prefWidth="52.0" text="Replace" textAlignment="CENTER">
+                              <font>
+                                  <Font size="10.0" />
+                              </font>
+                          </Button>
+                          <Button minHeight="23.0" minWidth="44.0" mnemonicParsing="false" onAction="#replaceAllButtonClicked" prefHeight="23.0" prefWidth="67.0" text="Replace All" textAlignment="CENTER">
+                              <font>
+                                  <Font size="10.0" />
+                              </font>
+                          </Button>
+                      </children>
+                      <opaqueInsets>
+                          <Insets />
+                      </opaqueInsets>
+                      <padding>
+                          <Insets right="10.0" />
+                      </padding>
+                  </HBox>
+         </children>
+      </VBox>
     </children>
 </AnchorPane>
