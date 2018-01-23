@@ -7,6 +7,8 @@ import javafx.fxml.Initializable;
 import javafx.print.*;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
 import org.fxmisc.richtext.StyleClassedTextArea;
 import org.fxmisc.richtext.model.Paragraph;
 import org.fxmisc.richtext.model.StyleSpans;
@@ -49,11 +51,9 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     @FXML
     public TextField replaceTextField;
     @FXML
-    public HBox replaceBox;
-    @FXML
     private ChoiceBox<String> fontSize, fontType, fontColor, paragraphHeading, bulletList;
     @FXML
-    private HBox searchBox;
+    private VBox searchBox;
     @FXML
     private ToggleButton boldButton, italicButton, underscoreButton,
             alignmentLeftButton, alignmentCenterButton, alignmentRightButton, alignmentAdjustButton;
@@ -335,7 +335,6 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     @FXML
     private void editSearchClicked() {
         searchBox.setVisible(true);
-        replaceBox.setVisible(true);
     }
 
     @FXML
@@ -378,7 +377,6 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     @FXML
     private void closeSearchBoxClicked() {
         searchBox.setVisible(false);
-        replaceBox.setVisible(false);
         textFormatter.clearHighlight(searchTextIndex);
     }
 
