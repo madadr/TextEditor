@@ -1,12 +1,14 @@
 package textEditor.controller;
 
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
+import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import textEditor.controller.inject.ClientInjectionTarget;
 import textEditor.controller.inject.UserInjectionTarget;
@@ -16,13 +18,23 @@ import textEditor.model.interfaces.User;
 import textEditor.utils.RMIClient;
 import textEditor.view.WindowSwitcher;
 
+import javax.mail.*;
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 import java.io.IOException;
 import java.net.URL;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.util.Properties;
 import java.util.ResourceBundle;
+import java.util.regex.Pattern;
+
+import static textEditor.utils.Const.RegistrationFields.EMAIL;
 
 public class LoginController implements Initializable, ClientInjectionTarget, WindowSwitcherInjectionTarget, UserInjectionTarget {
+    public HBox forgotPasswordBox;
+    public TextField forgotPasswordEmail;
     @FXML
     private Button submitLogin, registrationButton;
     @FXML
@@ -133,5 +145,29 @@ public class LoginController implements Initializable, ClientInjectionTarget, Wi
             resultOfAuthorization.setTextFill(Color.web("#ff3300"));
         }
         resultOfAuthorization.setVisible(true);
+    }
+
+    public void onClickForgot() {
+        forgotPasswordBox.setVisible(true);
+    }
+
+    public void onClickForgotSubmit() {
+        String userEmail = forgotPasswordEmail.getText();
+        String matchEmail = "\\b[a-zA-Z0-9]{2,}\\b@\\b[a-zA-Z0-9]{2,}\\b\\.\\b[a-zA-Z0-9]{2,}\\b";
+        Pattern emailPattern = Pattern.compile(matchEmail);
+        boolean isEmailMeetRequirement = emailPattern.matcher(userEmail).matches();
+        try {
+            if (isEmailMeetRequirement && databaseModel.isEmailExist(userEmail)) {
+                databaseModel.sendPasswordToUser(userEmail);
+                System.out.println("Done");
+
+                setResultText("We send password to your email", true);
+
+            } else {
+                setResultText("Email is invalid", false);
+            }
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
     }
 }
