@@ -4,6 +4,7 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -16,6 +17,7 @@ import textEditor.controller.inject.WindowSwitcherInjectionTarget;
 import textEditor.model.interfaces.DatabaseModel;
 import textEditor.model.interfaces.User;
 import textEditor.utils.RMIClient;
+import textEditor.view.AlertManager;
 import textEditor.view.WindowSwitcher;
 
 import javax.mail.*;
@@ -81,7 +83,7 @@ public class LoginController implements Initializable, ClientInjectionTarget, Wi
     }
 
     private void setNotConnected() {
-        setResultText("Brak połączenia z bazą danych", false);
+        setResultText("No connection with database", false);
         submitLogin.setDisable(true);
         registrationButton.setDisable(true);
         userLoginField.setDisable(true);
@@ -153,18 +155,15 @@ public class LoginController implements Initializable, ClientInjectionTarget, Wi
 
     public void onClickForgotSubmit() {
         String userEmail = forgotPasswordEmail.getText();
-        String matchEmail = "\\b[a-zA-Z0-9]{2,}\\b@\\b[a-zA-Z0-9]{2,}\\b\\.\\b[a-zA-Z0-9]{2,}\\b";
-        Pattern emailPattern = Pattern.compile(matchEmail);
-        boolean isEmailMeetRequirement = emailPattern.matcher(userEmail).matches();
         try {
-            if (isEmailMeetRequirement && databaseModel.isEmailExist(userEmail)) {
+            if (databaseModel.isEmailExist(userEmail)) {
                 databaseModel.sendPasswordToUser(userEmail);
                 System.out.println("Done");
-
-                setResultText("We send password to your email", true);
+                AlertManager.displayAlert(Alert.AlertType.CONFIRMATION,"We send password to your email");
+                forgotPasswordBox.setVisible(false);
 
             } else {
-                setResultText("Email is invalid", false);
+                AlertManager.displayAlert(Alert.AlertType.WARNING,"Email is invalid");
             }
         } catch (RemoteException e) {
             e.printStackTrace();
