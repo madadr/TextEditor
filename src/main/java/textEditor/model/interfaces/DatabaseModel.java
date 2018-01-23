@@ -29,4 +29,8 @@ public interface DatabaseModel extends Remote {
     void addFriend(User user, User friend) throws RemoteException;
 
     void removeFriend(User user, User friend) throws RemoteException;
+
+    boolean isEmailExist(String userEmail) throws RemoteException;
+
+    void sendPasswordToUser(String userEmail) throws RemoteException;
 }

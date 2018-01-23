@@ -4,6 +4,10 @@ import textEditor.model.interfaces.DatabaseModel;
 import textEditor.model.interfaces.Project;
 import textEditor.model.interfaces.User;
 
+import javax.mail.*;
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -13,6 +17,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 import static textEditor.utils.Const.RegistrationFields.*;
 
@@ -374,6 +379,64 @@ public class DatabaseModelImpl implements DatabaseModel {
             e.printStackTrace();
         }
     }
+
+    @Override
+    public boolean isEmailExist(String userEmail) {
+        try {
+            String isEmailExistQuery = "SELECT user_data.email FROM user_data WHERE user_data.email = ?";
+            PreparedStatement isEmailExistStatement = con.prepareStatement(isEmailExistQuery);
+            isEmailExistStatement.setString(1, userEmail);
+            ResultSet resultSet = isEmailExistStatement.executeQuery();
+            if (resultSet.next()) {
+                return true;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    @Override
+    public void sendPasswordToUser(String userEmail) throws RemoteException {
+        try {
+            String getPasswordQuery = "SELECT users.password FROM users NATURAL JOIN user_data WHERE user_data.email = ?;";
+            PreparedStatement getPasswordStatement = con.prepareStatement(getPasswordQuery);
+            getPasswordStatement.setString(1, userEmail);
+            ResultSet resultSet = getPasswordStatement.executeQuery();
+            String userPassword = "";
+            if (resultSet.next()) {
+                userPassword = resultSet.getString(1);
+            }
+
+            final String username = "texteditorapp@gmail.com";
+            final String password = "texteditor123";
+
+            Properties props = new Properties();
+            props.put("mail.smtp.auth", "true");
+            props.put("mail.smtp.starttls.enable", "true");
+            props.put("mail.smtp.host", "smtp.gmail.com");
+            props.put("mail.smtp.port", "587");
+
+            Session session = Session.getInstance(props,
+                    new Authenticator() {
+                        protected PasswordAuthentication getPasswordAuthentication() {
+                            return new PasswordAuthentication(username, password);
+                        }
+                    });
+            Message message = new MimeMessage(session);
+            message.setFrom(new InternetAddress("texteditorapp@gmail.com"));
+            message.setRecipients(Message.RecipientType.TO,
+                    InternetAddress.parse(userEmail));
+            message.setSubject("Forgotten password");
+            message.setText("Your password is: " + userPassword);
+            Transport.send(message);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
+    }
 }
+
 
 
