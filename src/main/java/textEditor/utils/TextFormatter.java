@@ -174,8 +174,6 @@ public class TextFormatter {
         box.getSelectionModel().selectedItemProperty().addListener(listener);
     }
 
-    //TODO: THIS SHOULD INCLUDE SOME Default value protection setted to LEFT but only when others styles are not apply
-    //TODO: I DONT HAVE IDEA HOW TO MAKE IT
     public void paragraphStyleFollower(ToggleButton button, IndexRange paragraphRange, String value) {
         int currentParagraphIndex = paragraphRange.getStart();
         boolean isWholeStyled = true;

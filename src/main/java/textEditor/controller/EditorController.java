@@ -7,6 +7,7 @@ import javafx.fxml.Initializable;
 import javafx.print.*;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import org.fxmisc.richtext.StyleClassedTextArea;
 import org.fxmisc.richtext.model.Paragraph;
@@ -27,7 +28,6 @@ import textEditor.utils.TextFormatter;
 import textEditor.view.AlertManager;
 import textEditor.view.WindowSwitcher;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.rmi.NotBoundException;
@@ -51,11 +51,9 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     @FXML
     public TextField replaceTextField;
     @FXML
-    public HBox replaceBox;
-    @FXML
     private ChoiceBox<String> fontSize, fontType, fontColor, paragraphHeading, bulletList;
     @FXML
-    private HBox searchBox;
+    private VBox searchBox;
     @FXML
     private ToggleButton boldButton, italicButton, underscoreButton,
             alignmentLeftButton, alignmentCenterButton, alignmentRightButton, alignmentAdjustButton;
@@ -326,25 +324,17 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
 
     @FXML
     private void helpHelpClicked() {
-        //TODO:  implement javafx stage appear with help content
+        AlertManager.displayAlert(Alert.AlertType.INFORMATION, "" +
+                "Text editor - 2018\n" +
+                "Created by:\n" +
+                "Adrian Madej\n" +
+                "Arkadiusz Jastrzębski\n" +
+                "Kamil Majerczyk");
     }
 
     @FXML
     private void editSearchClicked() {
         searchBox.setVisible(true);
-        replaceBox.setVisible(true);
-    }
-
-    @FXML
-    private void fileOpenClicked() {
-        System.out.println("File will be open");
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Choose resource");
-        File file = fileChooser.showOpenDialog(switcher.getMainStage());
-        if (file != null) {
-            //TODO: handle this
-            //openFile(file);
-        }
     }
 
     @FXML
@@ -387,7 +377,6 @@ public class EditorController implements Initializable, ClientInjectionTarget, W
     @FXML
     private void closeSearchBoxClicked() {
         searchBox.setVisible(false);
-        replaceBox.setVisible(false);
         textFormatter.clearHighlight(searchTextIndex);
     }
 

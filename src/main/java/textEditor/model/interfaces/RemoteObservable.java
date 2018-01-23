@@ -4,7 +4,6 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 
 public interface RemoteObservable extends Remote {
-    // TODO: consider adding ONLY_PARAGRAPH
     public enum UpdateTarget {
         ONLY_TEXT, ONLY_STYLE
     }
@@ -13,7 +12,6 @@ public interface RemoteObservable extends Remote {
 
     void deleteObserver(RemoteObserver observer) throws RemoteException;
 
-    // TODO: add overloaded deleteObservers with List<RemoteObserver> argument
     void deleteObservers() throws RemoteException;
 
     void notifyObservers(UpdateTarget target) throws RemoteException;
